@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Typowe mostki USB-UART spotykane w kablach programujących Bafang -->
+<resources>
+    <!-- FTDI FT232 -->
+    <usb-device vendor-id="1027" />
+    <!-- Prolific PL2303 -->
+    <usb-device vendor-id="1659" />
+    <!-- QinHeng CH340/CH341 -->
+    <usb-device vendor-id="6790" />
+    <!-- Silicon Labs CP210x -->
+    <usb-device vendor-id="4292" />
+</resources>
