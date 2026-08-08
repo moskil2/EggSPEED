@@ -1,5 +1,18 @@
 # EggSPEED
 
+<p align="center">
+  <img src="LOGO.png" width="180" alt="EggSPEED icon" />
+</p>
+
+<p align="center">
+  <img src="screenshots/1.jpg" width="150" alt="EggSPEED screenshot 1" />
+  <img src="screenshots/2.jpg" width="150" alt="EggSPEED screenshot 2" />
+  <img src="screenshots/3.jpg" width="150" alt="EggSPEED screenshot 3" />
+  <img src="screenshots/4.jpg" width="150" alt="EggSPEED screenshot 4" />
+  <img src="screenshots/5.jpg" width="150" alt="EggSPEED screenshot 5" />
+  <img src="screenshots/6.jpg" width="150" alt="EggSPEED screenshot 6" />
+</p>
+
 A modern Android app for Bafang BBS01 / BBS02 / BBSHD mid-drive controllers, talking directly to the controller over UART (USB OTG programming cable).
 
 ## Milestone 1 - "can't be bricked" version (current)
