@@ -30,6 +30,15 @@
 6. **Instantaneous power draw** - live battery power usage in watts.
 7. **Average energy usage** - trip-average and short-term energy consumption in Wh/km.
 
+## Download
+
+EggSPEED is currently in **closed testing** on Google Play, so the install link only works for testers. It takes two clicks to get in:
+
+1. **[Join the tester group](https://groups.google.com/g/eggspeed)** - sign in with the same Google account you use on the Play Store, then hit "Join group".
+2. **[Open the Play Store testing link](https://play.google.com/apps/testing/app.spotrobotics.eggspeed)** on your phone - once you're a member, Google Play unlocks the install button for you automatically.
+
+That's it - after the first install, EggSPEED updates itself through Google Play like any other app.
+
 ## Safety model
 
 EggSPEED can read from and write to the controller's Basic / Pedal Assist / Throttle configuration blocks - it is no longer read-only. It never flashes firmware, and firmware flashing is not planned at all. Commands sent to the controller fall into four categories:
