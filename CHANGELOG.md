@@ -1,8 +1,5 @@
 # Changelog
 
-All notable changes to EggSPEED are documented here.
-
-> Earlier releases exist (v0.2.0-M2 through v0.3.5) but predate this repository's history - no reliable change notes are available for them, so they're intentionally omitted rather than listed with empty placeholders.
 
 ## v0.3.8 - 2026-08-08 (versionCode 10)
 - Bumped compile/target SDK to Android 16 (API 36), required by Google Play's target API level policy (deadline 2026-08-31)
