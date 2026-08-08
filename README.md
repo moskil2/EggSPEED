@@ -30,29 +30,30 @@
 6. **Instantaneous power draw** - live battery power usage in watts.
 7. **Average energy usage** - trip-average and short-term energy consumption in Wh/km.
 
-## Milestone 1 - "can't be bricked" version (current)
+## Safety model
 
-**Safety guarantee:** the app code contains **no** builder for flash-write frames to the controller (`0x16 + 0x52/0x53/0x54`). The only commands ever sent to the controller are:
+EggSPEED can read from and write to the controller's Basic / Pedal Assist / Throttle configuration blocks - it is no longer read-only. It never flashes firmware, and firmware flashing is not planned at all. Commands sent to the controller fall into four categories:
 
 | Command | Bytes | Nature |
 |---|---|---|
 | Read GEN/BAS/PAS/THR blocks | `0x11 + address` | pure read |
 | Telemetry (brake/battery/speed/current) | `0x11 + 0x08/0x11/0x20/0x0A` | pure read |
-| Display init / light | `0x16 0x1A 0xF0/0xF1` | transient, same as the factory display |
-| Assist level | `0x16 0x0B <code> <checksum>` | transient, same as the factory display |
+| Display init / light / assist level | `0x16 0x1A 0xF0/0xF1` / `0x16 0x0B <code> <checksum>` | transient, same as the factory display - doesn't modify persistent memory |
+| Write BAS/PAS/THR block | `0x16 + address + data + LRC` | persistent write to controller flash |
 
-The "transient" commands are exactly the frames the factory Bafang display sends cyclically during normal riding - they don't modify persistent memory.
+Every write goes through two safety layers before anything is sent:
+1. **Client-side clamping** - every value is coerced into a conservative, protocol-safe range before the write frame is even built, regardless of where the value came from.
+2. **Controller-side confirmation** - the controller validates the write itself and returns a per-parameter status code; the app decodes it and surfaces a specific error message (e.g. "current limit for level 3 out of range") instead of a generic failure.
 
-### M1 features
+### Core features
 - USB OTG connection (Bafang programming cable, UART 1200 baud 8N1)
 - Controller identification (manufacturer, model, HW/FW versions, voltage, max current)
-- Full configuration readout: Basic / Pedal Assist / Throttle (preview only)
+- Full configuration read and write: Basic / Pedal Assist / Throttle
 - Live dashboard: speed (wheel RPM × circumference), battery %, power W (estimated), brake
 - Display-style controls: assist level 0-9, light
 - Distance counter (speed integration on the app side)
 
-### What M1 deliberately does NOT do
-- Write any parameters to the controller
+### What EggSPEED deliberately does NOT do
 - Flash firmware (not planned at all)
 - Bluetooth (planned for the future - needs its own hardware bridge)
 
@@ -86,10 +87,10 @@ app/src/main/java/com/bafspeed/app/
   AppViewModel.kt      # app state, connection sequence, display mode
 ```
 
-## Known protocol gotchas (important before M2 - writing)
+## Known protocol gotchas (relevant to writing)
 
 1. **SMM in the BAS block**: writing SMM=1 as `0x10` is inconsistent with the Bafang standard - the controller expects `SMM*64` in the upper bits. Use `SMM*64 + SMS` when writing.
 2. **0xFF sentinel**: DA/SL/WM = "display-controlled" encodes as `0xFF`, other values use offsets (DA-1, SL+14, WM+9).
 3. **Wheel diameter**: `WD==12(700C) → 55; WD<12 → (WD+16)*2; WD>12 → (WD+15)*2`.
 4. **24V power formula**: `21.7 + 7.7·bat%`.
-5. The controller validates writes and returns per-parameter error codes - M2 must still validate client-side before sending.
+5. The controller validates writes and returns per-parameter error codes - the app still validates client-side before sending (see Safety model above).
