@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.BafSpeed" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">#020203</item>
+        <item name="android:statusBarColor">#020203</item>
+        <item name="android:navigationBarColor">#020203</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>

@@ -1,0 +1,27 @@
+### Build outputs ###
+/build/
+/app/build/
+*.apk
+*.aab
+
+### Signing / secrets - never commit ###
+local.properties
+keystore.properties
+*.jks
+*.keystore
+
+### Gradle / Kotlin ###
+.gradle/
+.kotlin/
+
+### IDE ###
+.idea/
+*.iml
+
+### OS ###
+.DS_Store
+Thumbs.db
+
+### Misc working files ###
+emulator_log.txt
+emulator_screenshot.png
