@@ -19,6 +19,17 @@
   </tr>
 </table>
 
+## Features
+
+1. **Full Bafang display replacement** - a live cockpit showing everything the factory display shows, and more.
+2. **Live controller programming** - write Basic, Pedal Assist, and Throttle parameters directly to the controller, even while riding.
+   - **Motor assist level control** - switch between assist levels 0-9 on the fly, exactly like the stock display.
+3. **Current calibration** - correct the app's displayed current/power reading for controllers with a shunt mod. This only adjusts what's shown in the app - nothing is written to the controller.
+4. **Voltage calibration** - apply a manual offset to correct the estimated pack voltage shown in the cockpit.
+5. **Battery range estimate** - predicted remaining range in km, blending your riding history with your current riding style.
+6. **Instantaneous power draw** - live battery power usage in watts.
+7. **Average energy usage** - trip-average and short-term energy consumption in Wh/km.
+
 ## Milestone 1 - "can't be bricked" version (current)
 
 **Safety guarantee:** the app code contains **no** builder for flash-write frames to the controller (`0x16 + 0x52/0x53/0x54`). The only commands ever sent to the controller are:
