@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  A modern Android app for Bafang BBS01 / BBS02 / BBSHD mid-drive controllers, talking directly to the controller over UART (USB OTG programming cable).
+  A modern Android app for Bafang BBS01 / BBS02 / BBSHD mid-drive controllers, talking directly to the controller over UART (USB OTG programming cable), now supporting both factory OEM Bafang firmware and bbs-fw, switchable in Settings.
 </p>
 
 <table align="center">
