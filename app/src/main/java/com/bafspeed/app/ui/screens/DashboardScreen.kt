@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bafspeed.app.AutoReconnectState
+import com.bafspeed.app.FirmwareType
 import com.bafspeed.app.SpeedUnit
 import com.bafspeed.app.UiState
 import com.bafspeed.app.i18n.tr
@@ -58,6 +59,11 @@ import kotlin.math.roundToInt
 private val HighContrastBorder = Color(0x40FFFFFF) // ~25% biały, znacznie mocniejszy niż Tokens.Border (6%)
 private val HighContrastText = Color(0xFFFFFFFF)
 private val TileBg = Color(0xFF121418)
+
+/** Odstęp między rzędem Światło/Hamulec a rzędem Sport (na wyraźne życzenie: oba rzędy razem
+ * nie wyższe niż pojedynczy przycisk −/+, czyli 2×COMPACT_TILE_HEIGHT + COMPACT_TILE_GAP ≤ 70.dp). */
+private val COMPACT_TILE_GAP = 4.dp
+private val COMPACT_TILE_HEIGHT = 33.dp
 
 /**
  * Rozszerza dostępną szerokość o [extra] na każdą stronę ponad ograniczenie z rodzica (np. padding
@@ -84,6 +90,7 @@ fun DashboardScreen(
     onStopDisplay: () -> Unit,
     onAssistChange: (Int) -> Unit,
     onLightToggle: () -> Unit,
+    onSportModeToggle: () -> Unit,
     onGoToConnect: () -> Unit,
     onResetTrip: () -> Unit,
     onResetAvgSpeed: () -> Unit,
@@ -162,11 +169,17 @@ fun DashboardScreen(
 
         Spacer(Modifier.height(2.dp))
 
+        // Tryb testowy (przycisk TEST w Ustawieniach) - wymusza skrajne wartosci na duzym
+        // wyswietlaczu predkosci/mocy i na kafelkach ponizej, zeby sprawdzic czy dluzsze/wieksze
+        // liczby nadal miesza sie w layoucie. Predkosc ograniczona do 99,9 - to twardy limit
+        // samego DigitalSpeed (skalowany pod maks. 2 cyfry), nie ma sensu podawac wiecej.
+        val t = state.testMode
+
         // Prędkość - czysto cyfrowa, bez pierścienia, jednostka po prawej stronie odczytu
-        DigitalSpeed(speedKmh = telemetry.speedKmh, unit = unit, modifier = Modifier.fillMaxWidth())
+        DigitalSpeed(speedKmh = if (t) unit.toKmh(99.9) else telemetry.speedKmh, unit = unit, modifier = Modifier.fillMaxWidth())
 
         // Moc - pod prędkością, mniejsza czcionka
-        DigitalPower(powerW = telemetry.powerW, modifier = Modifier.fillMaxWidth())
+        DigitalPower(powerW = if (t) 3000.0 else telemetry.powerW, modifier = Modifier.fillMaxWidth())
 
         Spacer(Modifier.height(6.dp))
 
@@ -177,14 +190,10 @@ fun DashboardScreen(
         // i wezszy odstep miedzy kartami (6dp -> 3dp), tak by karty zyskaly wiecej miejsca - etykiety
         // w StatCard maja maxLines=1, wiec brakujace miejsce psowaloby uklad (2. linia rozciagala kafelke).
         val statRowModifier = Modifier.fillMaxWidth().horizontalBleed(6.dp)
-        // Tryb testowy (przycisk TEST w Ustawieniach) - wymusza skrajne wartosci na 6 kafelkach
-        // (Prad/Napiecie/Pred.sr./Sr.zuzycie/Akt.zuzycie/Zasieg), zeby sprawdzic czy dluzsze/wieksze
-        // liczby nadal miesza sie w layoucie. Dystans/Trip celowo pomijamy (nie wymienione w tescie).
-        val t = state.testMode
         Row(horizontalArrangement = Arrangement.spacedBy(3.dp), modifier = statRowModifier) {
-            StatCard(tr("Dystans", "Distance"), String.format("%.1f", unit.fromKmh(state.totalOdoKm)), unit.distanceLabel, Modifier.weight(1f))
+            StatCard(tr("Dystans", "Distance"), if (t) "10000.0" else String.format("%.1f", unit.fromKmh(state.totalOdoKm)), unit.distanceLabel, Modifier.weight(1f))
             StatCard(
-                "Trip", String.format("%.1f", unit.fromKmh(state.tripKm)), unit.distanceLabel, Modifier.weight(1f),
+                "Trip", if (t) "1000.0" else String.format("%.1f", unit.fromKmh(state.tripKm)), unit.distanceLabel, Modifier.weight(1f),
                 onReset = { showResetTripConfirm = true },
             )
         }
@@ -310,25 +319,70 @@ fun DashboardScreen(
         }
         Spacer(Modifier.height(10.dp))
 
-        // − / Światło / Hamulec / +
+        // − / [Światło+Hamulec (+ Sport tylko na bbs-fw)] / +
+        // Przycisk Sport pokazujemy WYŁĄCZNIE na bbs-fw - na OEM nie ma potwierdzonego wsparcia
+        // (patrz PROTOKOL_BBSFW.md), więc znika razem z ograniczeniem wysokości, które było
+        // potrzebne tylko po to, żeby zmieścić 3 elementy w miejscu jednego przycisku −/+.
+        val showSportMode = state.firmwareType == FirmwareType.BBS_FW
+        val toggleTileHeight = if (showSportMode) COMPACT_TILE_HEIGHT else 56.dp
+        val toggleTileFontSize = if (showSportMode) 12.sp else 14.sp
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             SquareButton("−") { onAssistChange(state.assistLevel - 1) }
-            ToggleTile(
-                label = tr("Światło", "Light"),
-                active = state.lightOn,
-                activeColor = Tokens.Amber,
-                activeTextColor = Tokens.OnAccent,
-                modifier = Modifier.weight(1f),
-                onClick = onLightToggle,
-            )
-            ToggleTile(
-                label = tr("Hamulec", "Brake"),
-                active = telemetry.brakeActive,
-                activeColor = Tokens.Red,
-                activeTextColor = Color.White,
-                modifier = Modifier.weight(1f),
-            )
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(COMPACT_TILE_GAP)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    ToggleTile(
+                        label = tr("Światło", "Light"),
+                        active = state.lightOn,
+                        activeColor = Tokens.Amber,
+                        activeTextColor = Tokens.OnAccent,
+                        modifier = Modifier.weight(1f),
+                        height = toggleTileHeight,
+                        fontSize = toggleTileFontSize,
+                        onClick = onLightToggle,
+                    )
+                    ToggleTile(
+                        label = tr("Hamulec", "Brake"),
+                        active = telemetry.brakeActive,
+                        activeColor = Tokens.Red,
+                        activeTextColor = Color.White,
+                        modifier = Modifier.weight(1f),
+                        height = toggleTileHeight,
+                        fontSize = toggleTileFontSize,
+                    )
+                }
+                // Tryb jazdy Normal/Sport - ulotna komenda 0x16 0x0C, ta sama rodzina co Światło
+                // (patrz BafangCommands.setOperationMode) - potwierdzona tylko na bbs-fw.
+                if (showSportMode) {
+                    ToggleTile(
+                        label = tr("Tryb: Sport", "Mode: Sport"),
+                        active = state.sportMode,
+                        activeColor = Tokens.Red,
+                        activeTextColor = Color.White,
+                        modifier = Modifier.fillMaxWidth(),
+                        height = COMPACT_TILE_HEIGHT,
+                        fontSize = 12.sp,
+                        onClick = onSportModeToggle,
+                    )
+                }
+            }
             SquareButton("+") { onAssistChange(state.assistLevel + 1) }
+        }
+        // assistModeSelect 2-12 (LIGHTS / PASx_LIGHT) przejmuje na bbs-fw przycisk Światła do
+        // przełączania Normal/Sport (patrz app_set_lights() w app.c) - nasz przycisk Światło wysyła
+        // swój stan w KAŻDYM cyklu odpytywania, więc przy tym ustawieniu może po cichu nadpisywać
+        // powyższy przełącznik Sport (ostatni wysłany w cyklu wygrywa). Ostrzegamy zamiast cichej niespójności.
+        if (state.firmwareType == FirmwareType.BBS_FW && state.bbsFwConfigOrDefault.assistModeSelect in 2..12) {
+            Spacer(Modifier.height(4.dp))
+            Text(
+                tr(
+                    "Uwaga: \"Tryb wyboru wspomagania\" (zakładka bbs-fw System) jest ustawiony na sterowanie Sport/Normal " +
+                        "przyciskiem Światła - przycisk Światło może nie świecić prawdziwym światłem i może nadpisywać przycisk Sport co cykl.",
+                    "Warning: \"Assist Mode Select\" (bbs-fw System tab) is set to control Sport/Normal via the Lights " +
+                        "button - the Lights button may not light a real light and may override the Sport button every cycle.",
+                ),
+                fontFamily = Manrope, fontSize = 10.sp, color = Tokens.Amber, textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
         Spacer(Modifier.height(6.dp))
     }
@@ -411,8 +465,12 @@ private fun DigitalPower(powerW: Double, modifier: Modifier = Modifier) {
                 .alpha(0f)
                 .onGloballyPositioned { twoDigitsWidthPx = it.size.width },
         )
+        // Na zadanie: przesuniecie o dodatkowe 1,5 szerokosci znaku w lewo wzgledem powyzszego
+        // dokladnego centrowania - stad odejmujemy 1,5 * oneCharWidthPx (polowa twoDigitsWidthPx)
+        // od dotychczasowego przesuniecia w prawo o cale dwa znaki.
+        val oneCharWidthPx = twoDigitsWidthPx / 2f
         Row(
-            modifier = Modifier.offset(x = with(density) { (trailingWidthPx / 2 + twoDigitsWidthPx).toDp() }),
+            modifier = Modifier.offset(x = with(density) { (trailingWidthPx / 2 + twoDigitsWidthPx - 1.5f * oneCharWidthPx).toDp() }),
             verticalAlignment = Alignment.Bottom,
         ) {
             Text(
@@ -489,15 +547,26 @@ private fun StatCard(
             .let { if (onInfoClick != null) it.clickable { onInfoClick() } else it },
     ) {
         Column(Modifier.fillMaxWidth().padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                if (onInfoClick != null) "${label.uppercase()} ⓘ" else label.uppercase(),
-                fontFamily = Manrope, fontWeight = FontWeight.Medium, fontSize = 10.sp,
-                letterSpacing = 0.6.sp, color = labelColor, textAlign = TextAlign.Center,
-                maxLines = 1, overflow = TextOverflow.Ellipsis,
+            Row(
                 // Gdy jest ikona resetu (TopEnd, poza tym Column) - rezerwujemy dla niej miejsce
                 // z prawej, zeby wysrodkowana etykieta na nia nie nachodzila w waskich (1/3) kafelkach.
                 modifier = Modifier.fillMaxWidth().padding(end = if (onReset != null) 18.dp else 0.dp),
-            )
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    label.uppercase(),
+                    fontFamily = Manrope, fontWeight = FontWeight.Medium, fontSize = 10.sp,
+                    letterSpacing = 0.6.sp, color = labelColor, textAlign = TextAlign.Center,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis,
+                )
+                if (onInfoClick != null) {
+                    Spacer(Modifier.width(4.dp))
+                    // Ten sam glif/kolor co trójkąt rozwijania w polach programowania
+                    // (ExpandableParamTile) - sygnalizuje "dotknij, żeby zobaczyć więcej",
+                    // spójnie z resztą apki (dawniej było "ⓘ").
+                    Text("▼", fontFamily = Manrope, fontSize = 9.sp, color = Tokens.Emerald)
+                }
+            }
             Spacer(Modifier.height(6.dp))
             Row(verticalAlignment = Alignment.Bottom) {
                 Text(value, fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 22.sp, color = textColor)
@@ -547,7 +616,7 @@ private fun SquareButton(label: String, onClick: () -> Unit) {
     }
 }
 
-/** Przycisk/wskaźnik stanu (Światło, Hamulec) - podświetla się kolorem, gdy aktywny. onClick=null → tylko wskaźnik. */
+/** Przycisk/wskaźnik stanu (Światło, Hamulec, Sport) - podświetla się kolorem, gdy aktywny. onClick=null → tylko wskaźnik. */
 @Composable
 private fun ToggleTile(
     label: String,
@@ -555,6 +624,8 @@ private fun ToggleTile(
     activeColor: Color,
     activeTextColor: Color,
     modifier: Modifier = Modifier,
+    height: Dp = 56.dp,
+    fontSize: androidx.compose.ui.unit.TextUnit = 14.sp,
     onClick: (() -> Unit)? = null,
 ) {
     val bg = if (active) activeColor else TileBg
@@ -562,13 +633,13 @@ private fun ToggleTile(
     val textColor = if (active) activeTextColor else HighContrastText
     Box(
         modifier = modifier
-            .height(56.dp)
+            .height(height)
             .background(bg, RoundedCornerShape(14.dp))
             .border(1.5.dp, border, RoundedCornerShape(14.dp))
             .let { if (onClick != null) it.clickable { onClick() } else it },
         contentAlignment = Alignment.Center,
     ) {
-        Text(label, fontFamily = Manrope, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = textColor)
+        Text(label, fontFamily = Manrope, fontWeight = FontWeight.Bold, fontSize = fontSize, color = textColor, maxLines = 1)
     }
 }
 

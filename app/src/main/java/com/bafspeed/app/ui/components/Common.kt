@@ -2,12 +2,17 @@ package com.bafspeed.app.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
@@ -20,6 +25,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Text
+import com.bafspeed.app.i18n.tr
 import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
 import com.bafspeed.app.ui.theme.Tokens
@@ -62,6 +68,27 @@ fun EggSpeedWordmark(
         fontSize = fontSize,
         letterSpacing = letterSpacing,
     )
+}
+
+/** Stałe przyciski Read (zielony)/Write (czerwony) - zastępują dawny pływający pasek "Masz niezapisane zmiany". */
+@Composable
+fun ReadWriteButtons(onRead: () -> Unit, onWrite: () -> Unit, enabled: Boolean, modifier: Modifier = Modifier) {
+    Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        Box(
+            modifier = Modifier.weight(1f)
+                .background(if (enabled) Tokens.Emerald else Tokens.Elevated, RoundedCornerShape(14.dp))
+                .let { if (enabled) it.clickable { onRead() } else it }
+                .padding(vertical = 14.dp),
+            contentAlignment = Alignment.Center,
+        ) { Text(tr("Odczytaj", "Read"), fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = if (enabled) Tokens.OnAccent else Tokens.TextTertiary) }
+        Box(
+            modifier = Modifier.weight(1f)
+                .background(if (enabled) Tokens.Red else Tokens.Elevated, RoundedCornerShape(14.dp))
+                .let { if (enabled) it.clickable { onWrite() } else it }
+                .padding(vertical = 14.dp),
+            contentAlignment = Alignment.Center,
+        ) { Text(tr("Zapisz", "Write"), fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = if (enabled) Color.White else Tokens.TextTertiary) }
+    }
 }
 
 /** Mikro-etykieta sekcji: uppercase 11sp, letter-spacing. */

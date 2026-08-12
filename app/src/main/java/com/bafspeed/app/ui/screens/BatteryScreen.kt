@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bafspeed.app.FirmwareType
 import com.bafspeed.app.UiState
 import com.bafspeed.app.i18n.tr
 import com.bafspeed.app.ui.components.ExpandableParamTile
@@ -66,22 +67,26 @@ fun BatteryScreen(
     ) {
         PreviewBanner(
             tr(
-                "Odcięcie niskiego napięcia wysyłane jest do sterownika dopiero po Twoim potwierdzeniu. Liczba cel i " +
-                    "pojemność to dane pomocnicze aplikacji - nie są zapisywane w sterowniku, ale są potrzebne, żeby " +
+                "Liczba cel i pojemność to dane pomocnicze aplikacji - nie są zapisywane w sterowniku, ale są potrzebne, żeby " +
                     "EggSPEED mógł poprawnie wyliczyć zasięg roweru na ekranie Kokpit.",
-                "Low voltage cutoff is sent to the controller only after your confirmation. Cell count and " +
-                    "capacity are app-side helper data - they aren't saved in the controller, but are needed so " +
+                "Cell count and capacity are app-side helper data - they aren't saved in the controller, but are needed so " +
                     "EggSPEED can correctly estimate the bike's range on the Cockpit screen.",
             ),
             borderWidth = 2.dp,
         )
 
-        // Napięcie nominalne z GEN (tylko odczyt)
+        val isBbsFw = state.firmwareType == FirmwareType.BBS_FW
+        val bbsFwCfg = state.bbsFwConfigOrDefault
+
+        // Napięcie nominalne (OEM: z bloku GEN) / maksymalne (bbs-fw: pole configu) - tylko odczyt
         TokenCard(borderColor = WhiteBorder) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(tr("Nominalne napięcie", "Nominal voltage"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary, modifier = Modifier.weight(1f))
                 Text(
-                    state.general?.let { "${it.nominalVoltage} V" } ?: "-",
+                    if (isBbsFw) tr("Napięcie maksymalne", "Max voltage") else tr("Nominalne napięcie", "Nominal voltage"),
+                    fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary, modifier = Modifier.weight(1f),
+                )
+                Text(
+                    if (isBbsFw) "${bbsFwCfg.maxBatteryX100v / 100.0} V" else (state.general?.let { "${it.nominalVoltage} V" } ?: "-"),
                     fontFamily = Sora, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = Tokens.TextPrimary,
                 )
             }
@@ -89,8 +94,8 @@ fun BatteryScreen(
 
         MicroLabel(tr("Twoja bateria", "Your battery"))
 
-        // Tylko podgląd - edycja przeniesiona do zakładki Bafang Basic (jedno źródło prawdy,
-        // żeby ta sama wartość nie była edytowalna w dwóch miejscach naraz).
+        // Tylko podgląd - edycja przeniesiona do zakładki Bafang Basic / bbs-fw General (jedno
+        // źródło prawdy, żeby ta sama wartość nie była edytowalna w dwóch miejscach naraz).
         TokenCard(borderColor = WhiteBorder) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(
@@ -99,13 +104,14 @@ fun BatteryScreen(
                     modifier = Modifier.weight(1f),
                 )
                 Text(
-                    "${basic.lowBatteryProtection} V",
+                    "${if (isBbsFw) bbsFwCfg.lowCutOffV else basic.lowBatteryProtection} V",
                     fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = Tokens.TextPrimary,
                 )
             }
             Spacer(Modifier.height(4.dp))
             Text(
-                tr("Edytowalne w zakładce Bafang Basic.", "Editable in the Bafang Basic tab."),
+                if (isBbsFw) tr("Edytowalne w zakładce bbs-fw - Ustawienia podstawowe.", "Editable in the bbs-fw General tab.")
+                else tr("Edytowalne w zakładce Bafang Basic.", "Editable in the Bafang Basic tab."),
                 fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
             )
         }

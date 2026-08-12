@@ -1,5 +1,7 @@
 package com.bafspeed.app.ui.screens
 
+import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
@@ -46,8 +49,8 @@ private const val WEBSITE = "spotrobotics.app"
 private const val SUPPORT_FORM_URL = "https://spotrobotics.app/support/"
 
 /**
- * Zakladka "About" - informacje o aplikacji, kontakt, polityka prywatnosci i ostrzezenie
- * o hobbystycznym charakterze narzedzia. Ten sam wzorzec wizualny co Pedal/Throttle/General.
+ * Zakladka "Menu" - poza informacjami o aplikacji (dawne "About") zawiera tez akcje zwiazane
+ * z Google Play (ocena, sprawdzenie aktualizacji). Ten sam wzorzec wizualny co Pedal/Throttle/General.
  */
 @Composable
 fun AboutScreen() {
@@ -65,6 +68,20 @@ fun AboutScreen() {
             EggSpeedWordmark(fontSize = 20.sp, letterSpacing = 0.sp)
             Spacer(Modifier.height(4.dp))
             Text(tr("Stworzone przez Tomasza Pieczarę", "Created by Tomasz Pieczara"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary)
+        }
+
+        TokenCard(borderColor = WhiteBorder) {
+            ActionRow(
+                icon = "⭐",
+                label = tr("Oceń aplikację w Google Play", "Rate the app on Google Play"),
+                onClick = { openPlayStoreListing(context) },
+            )
+            HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
+            ActionRow(
+                icon = "⬆",
+                label = tr("Sprawdź aktualizacje", "Check for updates"),
+                onClick = { openPlayStoreListing(context) },
+            )
         }
 
         TokenCard(borderColor = WhiteBorder) {
@@ -185,6 +202,38 @@ private fun ContactExpandableTile(label: String, body: String, linkLabel: String
                 Text(linkLabel, fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Tokens.Blue)
             }
         }
+    }
+}
+
+/** Próbuje otworzyć wpis appki w Sklepie Play przez samą appkę Sklepu (`market://`), a jeśli jej brak - w przeglądarce. */
+private fun openPlayStoreListing(context: Context) {
+    val pkg = context.packageName
+    try {
+        context.startActivity(
+            Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$pkg")).apply {
+                setPackage("com.android.vending")
+            },
+        )
+    } catch (e: ActivityNotFoundException) {
+        runCatching {
+            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$pkg")))
+        }
+    }
+}
+
+/** Klikalny wiersz akcji (ikona + etykieta + strzałka) - dla pozycji menu prowadzących poza appkę (np. do Sklepu Play). */
+@Composable
+private fun ActionRow(icon: String, label: String, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(vertical = 9.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(icon, fontSize = 16.sp, modifier = Modifier.width(24.dp))
+        Text(label, fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary, modifier = Modifier.weight(1f))
+        Text("→", fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Tokens.Blue)
     }
 }
 

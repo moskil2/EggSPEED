@@ -21,7 +21,7 @@ import com.bafspeed.app.protocol.SPEED_METER_TYPE_LABELS
 import com.bafspeed.app.protocol.WHEEL_SIZE_LABELS
 import com.bafspeed.app.ui.components.ExpandableParamTile
 import com.bafspeed.app.ui.components.FlankedSlider
-import com.bafspeed.app.ui.components.PreviewBanner
+import com.bafspeed.app.ui.components.ReadWriteButtons
 import com.bafspeed.app.ui.components.StepBtn
 import com.bafspeed.app.ui.theme.Tokens
 
@@ -41,6 +41,9 @@ fun GeneralScreen(
     onSpeedMeterTypeChange: (Int) -> Unit,
     onSpeedMeterSignalsChange: (Int) -> Unit,
     onWheelChange: (Int) -> Unit,
+    onRead: () -> Unit,
+    onWrite: () -> Unit,
+    readWriteEnabled: Boolean,
 ) {
     val basic = state.basicOrDefault
     // Prąd maksymalny zgłoszony przez podłączony sterownik (blok GEN) - różne silniki
@@ -55,10 +58,7 @@ fun GeneralScreen(
             .padding(PaddingValues(start = 14.dp, end = 14.dp, top = 0.dp, bottom = 16.dp)),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        PreviewBanner(tr(
-            "Zmiany są lokalne, dopóki nie potwierdzisz zapisu przyciskiem \"Masz niezapisane zmiany\" poniżej.",
-            "Changes stay local until you confirm the write with the \"Unsaved changes\" button below.",
-        ))
+        ReadWriteButtons(onRead = onRead, onWrite = onWrite, enabled = readWriteEnabled)
 
         ExpandableParamTile(
             label = tr("Ochrona niskiego napięcia", "Low Battery Protection"),

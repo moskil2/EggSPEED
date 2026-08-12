@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bafspeed.app.ConnectionStatus
+import com.bafspeed.app.FirmwareType
 import com.bafspeed.app.UiState
 import com.bafspeed.app.protocol.Telemetry
 import com.bafspeed.app.i18n.tr
@@ -129,14 +130,27 @@ fun CalibrationScreen(
         ExpandableParamTile(
             label = tr("Korekta napięcia", "Voltage correction"),
             valueLabel = "${if (voltageOffsetV > 0) "+" else ""}${String.format("%.1f", voltageOffsetV)} V",
-            description = tr(
-                "Napięcie w Kokpicie jest estymowane z % baterii (rejestr 0x24 martwy na fabrycznym " +
-                    "firmware) - jeśli odbiega od realnego pomiaru (multimetr), skoryguj różnicę tutaj. Korekta " +
-                    "doliczana jest do każdego kolejnego odczytu napięcia (i przez to też do mocy).",
-                "Voltage in the Cockpit is estimated from the battery % (register 0x24 is dead on the factory " +
-                    "firmware) - if it deviates from a real measurement (multimeter), correct the difference here. " +
-                    "The correction is added to every subsequent voltage reading (and therefore to power too).",
-            ),
+            description = if (state.firmwareType == FirmwareType.BBS_FW) {
+                tr(
+                    "Napięcie w Kokpicie to realny pomiar z ADC sterownika (bbs-fw udostępnia go pod rejestrem " +
+                        "0x24, w przeciwieństwie do fabrycznego firmware, gdzie ten rejestr jest martwy) - jeśli " +
+                        "mimo to odbiega od pomiaru multimetrem (np. dryf ADC), skoryguj różnicę tutaj. Korekta " +
+                        "doliczana jest do każdego kolejnego odczytu napięcia (i przez to też do mocy).",
+                    "Voltage in the Cockpit is a real ADC measurement from the controller (bbs-fw exposes it via " +
+                        "register 0x24, unlike the factory firmware where that register is dead) - if it still " +
+                        "deviates from a multimeter reading (e.g. ADC drift), correct the difference here. The " +
+                        "correction is added to every subsequent voltage reading (and therefore to power too).",
+                )
+            } else {
+                tr(
+                    "Napięcie w Kokpicie jest estymowane z % baterii (rejestr 0x24 martwy na fabrycznym " +
+                        "firmware) - jeśli odbiega od realnego pomiaru (multimetr), skoryguj różnicę tutaj. Korekta " +
+                        "doliczana jest do każdego kolejnego odczytu napięcia (i przez to też do mocy).",
+                    "Voltage in the Cockpit is estimated from the battery % (register 0x24 is dead on the factory " +
+                        "firmware) - if it deviates from a real measurement (multimeter), correct the difference here. " +
+                        "The correction is added to every subsequent voltage reading (and therefore to power too).",
+                )
+            },
         ) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 StepBtn("-", true) { onVoltageOffsetChange((voltageOffsetV - 0.1).coerceIn(-5.0, 5.0)) }

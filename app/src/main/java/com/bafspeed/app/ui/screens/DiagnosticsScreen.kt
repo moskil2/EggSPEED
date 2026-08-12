@@ -208,11 +208,16 @@ private fun CollapsibleInfoBanner(title: String, text: String) {
 }
 
 /**
- * Legenda TYLKO pewnych, faktycznie używanych gdzie indziej w apce rejestrów - żadnych
- * eksperymentalnych/niepewnych kandydatów (te są tylko w wynikach pełnego skanu, do
- * własnej interpretacji). Własny stan zwinięcia w jednej karcie (bez zagnieżdżonej karty
- * w środku) - w przeciwieństwie do ExpandableParamTile, którego content() renderuje się
- * zawsze niezależnie od stanu rozwinięcia, więc nie nadaje się do faktycznie zwijanej listy.
+ * Legenda TYLKO pewnych, nazwanych rejestrów - żadnych eksperymentalnych/niepewnych kandydatów
+ * (te są tylko w wynikach pełnego skanu, do własnej interpretacji). Dwie grupy: 9 rejestrów
+ * wyświetlacza znanych z oficjalnego źródła bbs-fw (`extcom.c`, OPCODE_BAFANG_DISPLAY_READ_*) -
+ * odpowiadają niezależnie od wybranego firmware, bo to warstwa zgodności z fabrycznym
+ * wyświetlaczem - oraz 4 bloki protokołu Bafang Configuration Tool (GEN/BAS/PAS/THR), które
+ * bbs-fw świadomie NIE implementuje w tej warstwie (potwierdzone w `extcom.c` - stałe
+ * OPCODE_BAFANG_TOOL_* są zdefiniowane, ale nigdzie nieużywane w żadnym switch/case). Własny stan
+ * zwinięcia w jednej karcie (bez zagnieżdżonej karty w środku) - w przeciwieństwie do
+ * ExpandableParamTile, którego content() renderuje się zawsze niezależnie od stanu rozwinięcia,
+ * więc nie nadaje się do faktycznie zwijanej listy.
  */
 @Composable
 private fun RegisterLegend() {
@@ -231,13 +236,45 @@ private fun RegisterLegend() {
         }
         if (expanded) {
             Spacer(Modifier.height(10.dp))
+            Text(
+                tr(
+                    "Rejestry wyświetlacza znane z oficjalnego źródła bbs-fw (extcom.c) - odpowiadają NIEZALEŻNIE od wybranego firmware, bo bbs-fw naśladuje fabryczny protokół wyświetlacza dla zgodności wstecznej:",
+                    "Display registers known from bbs-fw's official source (extcom.c) - respond REGARDLESS of the selected firmware, since bbs-fw mimics the factory display protocol for backward compatibility:",
+                ),
+                fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
+            )
+            Spacer(Modifier.height(8.dp))
+            DiagRow("0x08", tr("Status", "Status"))
             DiagRow("0x0A", tr("Prąd - używany w Kokpicie", "Current - used in the Cockpit"))
             DiagRow("0x11", tr("Bateria [%] - używana w Kokpicie", "Battery [%] - used in the Cockpit"))
             DiagRow("0x20", tr("Prędkość [rpm] - używana w Kokpicie", "Speed [rpm] - used in the Cockpit"))
+            DiagRow("0x21", tr("Nieznany - nawet autor bbs-fw go tak nazwał (Unknown1)", "Unknown - even the bbs-fw author named it that (Unknown1)"))
+            DiagRow("0x22", tr("Zasięg", "Range"))
+            DiagRow("0x24", tr("Kalorie", "Calories"))
+            DiagRow("0x25", tr("Nieznany - nawet autor bbs-fw go tak nazwał (Unknown3)", "Unknown - even the bbs-fw author named it that (Unknown3)"))
+            DiagRow("0x31", tr("W ruchu (moving)", "Moving"), last = true)
+            Spacer(Modifier.height(14.dp))
+            Text(
+                tr("Rejestry protokołu konfiguracji Bafang Configuration Tool (osobny format):", "Bafang Configuration Tool protocol registers (separate format):"),
+                fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
+            )
+            Spacer(Modifier.height(8.dp))
             DiagRow("0x51", tr("GEN - blok informacji ogólnych (producent/model/HW/FW/napięcie/prąd)", "GEN - general info block (manufacturer/model/HW/FW/voltage/current)"))
             DiagRow("0x52", tr("BAS - blok ustawień Basic", "BAS - Basic settings block"))
             DiagRow("0x53", tr("PAS - blok ustawień Pedal Assist", "PAS - Pedal Assist settings block"))
             DiagRow("0x54", tr("THR - blok ustawień Throttle", "THR - Throttle settings block"), last = true)
+            Spacer(Modifier.height(10.dp))
+            Text(
+                tr(
+                    "Na bbs-fw pełny skan zwykle odpowie tylko na 9 rejestrów wyświetlacza powyżej (0x08-0x31) - bbs-fw " +
+                        "NIE implementuje odczytu 0x51-0x54 w warstwie zgodności z wyświetlaczem (to inny, osobny " +
+                        "protokół, obsługiwany na zakładkach bbs-fw System/Assist Levels).",
+                    "On bbs-fw the full scan will usually only get responses from the 9 display registers above " +
+                        "(0x08-0x31) - bbs-fw does NOT implement reading 0x51-0x54 in its display-compatibility layer " +
+                        "(that's a separate protocol, handled on the bbs-fw System/Assist Levels tabs).",
+                ),
+                fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextTertiary,
+            )
         }
     }
 }

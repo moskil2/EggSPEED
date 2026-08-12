@@ -1,9 +1,6 @@
 package com.bafspeed.app.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,10 +19,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
@@ -38,73 +31,6 @@ import com.bafspeed.app.i18n.tr
 import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
 import com.bafspeed.app.ui.theme.Tokens
-
-/**
- * Pasek "masz niezapisane zmiany" - główna czarna część otwiera podgląd i zapis do sterownika.
- * Osobny przycisk "✕" (z potwierdzeniem) odrzuca lokalne zmiany i przywraca ostatnio odczytane
- * wartości - bez tego jedynym sposobem na wyjście z trybu "dirty" był zapis do sterownika.
- * Widoczny tylko gdy jest co zapisać, jest połączenie i nie trwa tryb wyświetlacza (współdzieli port UART).
- */
-@Composable
-fun UnsavedChangesBar(visible: Boolean, onReviewClick: () -> Unit, onDiscardClick: () -> Unit, modifier: Modifier = Modifier) {
-    if (!visible) return
-    var showDiscardConfirm by remember { mutableStateOf(false) }
-
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(Tokens.Amber, RoundedCornerShape(16.dp)),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Row(
-            modifier = Modifier
-                .weight(1f)
-                .clickable { onReviewClick() }
-                .padding(horizontal = 18.dp, vertical = 14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(Modifier.weight(1f)) {
-                Text(tr("Masz niezapisane zmiany", "You have unsaved changes"), fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Tokens.OnAccent)
-                Text(tr("Dotknij, aby przejrzeć i zapisać do sterownika", "Tap to review and save to the controller"), fontFamily = Manrope, fontSize = 12.sp, color = Tokens.OnAccent)
-            }
-            Text("→", fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Tokens.OnAccent)
-        }
-        Box(
-            modifier = Modifier
-                .padding(end = 12.dp)
-                .size(32.dp)
-                .clickable { showDiscardConfirm = true },
-            contentAlignment = Alignment.Center,
-        ) {
-            Text("✕", fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Tokens.OnAccent)
-        }
-    }
-
-    if (showDiscardConfirm) {
-        AlertDialog(
-            containerColor = Tokens.Card,
-            onDismissRequest = { showDiscardConfirm = false },
-            title = { Text(tr("Odrzucić niezapisane zmiany?", "Discard unsaved changes?"), fontFamily = Sora, fontWeight = FontWeight.Bold, color = Tokens.TextPrimary) },
-            text = {
-                Text(
-                    tr(
-                        "Wszystkie lokalne, jeszcze niezapisane zmiany w ustawieniach wrócą do wartości ostatnio odczytanych ze sterownika.",
-                        "All local, unsaved changes to the settings will revert to the values last read from the controller.",
-                    ),
-                    fontFamily = Manrope, fontSize = 13.sp, color = Tokens.TextSecondary,
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = { showDiscardConfirm = false; onDiscardClick() }) {
-                    Text(tr("Odrzuć zmiany", "Discard changes"), color = Tokens.Red, fontFamily = Manrope, fontWeight = FontWeight.Bold)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDiscardConfirm = false }) { Text(tr("Anuluj", "Cancel"), color = Tokens.TextTertiary, fontFamily = Manrope) }
-            },
-        )
-    }
-}
 
 /** Dialogi przepływu zapisu: potwierdzenie (z dry-run), postęp, wynik. Renderuje się automatycznie nad wszystkim. */
 @Composable

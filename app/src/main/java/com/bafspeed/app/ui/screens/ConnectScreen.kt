@@ -61,7 +61,7 @@ fun ConnectScreen(
             .padding(horizontal = 22.dp, vertical = 16.dp),
     ) {
         // Wordmark - podniesione wyżej (bez dużego odstępu przed okręgiem)
-        EggSpeedWordmark(fontSize = 13.sp, letterSpacing = 3.9.sp)
+        EggSpeedWordmark(fontSize = 18.sp, letterSpacing = 3.9.sp)
         Text(
             tr("dla Bafang BBS01 / BBS02 / BBSHD", "for Bafang BBS01 / BBS02 / BBSHD"),
             fontFamily = Manrope,

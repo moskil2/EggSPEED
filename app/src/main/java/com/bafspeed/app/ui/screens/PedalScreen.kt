@@ -22,7 +22,7 @@ import com.bafspeed.app.protocol.designatedAssistLabel
 import com.bafspeed.app.protocol.speedLimitLabel
 import com.bafspeed.app.ui.components.ExpandableParamTile
 import com.bafspeed.app.ui.components.FlankedSlider
-import com.bafspeed.app.ui.components.PreviewBanner
+import com.bafspeed.app.ui.components.ReadWriteButtons
 import com.bafspeed.app.ui.components.StepBtn
 import com.bafspeed.app.ui.theme.Tokens
 
@@ -48,6 +48,9 @@ fun PedalScreen(
     onCurrentDecay: (Int) -> Unit,
     onStopDecay: (Int) -> Unit,
     onKeepCurrent: (Int) -> Unit,
+    onRead: () -> Unit,
+    onWrite: () -> Unit,
+    readWriteEnabled: Boolean,
 ) {
     val pas = state.pasOrDefault
 
@@ -59,10 +62,7 @@ fun PedalScreen(
             .padding(PaddingValues(start = 14.dp, end = 14.dp, top = 0.dp, bottom = 16.dp)),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        PreviewBanner(tr(
-            "Zmiany są lokalne, dopóki nie potwierdzisz zapisu przyciskiem \"Masz niezapisane zmiany\" poniżej.",
-            "Changes stay local until you confirm the write with the \"Unsaved changes\" button below.",
-        ))
+        ReadWriteButtons(onRead = onRead, onWrite = onWrite, enabled = readWriteEnabled)
 
         ExpandableParamTile(
             label = tr("Typ czujnika pedałowania", "Pedal Sensor Type"),

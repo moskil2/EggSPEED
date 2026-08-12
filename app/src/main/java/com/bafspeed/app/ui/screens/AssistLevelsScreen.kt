@@ -32,7 +32,7 @@ import com.bafspeed.app.i18n.tr
 import com.bafspeed.app.ui.components.ExpandableParamTile
 import com.bafspeed.app.ui.components.FlankedSlider
 import com.bafspeed.app.ui.components.MicroLabel
-import com.bafspeed.app.ui.components.PreviewBanner
+import com.bafspeed.app.ui.components.ReadWriteButtons
 import com.bafspeed.app.ui.components.TokenCard
 import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
@@ -48,6 +48,9 @@ fun AssistLevelsScreen(
     state: UiState,
     onCurrentChange: (level: Int, pct: Int) -> Unit,
     onSpeedChange: (level: Int, pct: Int) -> Unit,
+    onRead: () -> Unit,
+    onWrite: () -> Unit,
+    readWriteEnabled: Boolean,
 ) {
     var selected by remember { mutableIntStateOf(0) }
     val basic = state.basicOrDefault
@@ -60,10 +63,7 @@ fun AssistLevelsScreen(
             .padding(PaddingValues(start = 14.dp, end = 14.dp, top = 0.dp, bottom = 16.dp)),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        PreviewBanner(tr(
-            "Zmiany są lokalne, dopóki nie potwierdzisz zapisu przyciskiem „Masz niezapisane zmiany” poniżej.",
-            "Changes stay local until you confirm the write with the \"Unsaved changes\" button below.",
-        ))
+        ReadWriteButtons(onRead = onRead, onWrite = onWrite, enabled = readWriteEnabled)
 
         // Selektor poziomow 0-9 - kazdy kafelek ma rowna szerokosc (weight), wiec wszystkie
         // 10 miesci sie na jednym ekranie bez przewijania w bok, niezaleznie od szerokosci telefonu.

@@ -57,6 +57,9 @@ import com.bafspeed.app.ui.screens.AssistLevelsScreen
 import com.bafspeed.app.ui.screens.BafangTypeScreen
 import com.bafspeed.app.ui.screens.BatteryPill
 import com.bafspeed.app.ui.screens.BatteryScreen
+import com.bafspeed.app.ui.screens.BbsFwAssistLevelsScreen
+import com.bafspeed.app.ui.screens.BbsFwInfoScreen
+import com.bafspeed.app.ui.screens.BbsFwSystemScreen
 import com.bafspeed.app.ui.screens.CalibrationScreen
 import com.bafspeed.app.ui.screens.ConnectScreen
 import com.bafspeed.app.ui.screens.DashboardScreen
@@ -69,7 +72,6 @@ import com.bafspeed.app.ui.screens.ProfilesScreen
 import com.bafspeed.app.ui.screens.ThrottleScreen
 import com.bafspeed.app.ui.screens.SettingsScreen
 import com.bafspeed.app.ui.components.EggSpeedWordmark
-import com.bafspeed.app.ui.components.UnsavedChangesBar
 import com.bafspeed.app.ui.components.WriteFlowDialogs
 import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
@@ -84,6 +86,9 @@ private enum class Screen {
     PEDAL,
     THROTTLE,
     ASSIST,
+    BBSFW_INFO,
+    BBSFW_SYSTEM,
+    BBSFW_ASSIST,
     BATTERY,
     SETTINGS,
     CALIBRATION,
@@ -93,6 +98,12 @@ private enum class Screen {
     LANGUAGE,
     ABOUT,
 }
+
+/** Ekrany specyficzne dla firmware OEM Bafang - ukrywane w menu, gdy wybrano bbs-fw (patrz [FirmwareType]). */
+private val OEM_ONLY_SCREENS = setOf(Screen.BAFANG_TYPE, Screen.MOTOR, Screen.PEDAL, Screen.THROTTLE, Screen.ASSIST)
+
+/** Ekrany specyficzne dla bbs-fw - protokół konfiguracji jest inny, więc mają osobny komplet zakładek. */
+private val BBS_FW_ONLY_SCREENS = setOf(Screen.BBSFW_INFO, Screen.BBSFW_SYSTEM, Screen.BBSFW_ASSIST)
 
 /** Tytuł zakładki - zależny od języka (patrz [LocalAppLanguage]). */
 @Composable
@@ -104,6 +115,9 @@ private fun Screen.title(): String = when (this) {
     Screen.PEDAL -> tr("Bafang - Pedałowanie (PAS)", "Bafang Pedal (PAS)")
     Screen.THROTTLE -> tr("Bafang - Manetka", "Bafang Throttle")
     Screen.ASSIST -> tr("Poziomy wspomagania", "Assist levels")
+    Screen.BBSFW_INFO -> "BBS-FW Version"
+    Screen.BBSFW_SYSTEM -> "System"
+    Screen.BBSFW_ASSIST -> "Assist Levels"
     Screen.BATTERY -> tr("Bateria", "Battery")
     Screen.SETTINGS -> tr("Ustawienia", "Settings")
     Screen.CALIBRATION -> tr("Kalibracja", "Calibration")
@@ -111,7 +125,7 @@ private fun Screen.title(): String = when (this) {
     Screen.PROFILES -> tr("Profile", "Profiles")
     Screen.REGISTER_DIAGNOSTICS -> tr("Diagnostyka", "Diagnostics")
     Screen.LANGUAGE -> tr("Język", "Language")
-    Screen.ABOUT -> tr("O aplikacji", "About")
+    Screen.ABOUT -> tr("Menu", "Menu")
 }
 
 class MainActivity : ComponentActivity() {
@@ -175,6 +189,15 @@ private fun App(vm: AppViewModel) {
         scope.launch { drawerState.close() }
     }
 
+    // Gdy zmieni się firmware (zakładka Ustawienia), zakładka aktualnie otwarta może zniknąć z menu
+    // (patrz OEM_ONLY_SCREENS/BBS_FW_ONLY_SCREENS) - w takim wypadku przenosimy na odpowiednik "Typ/Wersja".
+    LaunchedEffect(state.firmwareType) {
+        val hidden = if (state.firmwareType == FirmwareType.BBS_FW) OEM_ONLY_SCREENS else BBS_FW_ONLY_SCREENS
+        if (screen in hidden) {
+            screen = if (state.firmwareType == FirmwareType.BBS_FW) Screen.BBSFW_INFO else Screen.BAFANG_TYPE
+        }
+    }
+
     CompositionLocalProvider(LocalAppLanguage provides state.language) {
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -182,6 +205,7 @@ private fun App(vm: AppViewModel) {
             ModalDrawerSheet(drawerContainerColor = Tokens.Card) {
                 DrawerContent(
                     current = screen,
+                    firmwareType = state.firmwareType,
                     onNavigate = { go(it) },
                 )
             }
@@ -212,10 +236,7 @@ private fun App(vm: AppViewModel) {
                     .weight(1f)
                     .navigationBarsPadding(),
             ) {
-                val showUnsavedBar = state.configDirty &&
-                    state.connection == ConnectionStatus.CONNECTED &&
-                    !state.displayMode &&
-                    screen in setOf(Screen.ASSIST, Screen.MOTOR, Screen.PEDAL, Screen.THROTTLE, Screen.BATTERY)
+                val readWriteEnabled = state.connection == ConnectionStatus.CONNECTED && !state.displayMode
 
                 when (screen) {
                     Screen.CONNECT -> ConnectScreen(
@@ -231,6 +252,7 @@ private fun App(vm: AppViewModel) {
                         onStopDisplay = vm::stopDisplayMode,
                         onAssistChange = vm::setAssistLevel,
                         onLightToggle = { vm.setLight(!state.lightOn) },
+                        onSportModeToggle = { vm.setSportMode(!state.sportMode) },
                         onGoToConnect = { go(Screen.CONNECT) },
                         onResetTrip = vm::resetTrip,
                         onResetAvgSpeed = vm::resetAvgSpeed,
@@ -239,6 +261,9 @@ private fun App(vm: AppViewModel) {
                         state = state,
                         onCurrentChange = vm::setAssistLevelCurrent,
                         onSpeedChange = vm::setAssistLevelSpeed,
+                        onRead = vm::readAllConfig,
+                        onWrite = vm::requestSaveToController,
+                        readWriteEnabled = readWriteEnabled,
                     )
                     Screen.BAFANG_TYPE -> BafangTypeScreen(state = state)
                     Screen.MOTOR -> GeneralScreen(
@@ -248,6 +273,9 @@ private fun App(vm: AppViewModel) {
                         onSpeedMeterTypeChange = vm::setSpeedMeterModel,
                         onSpeedMeterSignalsChange = vm::setSpeedMeterSignals,
                         onWheelChange = vm::setWheelSize,
+                        onRead = vm::readAllConfig,
+                        onWrite = vm::requestSaveToController,
+                        readWriteEnabled = readWriteEnabled,
                     )
                     Screen.PEDAL -> PedalScreen(
                         state = state,
@@ -262,6 +290,9 @@ private fun App(vm: AppViewModel) {
                         onCurrentDecay = vm::setPasCurrentDecay,
                         onStopDecay = vm::setPasStopDecay,
                         onKeepCurrent = vm::setPasKeepCurrent,
+                        onRead = vm::readAllConfig,
+                        onWrite = vm::requestSaveToController,
+                        readWriteEnabled = readWriteEnabled,
                     )
                     Screen.THROTTLE -> ThrottleScreen(
                         state = state,
@@ -271,6 +302,57 @@ private fun App(vm: AppViewModel) {
                         onDesignatedAssist = vm::setThrottleDesignatedAssist,
                         onSpeedLimit = vm::setThrSpeedLimit,
                         onStartCurrent = vm::setThrStartCurrent,
+                        onRead = vm::readAllConfig,
+                        onWrite = vm::requestSaveToController,
+                        readWriteEnabled = readWriteEnabled,
+                    )
+                    Screen.BBSFW_INFO -> BbsFwInfoScreen(state = state)
+                    Screen.BBSFW_SYSTEM -> BbsFwSystemScreen(
+                        state = state,
+                        onMaxCurrent = vm::setBbsFwMaxCurrentAmps,
+                        onCurrentRamp = vm::setBbsFwCurrentRampAmpsS,
+                        onMaxBatteryVoltageX100 = vm::setBbsFwMaxBatteryVoltageX100,
+                        onLowCutOff = vm::setBbsFwLowCutOffV,
+                        onMaxSpeed = vm::setBbsFwMaxSpeedKph,
+                        onThrottleStartVoltageMv = vm::setBbsFwThrottleStartVoltageMv,
+                        onThrottleEndVoltageMv = vm::setBbsFwThrottleEndVoltageMv,
+                        onThrottleStartPercent = vm::setBbsFwThrottleStartPercent,
+                        onThrottleGlobalSpdLimOpt = vm::setBbsFwThrottleGlobalSpdLimOpt,
+                        onThrottleGlobalSpdLimPercent = vm::setBbsFwThrottleGlobalSpdLimPercent,
+                        onPasStartDelayPulses = vm::setBbsFwPasStartDelayPulses,
+                        onPasStopDelayX100s = vm::setBbsFwPasStopDelayX100s,
+                        onPasKeepCurrentPercent = vm::setBbsFwPasKeepCurrentPercent,
+                        onPasKeepCurrentCadenceRpm = vm::setBbsFwPasKeepCurrentCadenceRpm,
+                        onUseSpeedSensor = vm::setBbsFwUseSpeedSensor,
+                        onUseShiftSensor = vm::setBbsFwUseShiftSensor,
+                        onUsePushWalk = vm::setBbsFwUsePushWalk,
+                        onTemperatureSensorMode = vm::setBbsFwTemperatureSensorMode,
+                        onLightsMode = vm::setBbsFwLightsMode,
+                        onWheelSizeX10 = vm::setBbsFwWheelSizeInchX10,
+                        onSpeedSensorSignals = vm::setBbsFwSpeedSensorSignals,
+                        onShiftInterruptDurationMs = vm::setBbsFwShiftInterruptDurationMs,
+                        onShiftInterruptCurrentThreshold = vm::setBbsFwShiftInterruptCurrentThresholdPercent,
+                        onWalkModeDataDisplay = vm::setBbsFwWalkModeDataDisplay,
+                        onUseFreedomUnits = vm::setBbsFwUseFreedomUnits,
+                        onRead = vm::readAllConfig,
+                        onWrite = vm::requestSaveToController,
+                        readWriteEnabled = readWriteEnabled,
+                    )
+                    Screen.BBSFW_ASSIST -> BbsFwAssistLevelsScreen(
+                        state = state,
+                        onBaseType = vm::setBbsFwAssistBaseType,
+                        onPasVariant = vm::setBbsFwAssistPasVariant,
+                        onTargetCurrent = vm::setBbsFwAssistTargetCurrent,
+                        onMaxThrottleCurrent = vm::setBbsFwAssistMaxThrottleCurrent,
+                        onMaxCadence = vm::setBbsFwAssistMaxCadence,
+                        onMaxSpeed = vm::setBbsFwAssistMaxSpeed,
+                        onTorqueFactor = vm::setBbsFwAssistTorqueFactor,
+                        onFlag = vm::setBbsFwAssistFlag,
+                        onAssistModeSelect = vm::setBbsFwAssistModeSelect,
+                        onAssistStartupLevel = vm::setBbsFwAssistStartupLevel,
+                        onRead = vm::readAllConfig,
+                        onWrite = vm::requestSaveToController,
+                        readWriteEnabled = readWriteEnabled,
                     )
                     Screen.BATTERY -> BatteryScreen(
                         state = state,
@@ -296,7 +378,11 @@ private fun App(vm: AppViewModel) {
                     Screen.PROFILES -> ProfilesScreen(
                         state = state,
                         onSaveNew = vm::saveProfileInternal,
-                        onLoad = { name -> vm.loadProfileInternal(name); go(Screen.MOTOR) },
+                        onLoad = { name ->
+                            vm.loadProfileInternal(name)
+                                .onSuccess { go(if (state.firmwareType == FirmwareType.BBS_FW) Screen.BBSFW_SYSTEM else Screen.MOTOR) }
+                                .onFailure { Toast.makeText(context, tr(state.language, "Błąd wczytywania profilu: ${it.message}", "Error loading profile: ${it.message}"), Toast.LENGTH_LONG).show() }
+                        },
                         onDelete = vm::deleteProfileInternal,
                         onImportFile = { importLauncher.launch(arrayOf("*/*")) },
                         onExportFile = { exportLauncher.launch("eggspeed-profil.ini") },
@@ -306,19 +392,11 @@ private fun App(vm: AppViewModel) {
                         onUnitsChange = vm::setUnits,
                         onOdoOffsetChange = vm::setOdoOffsetKm,
                         onToggleTestMode = vm::toggleTestMode,
+                        onFirmwareTypeChange = vm::setFirmwareType,
                     )
                     Screen.LANGUAGE -> LanguageScreen(current = state.language, onSelect = vm::setLanguage)
                     Screen.ABOUT -> AboutScreen()
                 }
-
-                UnsavedChangesBar(
-                    visible = showUnsavedBar,
-                    onReviewClick = vm::requestSaveToController,
-                    onDiscardClick = vm::discardConfigChanges,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(16.dp),
-                )
             }
         }
     }
@@ -363,7 +441,7 @@ private fun TopBar(
             }
         }
         if (showWordmark) {
-            EggSpeedWordmark(fontSize = 15.sp, letterSpacing = 3.sp, modifier = Modifier.align(Alignment.Center))
+            EggSpeedWordmark(fontSize = 18.sp, letterSpacing = 3.sp, modifier = Modifier.align(Alignment.Center))
         }
         if (trailing != null) {
             // Blisko prawej krawedzi ekranu (minimalny margines) - zeby wskaznik baterii mial
@@ -393,6 +471,7 @@ private fun HamburgerIcon() {
 @Composable
 private fun DrawerContent(
     current: Screen,
+    firmwareType: FirmwareType,
     onNavigate: (Screen) -> Unit,
 ) {
     Column(
@@ -408,7 +487,15 @@ private fun DrawerContent(
         Text(tr("konfigurator Bafang", "Bafang configurator"), fontFamily = Manrope, fontSize = 12.sp, color = Tokens.TextTertiary)
         Spacer(Modifier.height(18.dp))
 
-        Screen.entries.forEach { s ->
+        // "Menu" (About) na samej górze (ocena w Google Play, kontakt, itd. są w środku) - zwykły
+        // wygląd jak reszta pozycji, tylko kolejność wyróżnia je jako pierwsze.
+        DrawerItem(Screen.ABOUT.title(), selected = current == Screen.ABOUT) { onNavigate(Screen.ABOUT) }
+        Spacer(Modifier.height(10.dp))
+
+        // Ekrany OEM i bbs-fw są wzajemnie wykluczające się (różne protokoły konfiguracji, patrz
+        // FirmwareType) - w menu widoczny jest tylko komplet pasujący do aktualnie wybranego firmware.
+        val hidden = if (firmwareType == FirmwareType.BBS_FW) OEM_ONLY_SCREENS else BBS_FW_ONLY_SCREENS
+        Screen.entries.filter { it !in hidden && it != Screen.ABOUT }.forEach { s ->
             // Pozycja "Language" dostaje flagę bieżącego języka jako prefiks - jedyna pozycja menu
             // z ikoną, zeby była łatwo rozpoznawalna wśród tekstowych etykiet.
             val icon = if (s == Screen.LANGUAGE) LocalAppLanguage.current.flag else null
@@ -422,21 +509,21 @@ private fun DrawerItem(label: String, icon: String? = null, selected: Boolean, o
     Box(
         Modifier
             .fillMaxWidth()
-            .padding(vertical = 2.dp)
+            .padding(vertical = 1.dp)
             .background(if (selected) Tokens.Elevated else Tokens.Card, RoundedCornerShape(12.dp))
             .clickable { onClick() }
-            .padding(horizontal = 14.dp, vertical = 12.dp),
+            .padding(horizontal = 14.dp, vertical = 8.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (icon != null) {
-                Text(icon, fontSize = 15.sp)
+                Text(icon, fontSize = 16.sp)
                 Spacer(Modifier.width(8.dp))
             }
             Text(
                 label,
                 fontFamily = Manrope,
                 fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                fontSize = 14.sp,
+                fontSize = 15.sp,
                 color = if (selected) Tokens.Blue else Tokens.TextSecondary,
             )
         }

@@ -8,6 +8,17 @@ import com.bafspeed.app.protocol.BafangDecoder
 import com.bafspeed.app.protocol.BafangValidation
 import com.bafspeed.app.protocol.BafangWriter
 import com.bafspeed.app.protocol.BasicSettings
+import com.bafspeed.app.protocol.BbsFwAssistBaseType
+import com.bafspeed.app.protocol.BbsFwAssistFlags
+import com.bafspeed.app.protocol.BbsFwAssistLevel
+import com.bafspeed.app.protocol.BbsFwAssistPasVariant
+import com.bafspeed.app.protocol.BbsFwCommands
+import com.bafspeed.app.protocol.BbsFwConfig
+import com.bafspeed.app.protocol.BbsFwController
+import com.bafspeed.app.protocol.BbsFwFrameParser
+import com.bafspeed.app.protocol.BbsFwVersionInfo
+import com.bafspeed.app.protocol.BbsFwWriteResponseParser
+import com.bafspeed.app.protocol.BbsFwWriter
 import com.bafspeed.app.protocol.ConfigFrameParser
 import com.bafspeed.app.protocol.DisplayStateMachine
 import com.bafspeed.app.protocol.EnergyAnalyzer
@@ -24,6 +35,7 @@ import com.bafspeed.app.protocol.WHEEL_SIZE_LABELS
 import com.bafspeed.app.protocol.WriteResponseParser
 import com.bafspeed.app.i18n.AppLanguage
 import com.bafspeed.app.i18n.tr
+import com.bafspeed.app.profile.BbsFwProfileIo
 import com.bafspeed.app.profile.ProfileData
 import com.bafspeed.app.profile.ProfileIo
 import com.bafspeed.app.serial.UsbSerialManager
@@ -41,6 +53,16 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 
 enum class ConnectionStatus { DISCONNECTED, SEARCHING, CONNECTING, CONNECTED, ERROR }
+
+/**
+ * Firmware sterownika po drugiej stronie kabla - decyduje, którego protokołu konfiguracji
+ * używamy (patrz [BafangCommands] vs [BbsFwCommands]). bbs-fw (github.com/danielnilsson9/bbs-fw)
+ * jawnie odrzuca ramki fabrycznego Bafang Config Tool (0x11+0x51..0x54) i ma własny protokół na
+ * tym samym porcie 1200 baud - stąd osobna, równoległa ścieżka odczytu/zapisu w całej apce,
+ * przełączana tym ustawieniem (zakładka Ustawienia). Tryb wyświetlacza (Kokpit/Diagnostyka)
+ * NIE zależy od tego przełącznika - bbs-fw reimplementuje te same rejestry co OEM.
+ */
+enum class FirmwareType { OEM_BAFANG, BBS_FW }
 
 /**
  * Stan automatycznego ponownego łączenia po zerwaniu połączenia podczas aktywnego Kokpitu
@@ -64,6 +86,11 @@ private const val MAX_RECONNECT_ATTEMPTS = 3
 private const val RECONNECT_FIRST_DELAY_MS = 3000L
 /** Odczekanie przed KAŻDĄ KOLEJNĄ próbą (2., 3.) po nieudanej poprzedniej. */
 private const val RECONNECT_RETRY_DELAY_MS = 5000L
+
+/** Odstęp między ponowieniami identyfikacji bbs-fw - jak oficjalny BBSFWTool.exe (Thread.Sleep(200)). */
+private const val BBS_FW_IDENTIFY_RETRY_INTERVAL_MS = 200L
+/** Maks. czas ponawiania identyfikacji bbs-fw zanim zgłosimy brak odpowiedzi (oficjalne narzędzie czeka 120s). */
+private const val BBS_FW_IDENTIFY_TIMEOUT_MS = 30_000L
 
 /** Podgląd ramki do zapisu - pokazywany użytkownikowi przed wysyłką (tryb dry-run). */
 data class FramePreview(val blockName: String, val hex: String)
@@ -90,6 +117,8 @@ data class UiState(
     val displayMode: Boolean = false,
     val assistLevel: Int = 0,
     val lightOn: Boolean = false,
+    /** Tryb jazdy Normal/Sport (przycisk w Kokpicie) - ulotny jak assistLevel/lightOn, patrz BafangCommands.setOperationMode. */
+    val sportMode: Boolean = false,
     /** Dystans trasy - trwały (SharedPreferences), zapisywany przy stopDisplayMode()/resetTrip(). Reset ręczny przyciskiem w Kokpicie. */
     val tripKm: Double = 0.0,
     /** Dystans przejechany W RUCHU od resetu prędkości średniej - licznik NIEZALEŻNY od Trip. */
@@ -134,10 +163,17 @@ data class UiState(
     val lastReadPedalAssist: PedalAssistSettings? = null,
     val lastReadThrottle: ThrottleSettings? = null,
     val writeFlow: WriteFlow = WriteFlow.Idle,
+    /** Firmware sterownika - trwały (SharedPreferences), patrz [FirmwareType]. Zmiana wymaga rozłączenia. */
+    val firmwareType: FirmwareType = FirmwareType.OEM_BAFANG,
+    /** Wersja bbs-fw + typ sterownika (tylko odczyt) - przeżywa rozłączenie jak [general]. */
+    val bbsFwVersion: BbsFwVersionInfo? = null,
+    val bbsFwConfig: BbsFwConfig? = null,
+    val lastReadBbsFwConfig: BbsFwConfig? = null,
 ) {
     val basicOrDefault: BasicSettings get() = basic ?: BasicSettings.DEFAULT
     val pasOrDefault: PedalAssistSettings get() = pedalAssist ?: PedalAssistSettings.DEFAULT
     val thrOrDefault: ThrottleSettings get() = throttle ?: ThrottleSettings.DEFAULT
+    val bbsFwConfigOrDefault: BbsFwConfig get() = bbsFwConfig ?: BbsFwConfig.DEFAULT
 
     /** Napięcie nominalne pakietu wyliczone z liczby cel (3,7V/cela) - np. 14S → 52V. */
     val nominalPackVoltage: Int get() = (cellCount * 3.7).roundToInt()
@@ -155,6 +191,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     private val serial = UsbSerialManager(app)
     private val configParser = ConfigFrameParser()
     private val writeResponseParser = WriteResponseParser()
+    private val bbsFwFrameParser = BbsFwFrameParser()
+    private val bbsFwWriteResponseParser = BbsFwWriteResponseParser()
 
     // Jedyny trwały zapis w apce (poza plikami .ini profili) - ODO, metadane baterii i stan
     // EnergyAnalyzer, celowo osobno od reszty stanu, który ma zostać ulotny (patrz UiState.odoOffsetKm i inne).
@@ -277,6 +315,37 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         )
     }
 
+    private fun saveBbsFwVersion(v: BbsFwVersionInfo) {
+        prefs.edit()
+            .putInt("bbsfw_major", v.major)
+            .putInt("bbsfw_minor", v.minor)
+            .putInt("bbsfw_patch", v.patch)
+            .putInt("bbsfw_config_version", v.configVersion)
+            .putInt("bbsfw_ctrl_type", v.ctrlType)
+            .apply()
+    }
+
+    private fun loadBbsFwVersion(): BbsFwVersionInfo? {
+        if (!prefs.contains("bbsfw_config_version")) return null
+        return BbsFwVersionInfo(
+            major = prefs.getInt("bbsfw_major", 0),
+            minor = prefs.getInt("bbsfw_minor", 0),
+            patch = prefs.getInt("bbsfw_patch", 0),
+            configVersion = prefs.getInt("bbsfw_config_version", 0),
+            ctrlType = prefs.getInt("bbsfw_ctrl_type", 0),
+        )
+    }
+
+    /** Cała struktura config_t zapisana jako jeden string bajtów - prostsze niż pole-po-polu (34+120 pól). */
+    private fun saveBbsFwConfig(c: BbsFwConfig) {
+        prefs.edit().putString("bbsfw_config_raw", c.serialize().joinToString(",")).apply()
+    }
+
+    private fun loadBbsFwConfig(): BbsFwConfig? {
+        val raw = prefs.getString("bbsfw_config_raw", null) ?: return null
+        return runCatching { BbsFwConfig.deserialize(raw.split(",").map { it.toInt() }) }.getOrNull()
+    }
+
     private fun saveThr(thr: ThrottleSettings) {
         prefs.edit()
             .putInt("thr_sv", thr.startVoltage)
@@ -321,6 +390,10 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             lastReadPedalAssist = loadPas(),
             throttle = loadThr(),
             lastReadThrottle = loadThr(),
+            firmwareType = runCatching { FirmwareType.valueOf(prefs.getString("firmware_type", FirmwareType.OEM_BAFANG.name)!!) }.getOrDefault(FirmwareType.OEM_BAFANG),
+            bbsFwVersion = loadBbsFwVersion(),
+            bbsFwConfig = loadBbsFwConfig(),
+            lastReadBbsFwConfig = loadBbsFwConfig(),
         ),
     )
     val state: StateFlow<UiState> = _state.asStateFlow()
@@ -337,6 +410,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     private var tripJob: Job? = null
     private var configTimeoutJob: Job? = null
+    /** Pętla ponawiająca identyfikację bbs-fw (READ_FW_VERSION) - patrz [startBbsFwIdentifyRetry]. */
+    private var identifyRetryJob: Job? = null
     /** Licznik prób w trwającej sekwencji auto-reconnect (patrz [AutoReconnectState], [handleConnectFailure]). */
     private var reconnectAttempt = 0
 
@@ -346,6 +421,9 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     private var pendingAck: CompletableDeferred<WriteResponseParser.Result.Ack>? = null
     private var verifyMode = false
     private var pendingVerifyFrame: CompletableDeferred<ConfigFrameParser.Result.Frame>? = null
+    /** Odpowiedniki pendingAck/pendingVerifyFrame dla ścieżki bbs-fw - patrz [FirmwareType.BBS_FW]. */
+    private var pendingBbsFwAck: CompletableDeferred<BbsFwWriteResponseParser.Result.Ack>? = null
+    private var pendingBbsFwVerifyFrame: CompletableDeferred<BbsFwFrameParser.Result.ConfigFrame>? = null
 
     /**
      * Połączenie: uprawnienia → otwarcie portu → odczyt GEN → BAS/PAS/THR (tylko odczyt).
@@ -367,7 +445,13 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             }
             try {
                 withContext(Dispatchers.IO) {
-                    serial.open(onData = ::onSerialData, onError = { onSerialError(it) })
+                    // Oficjalny BBSFWTool.exe nigdy nie ustawia DTR/RTS (zostają false) - u nas
+                    // wymuszanie ich na true dla bbs-fw przeszkadzało w nawiązaniu połączenia.
+                    serial.open(
+                        onData = ::onSerialData,
+                        onError = { onSerialError(it) },
+                        assertDtrRts = _state.value.firmwareType == FirmwareType.OEM_BAFANG,
+                    )
                 }
             } catch (e: Exception) {
                 handleConnectFailure(e.message ?: tr(lang, "Błąd otwarcia portu", "Error opening port"))
@@ -379,7 +463,11 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 statusMessage = tr(lang, "Port otwarty (1200 baud) - identyfikuję sterownik…", "Port open (1200 baud) - identifying controller…"),
             )
             configParser.reset()
-            sendConfigRead(BafangCommands.READ_GEN)
+            bbsFwFrameParser.reset()
+            when (_state.value.firmwareType) {
+                FirmwareType.OEM_BAFANG -> sendConfigRead(BafangCommands.READ_GEN)
+                FirmwareType.BBS_FW -> startBbsFwIdentifyRetry()
+            }
         }
     }
 
@@ -455,9 +543,9 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         val s = _state.value
         viewModelScope.launch {
             // Bezpieczenstwo: zanim faktycznie zamkniemy port, jesli Kokpit byl aktywny
-            // (silnik mogl miec ustawione wspomaganie/swiatlo), wysylamy te same ulotne
-            // komendy co fabryczny wyswietlacz - wspomaganie na 0 zawsze, swiatlo OFF tylko
-            // jesli bylo wlaczone - zeby rower nie zostal z wlaczonym silnikiem/swiatlem.
+            // (silnik mogl miec ustawione wspomaganie/swiatlo/tryb Sport), wysylamy te same ulotne
+            // komendy co fabryczny wyswietlacz - wspomaganie na 0 zawsze, swiatlo OFF i tryb Normal
+            // tylko jesli byly wlaczone - zeby rower nie zostal z wlaczonym silnikiem/swiatlem/Sportem.
             if (s.displayMode && s.connection == ConnectionStatus.CONNECTED) {
                 runCatching {
                     withContext(Dispatchers.IO) {
@@ -467,6 +555,10 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                             serial.write(BafangCommands.LIGHT_OFF)
                             delay(100)
                         }
+                        if (s.sportMode) {
+                            serial.write(BafangCommands.setOperationMode(false))
+                            delay(100)
+                        }
                     }
                 }
             }
@@ -474,6 +566,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             stopDisplayMode()
             serial.close()
             configTimeoutJob?.cancel()
+            identifyRetryJob?.cancel()
             val cur = _state.value
             _state.value = UiState(
                 language = cur.language,
@@ -495,8 +588,24 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 configDirty = cur.configDirty,
                 lastKnownBatteryPct = cur.lastKnownBatteryPct,
                 lastKnownVoltageV = cur.lastKnownVoltageV,
+                firmwareType = cur.firmwareType,
+                bbsFwVersion = cur.bbsFwVersion,
+                bbsFwConfig = cur.bbsFwConfig,
+                lastReadBbsFwConfig = cur.lastReadBbsFwConfig,
             )
         }
+    }
+
+    /**
+     * Zmiana firmware sterownika (OEM Bafang / bbs-fw) - protokoły odczytu/zapisu konfiguracji
+     * są całkowicie różne (patrz [FirmwareType]), więc zmiana w trakcie połączenia rozłącza
+     * najpierw, żeby nie zostawić parserów w niespójnym stanie z ramkami "starego" protokołu.
+     */
+    fun setFirmwareType(type: FirmwareType) {
+        if (_state.value.firmwareType == type) return
+        if (_state.value.connection != ConnectionStatus.DISCONNECTED) disconnect()
+        _state.value = _state.value.copy(firmwareType = type)
+        prefs.edit().putString("firmware_type", type.name).apply()
     }
 
     // --- ODO & Alarms (jedyne trwałe ustawienia w apce - zapisywane w SharedPreferences) ---
@@ -528,8 +637,16 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         if (_state.value.connection != ConnectionStatus.CONNECTED) return
         if (_state.value.displayMode) return
         viewModelScope.launch {
-            configParser.reset()
-            sendConfigRead(BafangCommands.READ_BAS)
+            when (_state.value.firmwareType) {
+                FirmwareType.OEM_BAFANG -> {
+                    configParser.reset()
+                    sendConfigRead(BafangCommands.READ_BAS)
+                }
+                FirmwareType.BBS_FW -> {
+                    bbsFwFrameParser.reset()
+                    sendConfigRead(BbsFwCommands.READ_CONFIG)
+                }
+            }
         }
     }
 
@@ -550,10 +667,12 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         _state.value = _state.value.copy(displayMode = true)
         display.assistLevel = _state.value.assistLevel
         display.lightOn = _state.value.lightOn
+        display.sportMode = _state.value.sportMode
         display.currentCalibrationFactor = _state.value.currentCalibrationFactor
         display.voltageCalibrationOffsetV = _state.value.voltageCalibrationOffsetV
         display.lowBatteryProtectionV = _state.value.basicOrDefault.lowBatteryProtection
         display.cellCount = _state.value.cellCount
+        display.useRealVoltage = _state.value.firmwareType == FirmwareType.BBS_FW
         display.start()
         startTripIntegration()
     }
@@ -579,6 +698,11 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     fun setLight(on: Boolean) {
         display.lightOn = on
         _state.value = _state.value.copy(lightOn = on)
+    }
+
+    fun setSportMode(on: Boolean) {
+        display.sportMode = on
+        _state.value = _state.value.copy(sportMode = on)
     }
 
     fun setUnits(units: SpeedUnit) {
@@ -680,6 +804,110 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     fun setThrSpeedLimit(v: Int) = editThr { it.copy(speedLimit = v.coerceIn(0, 26)) }
     fun setThrStartCurrent(v: Int) = editThr { it.copy(startCurrentPct = v.coerceIn(0, 100)) }
 
+    // --- Edycja lokalna konfiguracji bbs-fw (config_t) - ten sam wzorzec co editBasic/editPas/editThr ---
+
+    private fun editBbsFwConfig(transform: (BbsFwConfig) -> BbsFwConfig) {
+        val cur = _state.value.bbsFwConfigOrDefault
+        _state.value = _state.value.copy(bbsFwConfig = transform(cur), configDirty = true)
+    }
+
+    // Zakresy poniżej odpowiadają Configuration.Validate() w oficjalnej apce Windows autora - patrz
+    // komentarz w BbsFwValidation.kt. Klamrowanie tutaj to tylko wygoda UI (natychmiastowa reakcja
+    // suwaka/stepera) - ostateczna, wiążąca sanityzacja i tak następuje w BbsFwWriter.build().
+    fun setBbsFwUseFreedomUnits(v: Boolean) = editBbsFwConfig { it.copy(useFreedomUnits = v) }
+    fun setBbsFwMaxCurrentAmps(v: Int) {
+        val limit = BbsFwController.maxCurrentAmps(_state.value.bbsFwVersion?.ctrlType ?: 0)
+        editBbsFwConfig { it.copy(maxCurrentAmps = v.coerceIn(5, limit)) }
+    }
+    fun setBbsFwCurrentRampAmpsS(v: Int) = editBbsFwConfig { it.copy(currentRampAmpsS = v.coerceIn(1, 255)) }
+    fun setBbsFwMaxBatteryVoltageX100(v: Int) = editBbsFwConfig { it.copy(maxBatteryX100v = v.coerceIn(100, 10000)) }
+    fun setBbsFwLowCutOffV(v: Int) = editBbsFwConfig { it.copy(lowCutOffV = v.coerceIn(1, 100)) }
+    fun setBbsFwMaxSpeedKph(v: Int) = editBbsFwConfig { it.copy(maxSpeedKph = v.coerceIn(0, 180)) }
+    fun setBbsFwUseSpeedSensor(v: Boolean) = editBbsFwConfig { it.copy(useSpeedSensor = v) }
+    fun setBbsFwUseShiftSensor(v: Boolean) = editBbsFwConfig { it.copy(useShiftSensor = v) }
+    fun setBbsFwUsePushWalk(v: Boolean) = editBbsFwConfig { it.copy(usePushWalk = v) }
+    /** Patrz [com.bafspeed.app.protocol.BbsFwTemperatureSensor] - NIE bool, 4-wartościowy wybór. */
+    fun setBbsFwTemperatureSensorMode(v: Int) = editBbsFwConfig { it.copy(temperatureSensorMode = v.coerceIn(0, 3)) }
+    fun setBbsFwLightsMode(v: Int) = editBbsFwConfig { it.copy(lightsMode = v.coerceIn(0, 3)) }
+    fun setBbsFwWheelSizeInchX10(v: Int) = editBbsFwConfig { it.copy(wheelSizeInchX10 = v.coerceIn(100, 400)) }
+    fun setBbsFwSpeedSensorSignals(v: Int) = editBbsFwConfig { it.copy(speedSensorSignals = v.coerceIn(1, 10)) }
+    fun setBbsFwPasStartDelayPulses(v: Int) = editBbsFwConfig { it.copy(pasStartDelayPulses = v.coerceIn(0, 24)) }
+    fun setBbsFwPasStopDelayX100s(v: Int) = editBbsFwConfig { it.copy(pasStopDelayX100s = v.coerceIn(5, 100)) }
+    fun setBbsFwPasKeepCurrentPercent(v: Int) = editBbsFwConfig { it.copy(pasKeepCurrentPercent = v.coerceIn(10, 100)) }
+    fun setBbsFwPasKeepCurrentCadenceRpm(v: Int) = editBbsFwConfig { it.copy(pasKeepCurrentCadenceRpm = v.coerceIn(0, 255)) }
+    fun setBbsFwThrottleStartVoltageMv(v: Int) = editBbsFwConfig { it.copy(throttleStartVoltageMv = v.coerceIn(200, 2500)) }
+    fun setBbsFwThrottleEndVoltageMv(v: Int) = editBbsFwConfig { it.copy(throttleEndVoltageMv = v.coerceIn(2500, 5000)) }
+    fun setBbsFwThrottleStartPercent(v: Int) = editBbsFwConfig { it.copy(throttleStartPercent = v.coerceIn(0, 100)) }
+    fun setBbsFwThrottleGlobalSpdLimOpt(v: Int) = editBbsFwConfig { it.copy(throttleGlobalSpdLimOpt = v.coerceIn(0, 2)) }
+    fun setBbsFwThrottleGlobalSpdLimPercent(v: Int) = editBbsFwConfig { it.copy(throttleGlobalSpdLimPercent = v.coerceIn(0, 100)) }
+    fun setBbsFwShiftInterruptDurationMs(v: Int) = editBbsFwConfig { it.copy(shiftInterruptDurationMs = v.coerceIn(50, 2000)) }
+    fun setBbsFwShiftInterruptCurrentThresholdPercent(v: Int) = editBbsFwConfig { it.copy(shiftInterruptCurrentThresholdPercent = v.coerceIn(0, 100)) }
+    fun setBbsFwWalkModeDataDisplay(v: Int) = editBbsFwConfig { it.copy(walkModeDataDisplay = v.coerceIn(0, 3)) }
+    fun setBbsFwAssistModeSelect(v: Int) = editBbsFwConfig { it.copy(assistModeSelect = v.coerceIn(0, 13)) }
+    fun setBbsFwAssistStartupLevel(v: Int) = editBbsFwConfig { it.copy(assistStartupLevel = v.coerceIn(0, 9)) }
+
+    private fun setBbsFwAssistLevel(profile: Int, level: Int, transform: (BbsFwAssistLevel) -> BbsFwAssistLevel) = editBbsFwConfig { cfg ->
+        cfg.withAssistLevel(profile, level, transform(cfg.assistLevel(profile, level)))
+    }
+    fun setBbsFwAssistFlag(profile: Int, level: Int, flag: Int, enabled: Boolean) = setBbsFwAssistLevel(profile, level) { it.withFlag(flag, enabled) }
+    fun setBbsFwAssistTargetCurrent(profile: Int, level: Int, pct: Int) = setBbsFwAssistLevel(profile, level) { it.copy(targetCurrentPercent = pct.coerceIn(0, 100)) }
+    fun setBbsFwAssistMaxThrottleCurrent(profile: Int, level: Int, pct: Int) = setBbsFwAssistLevel(profile, level) { it.copy(maxThrottleCurrentPercent = pct.coerceIn(0, 100)) }
+    fun setBbsFwAssistMaxCadence(profile: Int, level: Int, pct: Int) = setBbsFwAssistLevel(profile, level) { it.copy(maxCadencePercent = pct.coerceIn(0, 100)) }
+    fun setBbsFwAssistMaxSpeed(profile: Int, level: Int, pct: Int) = setBbsFwAssistLevel(profile, level) { it.copy(maxSpeedPercent = pct.coerceIn(0, 100)) }
+    fun setBbsFwAssistTorqueFactor(profile: Int, level: Int, x10: Int) = setBbsFwAssistLevel(profile, level) { it.copy(torqueAmplificationFactorX10 = x10.coerceIn(0, 250)) }
+
+    /**
+     * "Type" poziomu (Motor Disabled/PAS/Throttle/Cruise) - logika 1:1 z `SelectedType` setter
+     * w oficjalnej apce autora (`AssistLevelViewModel.cs`, `ApplyBaseTypeFlag` + efekty uboczne
+     * per-typ), łącznie z zerowaniem pól, które przestają mieć znaczenie po zmianie typu.
+     */
+    fun setBbsFwAssistBaseType(profile: Int, level: Int, baseType: Int) = setBbsFwAssistLevel(profile, level) { lvl ->
+        val baseBits = BbsFwAssistFlags.PAS or BbsFwAssistFlags.THROTTLE or BbsFwAssistFlags.CRUISE
+        var flags = lvl.flags and baseBits.inv()
+        flags = when (baseType) {
+            BbsFwAssistBaseType.PAS -> flags or BbsFwAssistFlags.PAS
+            BbsFwAssistBaseType.THROTTLE -> flags or BbsFwAssistFlags.THROTTLE
+            BbsFwAssistBaseType.CRUISE -> flags or BbsFwAssistFlags.CRUISE
+            else -> flags
+        }
+        when (baseType) {
+            BbsFwAssistBaseType.DISABLED -> lvl.copy(
+                flags = flags and (BbsFwAssistFlags.PAS_TORQUE or BbsFwAssistFlags.PAS_VARIABLE or BbsFwAssistFlags.OVERRIDE_CADENCE or BbsFwAssistFlags.OVERRIDE_SPEED).inv(),
+                targetCurrentPercent = 0, maxThrottleCurrentPercent = 0, maxSpeedPercent = 0, torqueAmplificationFactorX10 = 0,
+            )
+            BbsFwAssistBaseType.THROTTLE -> lvl.copy(
+                flags = flags and (BbsFwAssistFlags.PAS_TORQUE or BbsFwAssistFlags.PAS_VARIABLE or BbsFwAssistFlags.OVERRIDE_CADENCE or BbsFwAssistFlags.OVERRIDE_SPEED).inv(),
+                targetCurrentPercent = 0, torqueAmplificationFactorX10 = 0,
+            )
+            BbsFwAssistBaseType.PAS -> lvl.copy(flags = flags, maxThrottleCurrentPercent = 0)
+            else -> lvl.copy(flags = flags) // Cruise - bez dodatkowych efektow ubocznych (jak w oryginale)
+        }
+    }
+
+    /**
+     * "Variant" poziomu PAS (Cadence/Torque/Variable) - logika 1:1 z `SelectedPasVariant` setter
+     * w oficjalnej apce autora: Variable wyłącza i zeruje wszystko związane z manetką (bo w tym
+     * wariancie to manetka reguluje moc PAS, patrz apply_pas_cadence w app.c), Cadence zeruje
+     * współczynnik momentu (nieużywany poza Torque), Torque zostawia go bez zmian.
+     */
+    fun setBbsFwAssistPasVariant(profile: Int, level: Int, variant: Int) = setBbsFwAssistLevel(profile, level) { lvl ->
+        val variantBits = BbsFwAssistFlags.PAS_TORQUE or BbsFwAssistFlags.PAS_VARIABLE
+        var flags = lvl.flags and variantBits.inv()
+        flags = when (variant) {
+            BbsFwAssistPasVariant.TORQUE -> flags or BbsFwAssistFlags.PAS_TORQUE
+            BbsFwAssistPasVariant.VARIABLE -> flags or BbsFwAssistFlags.PAS_VARIABLE
+            else -> flags
+        }
+        when (variant) {
+            BbsFwAssistPasVariant.VARIABLE -> lvl.copy(
+                flags = flags and (BbsFwAssistFlags.THROTTLE or BbsFwAssistFlags.OVERRIDE_CADENCE or BbsFwAssistFlags.OVERRIDE_SPEED).inv(),
+                torqueAmplificationFactorX10 = 0, maxThrottleCurrentPercent = 0,
+            )
+            BbsFwAssistPasVariant.CADENCE -> lvl.copy(flags = flags, torqueAmplificationFactorX10 = 0)
+            else -> lvl.copy(flags = flags) // Torque - wspolczynnik momentu zostaje bez zmian
+        }
+    }
+
     /** Ustawia pojemność wprost w Ah. */
     fun setCapacityAh(ah: Double) {
         val clamped = ah.coerceIn(0.0, 999.0)
@@ -738,6 +966,10 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             _state.value = s.copy(statusMessage = tr(s.language, "Zatrzymaj kokpit (żywe dane) przed zapisem ustawień", "Stop the cockpit (live data) before writing settings"))
             return
         }
+        if (s.firmwareType == FirmwareType.BBS_FW) {
+            requestSaveBbsFw(s)
+            return
+        }
         val (basChanged, pasChanged, thrChanged) = currentDirtyBlocks(s)
         val changes = mutableListOf<String>()
         val previews = mutableListOf<FramePreview>()
@@ -769,21 +1001,6 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         _state.value = _state.value.copy(writeFlow = WriteFlow.Idle)
     }
 
-    /**
-     * Odrzuca lokalne (niezapisane) zmiany w Basic/Pedal/Throttle - przywraca robocze kopie
-     * do ostatnio odczytanych wartości ze sterownika (lastRead*) i czyści configDirty.
-     * Wywoływane z przycisku "✕" na pasku "Masz niezapisane zmiany" (patrz UnsavedChangesBar).
-     */
-    fun discardConfigChanges() {
-        val s = _state.value
-        _state.value = s.copy(
-            basic = s.lastReadBasic,
-            pedalAssist = s.lastReadPedalAssist,
-            throttle = s.lastReadThrottle,
-            configDirty = false,
-        )
-    }
-
     fun acknowledgeWriteResult() {
         _state.value = _state.value.copy(writeFlow = WriteFlow.Idle)
     }
@@ -791,6 +1008,10 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     fun confirmSaveToController() {
         val s = _state.value
         if (s.writeFlow !is WriteFlow.Confirming) return
+        if (s.firmwareType == FirmwareType.BBS_FW) {
+            confirmSaveBbsFw()
+            return
+        }
         val (basChanged, pasChanged, thrChanged) = currentDirtyBlocks(s)
 
         viewModelScope.launch {
@@ -907,6 +1128,126 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         return allOk
     }
 
+    // --- Zapis do sterownika bbs-fw - odpowiednik sekcji OEM powyżej, ale JEDEN blok configu
+    // zamiast trzech (BAS/PAS/THR), i ACK bez kodów błędów per pole (patrz BbsFwWriteResponseParser).
+
+    private fun requestSaveBbsFw(s: UiState) {
+        val old = s.lastReadBbsFwConfig
+        val new = s.bbsFwConfig
+        if (old == null || new == null || old == new) {
+            _state.value = s.copy(statusMessage = tr(s.language, "Brak zmian do zapisania", "No changes to save"), configDirty = false)
+            return
+        }
+        val changes = diffBbsFw(s.language, old, new)
+        val (_, frame) = BbsFwWriter.build(new, s.bbsFwVersion?.ctrlType)
+        _state.value = s.copy(writeFlow = WriteFlow.Confirming(changes, listOf(FramePreview("bbs-fw Config", BbsFwWriter.toHex(frame)))))
+    }
+
+    private suspend fun writeBbsFwConfigAndAwaitAck(frame: ByteArray): Boolean {
+        val lang = _state.value.language
+        _state.value = _state.value.copy(writeFlow = WriteFlow.InProgress(tr(lang, "Wysyłam konfigurację do sterownika (bbs-fw)…", "Sending configuration to the controller (bbs-fw)…")))
+        bbsFwWriteResponseParser.reset()
+        writeAckMode = true
+        val deferred = CompletableDeferred<BbsFwWriteResponseParser.Result.Ack>()
+        pendingBbsFwAck = deferred
+        withContext(Dispatchers.IO) { runCatching { serial.write(frame) } }
+        val ack = withTimeoutOrNull(3000) { deferred.await() }
+        writeAckMode = false
+        pendingBbsFwAck = null
+
+        if (ack == null) {
+            _state.value = _state.value.copy(
+                writeFlow = WriteFlow.Done(false, tr(lang, "Brak odpowiedzi sterownika (bbs-fw) - sprawdź kabel i spróbuj ponownie.", "No response from the controller (bbs-fw) - check the cable and try again.")),
+            )
+            return false
+        }
+        if (!ack.ok) {
+            _state.value = _state.value.copy(
+                writeFlow = WriteFlow.Done(
+                    false,
+                    tr(
+                        lang,
+                        "Sterownik bbs-fw odrzucił zapis (niezgodna wersja/długość konfiguracji albo błąd zapisu do pamięci - firmware nie zwraca szczegółów).",
+                        "The bbs-fw controller rejected the write (config version/length mismatch, or a flash write error - the firmware doesn't report details).",
+                    ),
+                ),
+            )
+            return false
+        }
+        return true
+    }
+
+    private suspend fun readBbsFwConfigForVerify(): BbsFwFrameParser.Result.ConfigFrame? {
+        bbsFwFrameParser.reset()
+        verifyMode = true
+        val deferred = CompletableDeferred<BbsFwFrameParser.Result.ConfigFrame>()
+        pendingBbsFwVerifyFrame = deferred
+        delay(300)
+        withContext(Dispatchers.IO) { runCatching { serial.write(BbsFwCommands.READ_CONFIG) } }
+        val result = withTimeoutOrNull(3000) { deferred.await() }
+        verifyMode = false
+        pendingBbsFwVerifyFrame = null
+        return result
+    }
+
+    private fun confirmSaveBbsFw() {
+        val target = _state.value.bbsFwConfig ?: return
+        viewModelScope.launch {
+            val (sanitized, frame) = BbsFwWriter.build(target, _state.value.bbsFwVersion?.ctrlType)
+            if (!writeBbsFwConfigAndAwaitAck(frame)) return@launch
+
+            val lang = _state.value.language
+            _state.value = _state.value.copy(writeFlow = WriteFlow.InProgress(tr(lang, "Weryfikuję zapis (odczyt zwrotny)…", "Verifying write (read-back)…")))
+            val readBack = readBbsFwConfigForVerify()
+            var verifyOk = false
+            if (readBack != null && readBack.version == BbsFwCommands.CONFIG_VERSION && readBack.data.size == BbsFwConfig.BYTE_SIZE) {
+                val decoded = BbsFwConfig.deserialize(readBack.data)
+                _state.value = _state.value.copy(bbsFwConfig = decoded, lastReadBbsFwConfig = decoded)
+                saveBbsFwConfig(decoded)
+                verifyOk = decoded == sanitized
+            }
+
+            val cur = _state.value
+            _state.value = cur.copy(
+                writeFlow = WriteFlow.Done(
+                    verifyOk,
+                    if (verifyOk) {
+                        tr(
+                            lang,
+                            "Zapisano i zweryfikowano pomyślnie - sterownik odczytany ponownie zgadza się z wysłanymi wartościami.",
+                            "Saved and verified successfully - the controller read back again matches the values sent.",
+                        )
+                    } else {
+                        tr(
+                            lang,
+                            "Zapis wysłany, ale odczyt zwrotny NIE zgadza się z oczekiwanymi wartościami (albo się nie powiódł). Sprawdź ustawienia ręcznie przed jazdą.",
+                            "Write sent, but the read-back does NOT match the expected values (or failed). Check the settings manually before riding.",
+                        )
+                    },
+                ),
+                configDirty = cur.bbsFwConfig != cur.lastReadBbsFwConfig,
+            )
+        }
+    }
+
+    private fun diffBbsFw(lang: AppLanguage, old: BbsFwConfig, new: BbsFwConfig): List<String> {
+        val out = mutableListOf<String>()
+        if (old.maxCurrentAmps != new.maxCurrentAmps) out += "${tr(lang, "Limit prądu", "Current limit")}: ${old.maxCurrentAmps}A → ${new.maxCurrentAmps}A"
+        if (old.currentRampAmpsS != new.currentRampAmpsS) out += "${tr(lang, "Narastanie prądu", "Current ramp")}: ${old.currentRampAmpsS}A/s → ${new.currentRampAmpsS}A/s"
+        if (old.maxBatteryX100v != new.maxBatteryX100v) out += "${tr(lang, "Napięcie maksymalne", "Max voltage")}: ${old.maxBatteryX100v / 100.0}V → ${new.maxBatteryX100v / 100.0}V"
+        if (old.lowCutOffV != new.lowCutOffV) out += "${tr(lang, "Odcięcie niskiego napięcia", "Low voltage cutoff")}: ${old.lowCutOffV}V → ${new.lowCutOffV}V"
+        if (old.maxSpeedKph != new.maxSpeedKph) out += "${tr(lang, "Limit prędkości", "Speed limit")}: ${old.maxSpeedKph}km/h → ${new.maxSpeedKph}km/h"
+        if (old.wheelSizeInchX10 != new.wheelSizeInchX10) out += "${tr(lang, "Rozmiar koła", "Wheel size")}: ${old.wheelSizeInchX10 / 10.0}\" → ${new.wheelSizeInchX10 / 10.0}\""
+        if (old.lightsMode != new.lightsMode) out += "${tr(lang, "Tryb świateł", "Lights mode")}: ${old.lightsMode} → ${new.lightsMode}"
+        if (old.throttleStartVoltageMv != new.throttleStartVoltageMv) out += "${tr(lang, "Napięcie startowe manetki", "Throttle start voltage")}: ${old.throttleStartVoltageMv}mV → ${new.throttleStartVoltageMv}mV"
+        if (old.throttleEndVoltageMv != new.throttleEndVoltageMv) out += "${tr(lang, "Napięcie końcowe manetki", "Throttle end voltage")}: ${old.throttleEndVoltageMv}mV → ${new.throttleEndVoltageMv}mV"
+        if (old.assistModeSelect != new.assistModeSelect) out += "${tr(lang, "Tryb wyboru wspomagania", "Assist mode select")}: ${old.assistModeSelect} → ${new.assistModeSelect}"
+        val changedLevels = (0..1).sumOf { p -> (0..9).count { l -> old.assistLevels[p][l] != new.assistLevels[p][l] } }
+        if (changedLevels > 0) out += "${tr(lang, "Poziomy wspomagania - zmienionych pól", "Assist levels - changed entries")}: $changedLevels"
+        if (out.isEmpty()) out += tr(lang, "Inne parametry bbs-fw (bez szczegółowego podglądu w tym oknie)", "Other bbs-fw parameters (no detailed preview in this dialog)")
+        return out
+    }
+
     private fun diffBasic(lang: AppLanguage, old: BasicSettings, new: BasicSettings): List<String> {
         val out = mutableListOf<String>()
         if (old.lowBatteryProtection != new.lowBatteryProtection) out += "${tr(lang, "Ochrona niskiego napięcia", "Low battery protection")}: ${old.lowBatteryProtection}V → ${new.lowBatteryProtection}V"
@@ -965,30 +1306,62 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         _state.value = _state.value.copy(profiles = names)
     }
 
-    /** Buduje treść .ini z bieżącej konfiguracji roboczej. */
-    fun exportIni(): String = ProfileIo.serialize(
-        ProfileData(
-            general = _state.value.general,
-            basic = _state.value.basicOrDefault,
-            pedalAssist = _state.value.pasOrDefault,
-            throttle = _state.value.thrOrDefault,
+    /** Buduje treść profilu z bieżącej konfiguracji roboczej - format zależny od wybranego firmware. */
+    fun exportIni(): String = when (_state.value.firmwareType) {
+        FirmwareType.BBS_FW -> BbsFwProfileIo.serialize(_state.value.bbsFwConfigOrDefault)
+        FirmwareType.OEM_BAFANG -> ProfileIo.serialize(
+            ProfileData(
+                general = _state.value.general,
+                basic = _state.value.basicOrDefault,
+                pedalAssist = _state.value.pasOrDefault,
+                throttle = _state.value.thrOrDefault,
+            )
         )
-    )
+    }
 
-    /** Wczytuje .ini do konfiguracji roboczej (podgląd). NIE wysyła do sterownika. */
+    /**
+     * Wczytuje profil do konfiguracji roboczej (podgląd). NIE wysyła do sterownika.
+     * Profile OEM i bbs-fw NIE są wymienne (różne struktury/rejestry) - plik bbs-fw ma na
+     * początku znacznik [BbsFwProfileIo.FIRMWARE_MARKER], plik OEM (albo dowolny plik .ini
+     * z Bafang Configuration Tool - profile mają być z nim wymienne) go nie ma. Próba wczytania
+     * profilu niezgodnego z aktualnie wybranym firmware jest jawnie odrzucana - inaczej dane
+     * trafiłyby w złe pola albo (dla configu bbs-fw wczytanego jako OEM) zostałyby po cichu
+     * zignorowane.
+     */
     fun importIni(text: String): Result<Unit> = runCatching {
-        val data = ProfileIo.parse(text)
-        data.basic.wheelDiameterCode.let { code ->
-            if (code in WHEEL_CIRCUMFERENCE_M.indices) display.wheelCircumferenceM = WHEEL_CIRCUMFERENCE_M[code]
+        val lang = _state.value.language
+        val currentFw = _state.value.firmwareType
+        val isBbsFwProfile = text.lineSequence().any { it.trim() == BbsFwProfileIo.FIRMWARE_MARKER }
+        if (isBbsFwProfile && currentFw != FirmwareType.BBS_FW) {
+            error(tr(lang, "Ten profil zapisano dla firmware bbs-fw (Daniel Nilsson) - przełącz firmware w Ustawieniach, żeby go wczytać.", "This profile was saved for bbs-fw (Daniel Nilsson) firmware - switch firmware in Settings to load it."))
         }
-        display.lowBatteryProtectionV = data.basic.lowBatteryProtection
-        _state.value = _state.value.copy(
-            basic = data.basic,
-            pedalAssist = data.pedalAssist,
-            throttle = data.throttle,
-            configDirty = true,
-            statusMessage = tr(_state.value.language, "Wczytano profil (podgląd) - nie wysłano do sterownika", "Profile loaded (preview) - not sent to the controller"),
-        )
+        if (!isBbsFwProfile && currentFw == FirmwareType.BBS_FW) {
+            error(tr(lang, "Ten profil zapisano dla fabrycznego firmware Bafang (OEM) - przełącz firmware w Ustawieniach, żeby go wczytać.", "This profile was saved for factory Bafang (OEM) firmware - switch firmware in Settings to load it."))
+        }
+        when (currentFw) {
+            FirmwareType.BBS_FW -> {
+                val cfg = BbsFwProfileIo.parse(text)
+                _state.value = _state.value.copy(
+                    bbsFwConfig = cfg,
+                    configDirty = true,
+                    statusMessage = tr(lang, "Wczytano profil bbs-fw (podgląd) - nie wysłano do sterownika", "bbs-fw profile loaded (preview) - not sent to the controller"),
+                )
+            }
+            FirmwareType.OEM_BAFANG -> {
+                val data = ProfileIo.parse(text)
+                data.basic.wheelDiameterCode.let { code ->
+                    if (code in WHEEL_CIRCUMFERENCE_M.indices) display.wheelCircumferenceM = WHEEL_CIRCUMFERENCE_M[code]
+                }
+                display.lowBatteryProtectionV = data.basic.lowBatteryProtection
+                _state.value = _state.value.copy(
+                    basic = data.basic,
+                    pedalAssist = data.pedalAssist,
+                    throttle = data.throttle,
+                    configDirty = true,
+                    statusMessage = tr(lang, "Wczytano profil (podgląd) - nie wysłano do sterownika", "Profile loaded (preview) - not sent to the controller"),
+                )
+            }
+        }
     }
 
     fun saveProfileInternal(name: String) {
@@ -1027,18 +1400,61 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         withContext(Dispatchers.IO) { runCatching { serial.write(cmd) } }
     }
 
+    /**
+     * Identyfikacja bbs-fw (READ_FW_VERSION) - w przeciwieństwie do [sendConfigRead] (pojedyncza
+     * próba + 3s timeout) ponawia wysyłkę co [BBS_FW_IDENTIFY_RETRY_INTERVAL_MS] aż do
+     * [BBS_FW_IDENTIFY_TIMEOUT_MS], dokładnie tak jak oficjalne narzędzie Daniela Nilssona
+     * (BBSFWTool.exe, `SetupConnection`: wysyłka + Thread.Sleep(200), w pętli do timeoutu) -
+     * kontroler na tym firmware bywa wolny w wybudzaniu się na porcie programującym i pojedyncza
+     * próba z krótkim timeoutem regularnie kończyła się niepowodzeniem.
+     */
+    private fun startBbsFwIdentifyRetry() {
+        identifyRetryJob?.cancel()
+        configTimeoutJob?.cancel()
+        identifyRetryJob = viewModelScope.launch {
+            delay(500) // oryginalna apka odczekiwała 500 ms przed każdą komendą konfiguracji
+            val deadline = System.currentTimeMillis() + BBS_FW_IDENTIFY_TIMEOUT_MS
+            while (_state.value.connection == ConnectionStatus.CONNECTING && System.currentTimeMillis() < deadline) {
+                withContext(Dispatchers.IO) { runCatching { serial.write(BbsFwCommands.READ_FW_VERSION) } }
+                delay(BBS_FW_IDENTIFY_RETRY_INTERVAL_MS)
+            }
+            if (_state.value.connection == ConnectionStatus.CONNECTING) {
+                handleConnectFailure(
+                    tr(
+                        _state.value.language,
+                        "Sterownik nie odpowiada - sprawdź kabel i zasilanie (bateria włączona?)",
+                        "Controller not responding - check the cable and power (is the battery on?)",
+                    ),
+                )
+            }
+        }
+    }
+
     private fun onSerialData(bytes: ByteArray) {
+        val firmwareType = _state.value.firmwareType
         if (writeAckMode) {
-            when (val r = writeResponseParser.process(bytes)) {
-                is WriteResponseParser.Result.Ack -> pendingAck?.complete(r)
-                WriteResponseParser.Result.Processing -> Unit
+            when (firmwareType) {
+                FirmwareType.OEM_BAFANG -> when (val r = writeResponseParser.process(bytes)) {
+                    is WriteResponseParser.Result.Ack -> pendingAck?.complete(r)
+                    WriteResponseParser.Result.Processing -> Unit
+                }
+                FirmwareType.BBS_FW -> when (val r = bbsFwWriteResponseParser.process(bytes)) {
+                    is BbsFwWriteResponseParser.Result.Ack -> pendingBbsFwAck?.complete(r)
+                    BbsFwWriteResponseParser.Result.Processing -> Unit
+                }
             }
             return
         }
         if (verifyMode) {
-            when (val r = configParser.process(bytes)) {
-                is ConfigFrameParser.Result.Frame -> pendingVerifyFrame?.complete(r)
-                ConfigFrameParser.Result.Processing -> Unit
+            when (firmwareType) {
+                FirmwareType.OEM_BAFANG -> when (val r = configParser.process(bytes)) {
+                    is ConfigFrameParser.Result.Frame -> pendingVerifyFrame?.complete(r)
+                    ConfigFrameParser.Result.Processing -> Unit
+                }
+                FirmwareType.BBS_FW -> when (val r = bbsFwFrameParser.process(bytes)) {
+                    is BbsFwFrameParser.Result.ConfigFrame -> pendingBbsFwVerifyFrame?.complete(r)
+                    else -> Unit
+                }
             }
             return
         }
@@ -1049,10 +1465,60 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             display.onDataReceived(bytes)
             return
         }
-        when (val result = configParser.process(bytes)) {
-            is ConfigFrameParser.Result.Frame -> viewModelScope.launch { handleFrame(result) }
-            ConfigFrameParser.Result.Processing -> Unit
+        when (firmwareType) {
+            FirmwareType.OEM_BAFANG -> when (val result = configParser.process(bytes)) {
+                is ConfigFrameParser.Result.Frame -> viewModelScope.launch { handleFrame(result) }
+                ConfigFrameParser.Result.Processing -> Unit
+            }
+            FirmwareType.BBS_FW -> when (val result = bbsFwFrameParser.process(bytes)) {
+                is BbsFwFrameParser.Result.VersionFrame -> viewModelScope.launch { handleBbsFwVersionFrame(result) }
+                is BbsFwFrameParser.Result.ConfigFrame -> viewModelScope.launch { handleBbsFwConfigFrame(result) }
+                BbsFwFrameParser.Result.Processing -> Unit
+            }
         }
+    }
+
+    private suspend fun handleBbsFwVersionFrame(frame: BbsFwFrameParser.Result.VersionFrame) {
+        configTimeoutJob?.cancel()
+        identifyRetryJob?.cancel()
+        val lang = _state.value.language
+        _state.value = _state.value.copy(
+            bbsFwVersion = frame.info,
+            statusMessage = tr(
+                lang,
+                "bbs-fw ${frame.info.versionLabel} (config v${frame.info.configVersion}, typ sterownika ${frame.info.ctrlType}) - czytam konfigurację…",
+                "bbs-fw ${frame.info.versionLabel} (config v${frame.info.configVersion}, controller type ${frame.info.ctrlType}) - reading config…",
+            ),
+        )
+        saveBbsFwVersion(frame.info)
+        sendConfigRead(BbsFwCommands.READ_CONFIG)
+    }
+
+    private suspend fun handleBbsFwConfigFrame(frame: BbsFwFrameParser.Result.ConfigFrame) {
+        configTimeoutJob?.cancel()
+        val lang = _state.value.language
+        if (frame.version != BbsFwCommands.CONFIG_VERSION || frame.data.size != BbsFwConfig.BYTE_SIZE) {
+            _state.value = _state.value.copy(
+                connection = ConnectionStatus.ERROR,
+                statusMessage = tr(
+                    lang,
+                    "Niewspierana wersja konfiguracji bbs-fw (sterownik zgłasza v${frame.version}, ${frame.data.size} B; ta wersja apki zna v${BbsFwCommands.CONFIG_VERSION}, ${BbsFwConfig.BYTE_SIZE} B) - sprawdź wersję firmware.",
+                    "Unsupported bbs-fw config version (controller reports v${frame.version}, ${frame.data.size} B; this app version knows v${BbsFwCommands.CONFIG_VERSION}, ${BbsFwConfig.BYTE_SIZE} B) - check the firmware version.",
+                ),
+            )
+            return
+        }
+        val cfg = BbsFwConfig.deserialize(frame.data)
+        _state.value = _state.value.copy(
+            bbsFwConfig = cfg,
+            lastReadBbsFwConfig = cfg,
+            connection = ConnectionStatus.CONNECTED,
+            configDirty = false,
+            statusMessage = tr(lang, "Połączono (bbs-fw) - odczytano konfigurację", "Connected (bbs-fw) - config read"),
+            autoReconnectState = AutoReconnectState.IDLE,
+        )
+        reconnectAttempt = 0
+        saveBbsFwConfig(cfg)
     }
 
     private suspend fun handleFrame(frame: ConfigFrameParser.Result.Frame) {
@@ -1116,6 +1582,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             saveLastKnownTelemetry()
             stopDisplayMode()
             serial.close()
+            configTimeoutJob?.cancel()
+            identifyRetryJob?.cancel()
             val lang = _state.value.language
             if (wasActive) {
                 reconnectAttempt = 0

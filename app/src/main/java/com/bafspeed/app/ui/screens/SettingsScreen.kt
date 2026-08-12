@@ -31,12 +31,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bafspeed.app.FirmwareType
 import com.bafspeed.app.SpeedUnit
 import com.bafspeed.app.UiState
 import com.bafspeed.app.i18n.tr
@@ -56,6 +60,7 @@ fun SettingsScreen(
     onUnitsChange: (SpeedUnit) -> Unit,
     onOdoOffsetChange: (Double) -> Unit,
     onToggleTestMode: () -> Unit,
+    onFirmwareTypeChange: (FirmwareType) -> Unit,
 ) {
     val unit = state.units
 
@@ -67,6 +72,43 @@ fun SettingsScreen(
             .padding(PaddingValues(start = 14.dp, end = 14.dp, top = 0.dp, bottom = 16.dp)),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
+        MicroLabel(tr("Firmware sterownika", "Controller firmware"))
+        TokenCard(borderColor = WhiteBorder) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Text(tr("Firmware", "Firmware"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary, modifier = Modifier.weight(1f))
+                SegmentedControl(
+                    options = listOf(tr("OEM Bafang", "OEM Bafang"), "BBS-FW"),
+                    selectedIndex = if (state.firmwareType == FirmwareType.BBS_FW) 1 else 0,
+                    onSelect = { onFirmwareTypeChange(if (it == 1) FirmwareType.BBS_FW else FirmwareType.OEM_BAFANG) },
+                    modifier = Modifier.width(180.dp),
+                )
+            }
+            Spacer(Modifier.height(8.dp))
+            FirmwareDescriptionParagraph(
+                label = "OEM Bafang",
+                text = tr(
+                    "fabryczny, zamknięty firmware sterowników Bafang BBS01/BBS02/BBSHD. Komunikuje się protokołem Bafang Configuration Tool, którego apka używa domyślnie.",
+                    "the factory, closed-source firmware that Bafang BBS01/BBS02/BBSHD controllers ship with by default. Speaks the Bafang Configuration Tool protocol, which the app uses by default.",
+                ),
+            )
+            Spacer(Modifier.height(8.dp))
+            FirmwareDescriptionParagraph(
+                label = "BBS-FW",
+                text = tr(
+                    "(github.com/danielnilsson9/bbs-fw) - otwarte, alternatywne firmware, które można samodzielnie wgrać na te same sterowniki w miejsce fabrycznego. Ma WŁASNY, INNY protokół konfiguracji, więc przełącznik zmienia, jakich ramek apka używa do rozmowy ze sterownikiem.",
+                    "(github.com/danielnilsson9/bbs-fw) - open-source, alternative firmware you can flash yourself onto the same controllers in place of the factory one. Has its OWN, DIFFERENT configuration protocol, so this switch changes which frames the app uses to talk to the controller.",
+                ),
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                tr(
+                    "Wybierz opcję zgodną z tym, co faktycznie masz wgrane na sterowniku. Zmiana wymaga ponownego połączenia.",
+                    "Pick whichever matches what's actually flashed on your controller. Changing it requires reconnecting.",
+                ),
+                fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
+            )
+        }
+
         MicroLabel(tr("Aplikacja", "Application"))
         TokenCard(borderColor = WhiteBorder) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -141,6 +183,18 @@ fun SettingsScreen(
         )
         Spacer(Modifier.height(8.dp))
     }
+}
+
+/** Akapit opisu firmware - etykieta ("OEM Bafang"/"BBS-FW") na zielono, reszta zdania normalnym kolorem. */
+@Composable
+private fun FirmwareDescriptionParagraph(label: String, text: String) {
+    Text(
+        buildAnnotatedString {
+            withStyle(SpanStyle(color = Tokens.Emerald, fontWeight = FontWeight.Bold)) { append(label) }
+            append(" $text")
+        },
+        fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
+    )
 }
 
 @Composable
