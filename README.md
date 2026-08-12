@@ -32,6 +32,17 @@
 8. **Average energy usage** - trip-average and short-term energy consumption in Wh/km.
 9. **Firmware-aware profiles** - save/export/import named configuration profiles; loading is blocked with a clear error if the profile's firmware doesn't match the one currently selected, instead of silently writing into the wrong fields.
 
+### BBS-FW screens
+
+<table align="center">
+  <tr>
+    <td><img src="screenshots/7.jpg" width="140" alt="Settings screen with the OEM Bafang / BBS-FW firmware switch" /></td>
+    <td><img src="screenshots/8.jpg" width="140" alt="BBS-FW System screen, Global and Throttle settings" /></td>
+    <td><img src="screenshots/9.jpg" width="140" alt="BBS-FW System screen, Features and Speed Sensor settings" /></td>
+    <td><img src="screenshots/10.jpg" width="140" alt="BBS-FW Assist Levels screen, Standard/Sport pages" /></td>
+  </tr>
+</table>
+
 ## Download
 
 EggSPEED is currently in **closed testing** on Google Play, so the install link only works for testers. It takes two clicks to get in:
