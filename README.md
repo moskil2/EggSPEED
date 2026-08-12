@@ -8,6 +8,10 @@
   A modern Android app for Bafang BBS01 / BBS02 / BBSHD mid-drive controllers, talking directly to the controller over UART (USB OTG programming cable), now supporting both factory OEM Bafang firmware and <a href="https://github.com/danielnilsson9/bbs-fw">bbs-fw</a>, switchable in Settings.
 </p>
 
+<p align="center">
+  <a href="https://spotrobotics.app/eggspeed/">Presentation page</a>
+</p>
+
 <table align="center">
   <tr>
     <td><img src="screenshots/1.jpg" width="140" alt="EggSPEED screenshot 1" /></td>
