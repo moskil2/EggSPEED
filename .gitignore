@@ -25,3 +25,9 @@ Thumbs.db
 ### Misc working files ###
 emulator_log.txt
 emulator_screenshot.png
+
+### Decompiled/reverse-engineered reference material - never commit ###
+/apk_extracted/
+/reconstructed_source/
+Speeed App UI Modernization.zip
+httpsgithub.commkopaspeeed.txt
