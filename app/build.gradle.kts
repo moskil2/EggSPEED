@@ -81,8 +81,12 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 
-    // USB serial (UART przez OTG) — jitpack
+    // USB serial (UART przez OTG) — jitpack; potrzebne do zapakowania klas
+    // wykorzystywanych wewnątrz app/libs/bafspeed-protocol-release.aar
     implementation("com.github.mik3y:usb-serial-for-android:3.8.1")
+
+    // Prywatny moduł protokołu (BafSPEED-protocol), dostarczany jako skompilowany .aar
+    implementation(files("libs/bafspeed-protocol-release.aar"))
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
