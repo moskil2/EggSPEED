@@ -1,6 +1,13 @@
 # Changelog
 
 
+## v0.3.29 - 2026-08-13 (versionCode 31)
+- New "Temperature control" tab (bbs-fw only - the motor temperature register, 0x21, always returns 0 on bbs-fw regardless of configuration, so the app deliberately only exposes the controller reading, Tc, instead of showing a second tile that could never show real data)
+- Cockpit: new Tc tile (controller temperature), shown/hidden via a toggle in the new tab, positioned on the left side at roughly the power reading's height
+- Two configurable thresholds for Tc: "Warning" (lower, highlights the tile orange) and "Alarm" (higher, blinks the tile red and plays a one-time beep - re-arms only after the temperature drops back below the threshold, with its own mute toggle)
+- Test mode now also forces Tc to 100°C and the battery indicator to 100%, on top of the values it already forced
+- README now embeds the full contents of this changelog at the bottom, so it's visible directly instead of only through a link
+
 ## v0.3.26 - 2026-08-11 (versionCode 28)
 - **Merged bbs-fw (Daniel Nilsson firmware) support into the main release.** This had been developed and tested separately as OSF test builds (v0.3.18-OSF through v0.3.25-OSF, see below) with an external tester over several rounds of connection, config-version, and UI fixes, and is now considered stable enough to ship - EggSPEED now supports both factory OEM Bafang firmware and bbs-fw from a single app, switchable in Settings
 - Drawer menu: "Menu" moved to the very top of the list (kept its normal, un-highlighted look after feedback)
