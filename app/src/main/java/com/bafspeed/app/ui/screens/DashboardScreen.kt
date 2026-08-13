@@ -1,6 +1,10 @@
 package com.bafspeed.app.ui.screens
 
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -178,8 +182,22 @@ fun DashboardScreen(
         // Prędkość - czysto cyfrowa, bez pierścienia, jednostka po prawej stronie odczytu
         DigitalSpeed(speedKmh = if (t) unit.toKmh(99.9) else telemetry.speedKmh, unit = unit, modifier = Modifier.fillMaxWidth())
 
-        // Moc - pod prędkością, mniejsza czcionka
-        DigitalPower(powerW = if (t) 3000.0 else telemetry.powerW, modifier = Modifier.fillMaxWidth())
+        // Moc - pod prędkością, mniejsza czcionka. Kafelek Tc (zakładka "Temperature control", tylko
+        // bbs-fw - Tm/rejestr 0x21 zawsze zwraca 0 na bbs-fw, patrz PROTOKOL_BBSFW.md sekcja 5)
+        // nakłada się po lewej stronie tego bloku, na wysokości odczytu mocy - test mode wymusza
+        // 100°C, tak samo jak wymusza skrajne wartości predkosci/mocy powyzej.
+        val tempControllerC = if (t) 100 else telemetry.tempControllerC
+        Box(Modifier.fillMaxWidth()) {
+            DigitalPower(powerW = if (t) 3000.0 else telemetry.powerW, modifier = Modifier.fillMaxWidth())
+            if (state.showTempOnCockpit && state.firmwareType == FirmwareType.BBS_FW) {
+                TempTile(
+                    valueC = tempControllerC,
+                    warning = tempControllerC >= state.tempWarningC,
+                    alarm = tempControllerC >= state.tempAlarmC,
+                    modifier = Modifier.align(Alignment.CenterStart),
+                )
+            }
+        }
 
         Spacer(Modifier.height(6.dp))
 
@@ -490,6 +508,45 @@ private fun DigitalPower(powerW: Double, modifier: Modifier = Modifier) {
                     color = Tokens.TextSecondary, modifier = Modifier.padding(bottom = 8.dp),
                 )
             }
+        }
+    }
+}
+
+/**
+ * Kwadratowy kafelek temperatury sterownika (Tc) - kafelka Kokpitu (zakładka "Temperature control").
+ * Trzy stany, rosnąca dotkliwość: normalny (szare tło) → [warning] podświetla na pomarańczowo
+ * (stałe tło, bez migania) → [alarm] miga na czerwono (nieskończona animacja alpha) - progi
+ * ustawiane w tamtej zakładce jako "Warning"/"Alarm".
+ */
+@Composable
+private fun TempTile(valueC: Int, warning: Boolean, alarm: Boolean, modifier: Modifier = Modifier) {
+    val infiniteTransition = rememberInfiniteTransition(label = "tempBlink")
+    val blinkAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.3f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(animation = tween(500), repeatMode = RepeatMode.Reverse),
+        label = "tempBlinkAlpha",
+    )
+    val bg = when {
+        alarm -> Tokens.Red.copy(alpha = blinkAlpha)
+        warning -> Tokens.Amber
+        else -> TileBg
+    }
+    val border = when {
+        alarm -> Tokens.Red
+        warning -> Tokens.Amber
+        else -> HighContrastBorder
+    }
+    Box(
+        modifier = modifier
+            .size(56.dp)
+            .background(bg, RoundedCornerShape(12.dp))
+            .border(1.dp, border, RoundedCornerShape(12.dp)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text("Tc", fontFamily = Manrope, fontWeight = FontWeight.Bold, fontSize = 11.sp, color = HighContrastText.copy(alpha = 0.75f))
+            Text("$valueC°", fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = HighContrastText)
         }
     }
 }

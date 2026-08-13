@@ -71,6 +71,7 @@ import com.bafspeed.app.ui.screens.PedalScreen
 import com.bafspeed.app.ui.screens.ProfilesScreen
 import com.bafspeed.app.ui.screens.ThrottleScreen
 import com.bafspeed.app.ui.screens.SettingsScreen
+import com.bafspeed.app.ui.screens.TemperatureControlScreen
 import com.bafspeed.app.ui.components.EggSpeedWordmark
 import com.bafspeed.app.ui.components.WriteFlowDialogs
 import com.bafspeed.app.ui.theme.Manrope
@@ -90,6 +91,7 @@ private enum class Screen {
     BBSFW_SYSTEM,
     BBSFW_ASSIST,
     BATTERY,
+    TEMPERATURE_CONTROL,
     SETTINGS,
     CALIBRATION,
     DIAGNOSTICS,
@@ -103,7 +105,7 @@ private enum class Screen {
 private val OEM_ONLY_SCREENS = setOf(Screen.BAFANG_TYPE, Screen.MOTOR, Screen.PEDAL, Screen.THROTTLE, Screen.ASSIST)
 
 /** Ekrany specyficzne dla bbs-fw - protokół konfiguracji jest inny, więc mają osobny komplet zakładek. */
-private val BBS_FW_ONLY_SCREENS = setOf(Screen.BBSFW_INFO, Screen.BBSFW_SYSTEM, Screen.BBSFW_ASSIST)
+private val BBS_FW_ONLY_SCREENS = setOf(Screen.BBSFW_INFO, Screen.BBSFW_SYSTEM, Screen.BBSFW_ASSIST, Screen.TEMPERATURE_CONTROL)
 
 /** Tytuł zakładki - zależny od języka (patrz [LocalAppLanguage]). */
 @Composable
@@ -119,6 +121,7 @@ private fun Screen.title(): String = when (this) {
     Screen.BBSFW_SYSTEM -> "System"
     Screen.BBSFW_ASSIST -> "Assist Levels"
     Screen.BATTERY -> tr("Bateria", "Battery")
+    Screen.TEMPERATURE_CONTROL -> tr("Kontrola temperatury", "Temperature control")
     Screen.SETTINGS -> tr("Ustawienia", "Settings")
     Screen.CALIBRATION -> tr("Kalibracja", "Calibration")
     Screen.DIAGNOSTICS -> tr("Wszystko (podgląd)", "All in View")
@@ -224,7 +227,7 @@ private fun App(vm: AppViewModel) {
                     screen == Screen.DASHBOARD -> {
                         // Bez polaczenia pokazujemy ostatnio znany % (patrz UiState.lastKnownBatteryPct),
                         // zamiast zerowac wskaznik do 0.
-                        val pct = if (state.connection == ConnectionStatus.CONNECTED) telemetry.batteryPct else state.lastKnownBatteryPct
+                        val pct = if (state.testMode) 100 else if (state.connection == ConnectionStatus.CONNECTED) telemetry.batteryPct else state.lastKnownBatteryPct
                         { BatteryPill(pct = pct, scale = 1.5f) }
                     }
                     else -> null
@@ -359,6 +362,13 @@ private fun App(vm: AppViewModel) {
                         onCellCountChange = vm::setCellCount,
                         onCapacityAhChange = vm::setCapacityAh,
                         onCapacityWhChange = vm::setCapacityWh,
+                    )
+                    Screen.TEMPERATURE_CONTROL -> TemperatureControlScreen(
+                        state = state,
+                        onShowChange = vm::setShowTempOnCockpit,
+                        onWarningChange = vm::setTempWarningC,
+                        onAlarmChange = vm::setTempAlarmC,
+                        onAlarmSoundChange = vm::setTempAlarmSoundEnabled,
                     )
                     Screen.CALIBRATION -> CalibrationScreen(
                         state = state,

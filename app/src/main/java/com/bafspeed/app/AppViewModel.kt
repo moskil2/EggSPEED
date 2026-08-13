@@ -169,6 +169,18 @@ data class UiState(
     val bbsFwVersion: BbsFwVersionInfo? = null,
     val bbsFwConfig: BbsFwConfig? = null,
     val lastReadBbsFwConfig: BbsFwConfig? = null,
+    /**
+     * Pokazuj kafelek Tc (temp. sterownika) na Kokpicie - trwałe (SharedPreferences), patrz zakładka
+     * "Temperature control" (tylko bbs-fw - Tm/rejestr 0x21 zawsze zwraca 0 na bbs-fw, patrz
+     * PROTOKOL_BBSFW.md sekcja 5, więc apka celowo pokazuje tylko Tc).
+     */
+    val showTempOnCockpit: Boolean = false,
+    /** Próg [°C] "Warning" - po przekroczeniu kafelek Tc podświetla się na pomarańczowo. Trwały. */
+    val tempWarningC: Int = 60,
+    /** Próg [°C] "Alarm" - po przekroczeniu kafelek Tc miga na czerwono + jednorazowy dźwięk. Trwały. */
+    val tempAlarmC: Int = 80,
+    /** Dźwięk przy przekroczeniu progu Alarm (jednorazowo, do ponownego uzbrojenia po spadku poniżej progu) - trwały. */
+    val tempAlarmSoundEnabled: Boolean = true,
 ) {
     val basicOrDefault: BasicSettings get() = basic ?: BasicSettings.DEFAULT
     val pasOrDefault: PedalAssistSettings get() = pedalAssist ?: PedalAssistSettings.DEFAULT
@@ -380,6 +392,10 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             voltageCalibrationOffsetV = prefs.getFloat("voltage_calibration_offset_v", 0f).toDouble(),
             lastKnownBatteryPct = prefs.getInt("last_known_battery_pct", 0),
             lastKnownVoltageV = prefs.getFloat("last_known_voltage_v", 0f).toDouble(),
+            showTempOnCockpit = prefs.getBoolean("show_temp_controller", false),
+            tempWarningC = prefs.getInt("temp_warning_c", 60),
+            tempAlarmC = prefs.getInt("temp_alarm_c", 80),
+            tempAlarmSoundEnabled = prefs.getBoolean("temp_alarm_sound_enabled", true),
             tripKm = prefs.getFloat("trip_km", 0f).toDouble(),
             avgSpeedDistanceKm = prefs.getFloat("avg_speed_distance_km", 0f).toDouble(),
             avgSpeedMovingTimeH = prefs.getFloat("avg_speed_moving_time_h", 0f).toDouble(),
@@ -414,6 +430,22 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     private var identifyRetryJob: Job? = null
     /** Licznik prób w trwającej sekwencji auto-reconnect (patrz [AutoReconnectState], [handleConnectFailure]). */
     private var reconnectAttempt = 0
+
+    /**
+     * "Uzbrojenie" jednorazowego dźwięku alarmu Tc (zakładka Temperature control) - true = wolno
+     * zagrać dźwięk przy najbliższym przekroczeniu [UiState.tempAlarmC]. Po zagraniu ustawiane na
+     * false (cisza, dopóki temperatura nie spadnie z powrotem poniżej progu - patrz startTripIntegration).
+     */
+    private var tempAlarmArmed = true
+    private var toneGenerator: android.media.ToneGenerator? = null
+
+    private fun playTempAlarmBeep() {
+        if (!_state.value.tempAlarmSoundEnabled) return
+        runCatching {
+            val tone = toneGenerator ?: android.media.ToneGenerator(android.media.AudioManager.STREAM_NOTIFICATION, 90).also { toneGenerator = it }
+            tone.startTone(android.media.ToneGenerator.TONE_PROP_BEEP2, 400)
+        }
+    }
 
     // Routing przychodzących bajtów podczas zapisu/weryfikacji (wyłącza się nawzajem
     // z displayMode i ze zwykłym trybem odczytu konfiguracji - patrz onSerialData).
@@ -673,6 +705,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         display.lowBatteryProtectionV = _state.value.basicOrDefault.lowBatteryProtection
         display.cellCount = _state.value.cellCount
         display.useRealVoltage = _state.value.firmwareType == FirmwareType.BBS_FW
+        tempAlarmArmed = true
         display.start()
         startTripIntegration()
     }
@@ -716,6 +749,28 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     fun toggleTestMode() {
         _state.value = _state.value.copy(testMode = !_state.value.testMode)
+    }
+
+    fun setShowTempOnCockpit(show: Boolean) {
+        _state.value = _state.value.copy(showTempOnCockpit = show)
+        prefs.edit().putBoolean("show_temp_controller", show).apply()
+    }
+
+    fun setTempWarningC(c: Int) {
+        val clamped = c.coerceIn(30, 150)
+        _state.value = _state.value.copy(tempWarningC = clamped)
+        prefs.edit().putInt("temp_warning_c", clamped).apply()
+    }
+
+    fun setTempAlarmC(c: Int) {
+        val clamped = c.coerceIn(30, 150)
+        _state.value = _state.value.copy(tempAlarmC = clamped)
+        prefs.edit().putInt("temp_alarm_c", clamped).apply()
+    }
+
+    fun setTempAlarmSoundEnabled(enabled: Boolean) {
+        _state.value = _state.value.copy(tempAlarmSoundEnabled = enabled)
+        prefs.edit().putBoolean("temp_alarm_sound_enabled", enabled).apply()
     }
 
     // --- Edycja lokalna konfiguracji (M1: WYŁĄCZNIE podgląd, nic nie leci do sterownika) ---
@@ -1612,6 +1667,20 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 val now = System.currentTimeMillis()
                 val dtH = (now - lastTs) / 3_600_000.0
                 lastTs = now
+
+                // Alarm dźwiękowy Tc (zakładka Temperature control) - jednorazowy beep przy przekroczeniu
+                // tempAlarmC, ponownie "uzbrajany" dopiero po spadku z powrotem poniżej progu.
+                if (_state.value.showTempOnCockpit && _state.value.firmwareType == FirmwareType.BBS_FW) {
+                    val ctrlTempC = telemetry.value.tempControllerC
+                    if (ctrlTempC >= _state.value.tempAlarmC) {
+                        if (tempAlarmArmed) {
+                            tempAlarmArmed = false
+                            playTempAlarmBeep()
+                        }
+                    } else {
+                        tempAlarmArmed = true
+                    }
+                }
                 val kmh = telemetry.value.speedKmh
                 val distanceDeltaKm = if (kmh > 0.5) kmh * dtH else 0.0
                 if (distanceDeltaKm > 0.0) {
@@ -1641,6 +1710,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     override fun onCleared() {
+        toneGenerator?.release()
         serial.close()
         energyAnalyzer.saveState()
     }
