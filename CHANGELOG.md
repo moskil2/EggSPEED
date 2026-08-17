@@ -1,6 +1,37 @@
 # Changelog
 
 
+## v0.3.37 - 2026-08-16 (versionCode 39)
+- Battery: fixed "Your battery" showing two near-identical high-voltage rows (bbs-fw's real "Max voltage" register next to the calculated "Upper charge limit") - now three consistently-calculated, expandable tiles in ascending order: Low voltage cutoff (LBP), Nominal voltage, Upper charge limit, each with a green-triangle expandable explanation
+
+## v0.3.36 - 2026-08-16 (versionCode 38)
+- Calibration: "Preview" labels split into "Current preview" and "Voltage preview" so it's clear which tile shows what
+- Battery: merged the "Nominal/Max voltage" tile into "Your battery", and added a calculated upper charge limit (cell count x 4.2V) next to the existing low voltage cutoff (LBP)
+- Service: rewrote the PROTECT explanation banner, and switched the "PROTECT feature" ON/OFF control to the same switch style used by Speed Sensor in Features
+
+## v0.3.35 - 2026-08-15 (versionCode 37)
+- Service tab: dropped the "0000" default PIN concept - the tab is simply open until you set your own PIN inside it
+- Service tab: rewrote the PROTECT explanation banner, reformatted the "PROTECT feature" tile (text was touching the control) and switched it to a clear ON/OFF button, and the PROTECT status card is now always visible (green "PROTECT is ON" / red "PROTECT is OFF") instead of only appearing while active
+
+## v0.3.34 - 2026-08-15 (versionCode 36)
+- New PROTECT anti-robbery button on the Cockpit (both OEM and BBS-FW) - locks assist to 0 for real while the screen keeps responding normally to +/- taps, so it looks unchanged at a glance. Same shape as the ONLINE/OFFLINE badge, top right.
+- New "Service" tab (hamburger menu) - PIN-gated (default "0000" = open), the only way to turn PROTECT back off once armed. Also has the master switch for whether the PROTECT button exists on the Cockpit at all, and lets you set your own PIN.
+
+## v0.3.33 - 2026-08-15 (versionCode 35)
+- Calibration: the voltage preview now shows something useful offline too - falls back to the last known voltage from before disconnecting, or to an estimate from the nominal pack voltage if there's no history yet (fresh install)
+
+## v0.3.32 - 2026-08-15 (versionCode 34)
+- Calibration: the voltage preview tiles ("Voltage read" / "Voltage after correction") now actually update - the screen wasn't starting the telemetry polling loop, so they stayed stuck at 0.0 unless the Cockpit had already been visited first in the same session
+- Settings: removed a stray, unrelated footer line ("Saving parameters requires...") that didn't apply to anything on this screen
+- Settings: "Connection type" moved out of the Application card into its own tile at the bottom, now showing a USB/Bluetooth switch (Bluetooth not implemented yet - inactive, always USB)
+
+## v0.3.31 - 2026-08-15 (versionCode 33)
+- Test mode toggle moved from Settings to the top of the Diagnostics tab
+- Cockpit: Tc (controller temperature) tile now left-aligned flush with the Distance tile below it, instead of sitting slightly indented
+
+## v0.3.30 - 2026-08-15 (versionCode 32)
+- Protocol/serial layer split out into its own library - no functional changes, test release to confirm the build is still correct after this restructuring
+
 ## v0.3.29 - 2026-08-13 (versionCode 31)
 - New "Temperature control" tab (bbs-fw only - the motor temperature register, 0x21, always returns 0 on bbs-fw regardless of configuration, so the app deliberately only exposes the controller reading, Tc, instead of showing a second tile that could never show real data)
 - Cockpit: new Tc tile (controller temperature), shown/hidden via a toggle in the new tab, positioned on the left side at roughly the power reading's height
