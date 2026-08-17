@@ -10,6 +10,8 @@
 
 <p align="center">
   <a href="https://spotrobotics.app/eggspeed/">Presentation page</a>
+  &nbsp;|&nbsp;
+  <a href="https://spotrobotics.app/support/">Support</a>
 </p>
 
 <table align="center">
