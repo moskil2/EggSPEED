@@ -27,7 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -41,12 +40,9 @@ import com.bafspeed.app.ui.components.ExpandableParamTile
 import com.bafspeed.app.ui.components.MicroLabel
 import com.bafspeed.app.ui.components.PreviewBanner
 import com.bafspeed.app.ui.components.StepBtn
-import com.bafspeed.app.ui.components.TokenCard
 import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
 import com.bafspeed.app.ui.theme.Tokens
-
-private val WhiteBorder = Color(0x59FFFFFF)
 
 @Composable
 fun BatteryScreen(
@@ -78,43 +74,49 @@ fun BatteryScreen(
         val isBbsFw = state.firmwareType == FirmwareType.BBS_FW
         val bbsFwCfg = state.bbsFwConfigOrDefault
 
-        // Napięcie nominalne (OEM: z bloku GEN) / maksymalne (bbs-fw: pole configu) - tylko odczyt
-        TokenCard(borderColor = WhiteBorder) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    if (isBbsFw) tr("Napięcie maksymalne", "Max voltage") else tr("Nominalne napięcie", "Nominal voltage"),
-                    fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary, modifier = Modifier.weight(1f),
-                )
-                Text(
-                    if (isBbsFw) "${bbsFwCfg.maxBatteryX100v / 100.0} V" else (state.general?.let { "${it.nominalVoltage} V" } ?: "-"),
-                    fontFamily = Sora, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = Tokens.TextPrimary,
-                )
-            }
-        }
-
         MicroLabel(tr("Twoja bateria", "Your battery"))
 
-        // Tylko podgląd - edycja przeniesiona do zakładki Bafang Basic / bbs-fw General (jedno
-        // źródło prawdy, żeby ta sama wartość nie była edytowalna w dwóch miejscach naraz).
-        TokenCard(borderColor = WhiteBorder) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    tr("Odcięcie niskiego napięcia (LBP)", "Low voltage cutoff (LBP)"),
-                    fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary,
-                    modifier = Modifier.weight(1f),
-                )
-                Text(
-                    "${if (isBbsFw) bbsFwCfg.lowCutOffV else basic.lowBatteryProtection} V",
-                    fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = Tokens.TextPrimary,
-                )
-            }
-            Spacer(Modifier.height(4.dp))
-            Text(
-                if (isBbsFw) tr("Edytowalne w zakładce bbs-fw - Ustawienia podstawowe.", "Editable in the bbs-fw General tab.")
-                else tr("Edytowalne w zakładce Bafang Basic.", "Editable in the Bafang Basic tab."),
-                fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
-            )
-        }
+        // Trzy progi napięcia baterii, rosnąco: dolny limit rozładowania (LBP, realny odczyt/edycja
+        // w Bafang Basic / bbs-fw General - jedno źródło prawdy), napięcie nominalne (wyliczone z
+        // liczby cel, tak samo jak w kafelku "Liczba cel" niżej i na ekranie Kalibracji) i górny limit
+        // naładowania (wyliczony ze specyfikacji ogniw Li-ion, cellCount x 4,2V). Nominalne i górny
+        // limit celowo liczone tą samą metodą (z cellCount), żeby nie mieszać realnego odczytu z
+        // wyliczoną estymatą w jednej karcie - to myliło się wcześniej jako "dwa razy to samo".
+        ExpandableParamTile(
+            label = tr("Odcięcie niskiego napięcia (LBP)", "Low voltage cutoff (LBP)"),
+            valueLabel = "${if (isBbsFw) bbsFwCfg.lowCutOffV else basic.lowBatteryProtection} V",
+            description = tr(
+                "Napięcie, przy którym sterownik odcina zasilanie, żeby chronić ogniwa przed głębokim " +
+                    "rozładowaniem. " + (if (isBbsFw) "Edytowalne w zakładce bbs-fw - Ustawienia podstawowe."
+                    else "Edytowalne w zakładce Bafang Basic."),
+                "The voltage at which the controller cuts power to protect the cells from deep discharge. " +
+                    (if (isBbsFw) "Editable in the bbs-fw General tab." else "Editable in the Bafang Basic tab."),
+            ),
+        ) {}
+
+        ExpandableParamTile(
+            label = tr("Nominalne napięcie", "Nominal voltage"),
+            valueLabel = "${state.nominalPackVoltage} V",
+            description = tr(
+                "Napięcie nominalne pakietu wyliczone z liczby cel (${state.cellCount}S x ok. 3,7V/ogniwo) - " +
+                    "ta sama wartość, co w kafelku \"Liczba cel\" niżej. To wartość orientacyjna - rzeczywiste " +
+                    "napięcie pod obciążeniem zmienia się w zależności od poziomu naładowania.",
+                "The pack's nominal voltage, calculated from cell count (${state.cellCount}S x approx. " +
+                    "3.7V/cell) - the same value shown in the \"Cell count\" tile below. This is an approximate " +
+                    "value - the real voltage under load varies with charge level.",
+            ),
+        ) {}
+
+        ExpandableParamTile(
+            label = tr("Górny limit naładowania", "Upper charge limit"),
+            valueLabel = "${String.format("%.1f", state.cellCount * 4.2)} V",
+            description = tr(
+                "Wartość wyliczona ze specyfikacji ogniw Li-ion (4,2V x liczba cel) - orientacyjny górny próg " +
+                    "naładowania Twojej baterii.",
+                "Calculated from Li-ion cell spec (4.2V x cell count) - an approximate upper charge threshold " +
+                    "for your battery.",
+            ),
+        ) {}
 
         ExpandableParamTile(
             label = tr("Liczba cel", "Cell count"),

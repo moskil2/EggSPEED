@@ -154,6 +154,12 @@ data class UiState(
     val lastKnownBatteryPct: Int = 0,
     /** Ostatnie znane napięcie [V] przed rozłączeniem - jw. */
     val lastKnownVoltageV: Double = 0.0,
+    /** Czy przycisk PROTECT w ogóle jest widoczny na Kokpicie - trwałe, włączane/wyłączane w Serwisie. */
+    val protectFeatureEnabled: Boolean = false,
+    /** Czy PROTECT jest aktualnie uzbrojony - realnie wspomaganie=0, ekran pozoruje normalną pracę. Trwałe, kasowane tylko przez Serwis (PIN) lub odinstalowanie apki. */
+    val protectActive: Boolean = false,
+    /** PIN do zakładki Serwis - domyślnie pusty (brak ochrony, wejście otwarte). Trwały, resetuje się po odinstalowaniu apki. */
+    val servicePin: String = "",
     // Ślad, że konfiguracja robocza różni się od odczytanej ze sterownika (edycja lub wczytany profil)
     val configDirty: Boolean = false,
     val profiles: List<String> = emptyList(),
@@ -392,6 +398,9 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             voltageCalibrationOffsetV = prefs.getFloat("voltage_calibration_offset_v", 0f).toDouble(),
             lastKnownBatteryPct = prefs.getInt("last_known_battery_pct", 0),
             lastKnownVoltageV = prefs.getFloat("last_known_voltage_v", 0f).toDouble(),
+            protectFeatureEnabled = prefs.getBoolean("protect_feature_enabled", false),
+            protectActive = prefs.getBoolean("protect_active", false),
+            servicePin = prefs.getString("service_pin", "") ?: "",
             showTempOnCockpit = prefs.getBoolean("show_temp_controller", false),
             tempWarningC = prefs.getInt("temp_warning_c", 60),
             tempAlarmC = prefs.getInt("temp_alarm_c", 80),
@@ -697,7 +706,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     fun startDisplayMode() {
         if (_state.value.connection != ConnectionStatus.CONNECTED) return
         _state.value = _state.value.copy(displayMode = true)
-        display.assistLevel = _state.value.assistLevel
+        display.assistLevel = if (_state.value.protectActive) 0 else _state.value.assistLevel
         display.lightOn = _state.value.lightOn
         display.sportMode = _state.value.sportMode
         display.currentCalibrationFactor = _state.value.currentCalibrationFactor
@@ -724,8 +733,34 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     fun setAssistLevel(level: Int) {
         val l = level.coerceIn(0, 9)
-        display.assistLevel = l
+        // PROTECT: realnie wysyłane wspomaganie zostaje na 0, niezależnie od tego, co user klika -
+        // ekran (assistLevel w UiState) aktualizuje się normalnie, więc pozoruje działanie.
+        display.assistLevel = if (_state.value.protectActive) 0 else l
         _state.value = _state.value.copy(assistLevel = l)
+    }
+
+    /** Uzbraja PROTECT - natychmiast, bez potwierdzenia (liczy się jedno kliknięcie w sytuacji zagrożenia). */
+    fun activateProtect() {
+        display.assistLevel = 0
+        _state.value = _state.value.copy(protectActive = true)
+        prefs.edit().putBoolean("protect_active", true).apply()
+    }
+
+    /** Odblokowanie - wyłącznie z Serwisu (po PIN-ie). Przywraca realne wspomaganie do tego, co pokazuje ekran. */
+    fun deactivateProtect() {
+        display.assistLevel = _state.value.assistLevel
+        _state.value = _state.value.copy(protectActive = false)
+        prefs.edit().putBoolean("protect_active", false).apply()
+    }
+
+    fun setProtectFeatureEnabled(enabled: Boolean) {
+        _state.value = _state.value.copy(protectFeatureEnabled = enabled)
+        prefs.edit().putBoolean("protect_feature_enabled", enabled).apply()
+    }
+
+    fun setServicePin(pin: String) {
+        _state.value = _state.value.copy(servicePin = pin)
+        prefs.edit().putString("service_pin", pin).apply()
     }
 
     fun setLight(on: Boolean) {

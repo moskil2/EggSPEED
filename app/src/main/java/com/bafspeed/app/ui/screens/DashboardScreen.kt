@@ -98,6 +98,7 @@ fun DashboardScreen(
     onGoToConnect: () -> Unit,
     onResetTrip: () -> Unit,
     onResetAvgSpeed: () -> Unit,
+    onActivateProtect: () -> Unit,
 ) {
     // Tryb wyświetlacza aktywny tylko gdy ekran widoczny (i połączony - start jest guardowany)
     DisposableEffect(Unit) {
@@ -142,7 +143,9 @@ fun DashboardScreen(
             .padding(start = 8.dp, end = 8.dp, top = 2.dp, bottom = 10.dp),
     ) {
         // Status row - kropka 200%, ONLINE/OFFLINE jako klikalny przycisk → zakładka Połączenie.
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        // PROTECT/SAFE (antynapadowy, patrz ServiceScreen) dosunięty do prawej krawędzi tego samego
+        // wiersza - stąd fillMaxWidth() + Spacer(weight(1f)), czego reszta wiersza wcześniej nie miała.
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
             Box(Modifier.size(18.dp).background(if (connected) Tokens.Emerald else Tokens.Red, CircleShape))
             Spacer(Modifier.size(10.dp))
             if (connected) {
@@ -169,6 +172,22 @@ fun DashboardScreen(
                 Spacer(Modifier.size(8.dp))
                 ReconnectBadge(state.autoReconnectState)
             }
+            if (state.protectFeatureEnabled) {
+                Spacer(Modifier.weight(1f))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .border(1.dp, if (state.protectActive) Tokens.Emerald else Tokens.Red, RoundedCornerShape(8.dp))
+                        .let { if (!state.protectActive) it.clickable { onActivateProtect() } else it }
+                        .padding(horizontal = 10.dp, vertical = 4.dp),
+                ) {
+                    Text(
+                        if (state.protectActive) "SAFE" else "PROTECT",
+                        fontFamily = Manrope, fontWeight = FontWeight.ExtraBold, fontSize = 13.sp, letterSpacing = 1.sp,
+                        color = if (state.protectActive) Tokens.Emerald else Tokens.Red,
+                    )
+                }
+            }
         }
 
         Spacer(Modifier.height(2.dp))
@@ -187,7 +206,7 @@ fun DashboardScreen(
         // nakłada się po lewej stronie tego bloku, na wysokości odczytu mocy - test mode wymusza
         // 100°C, tak samo jak wymusza skrajne wartości predkosci/mocy powyzej.
         val tempControllerC = if (t) 100 else telemetry.tempControllerC
-        Box(Modifier.fillMaxWidth()) {
+        Box(Modifier.fillMaxWidth().horizontalBleed(6.dp)) {
             DigitalPower(powerW = if (t) 3000.0 else telemetry.powerW, modifier = Modifier.fillMaxWidth())
             if (state.showTempOnCockpit && state.firmwareType == FirmwareType.BBS_FW) {
                 TempTile(

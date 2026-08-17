@@ -66,6 +66,7 @@ fun DiagnosticsScreen(
     scanning: Boolean,
     fullScanHistory: List<ScanSnapshot>,
     onStartScan: () -> Unit,
+    onToggleTestMode: () -> Unit,
 ) {
     val connected = state.connection == ConnectionStatus.CONNECTED
     val clipboard = LocalClipboardManager.current
@@ -80,6 +81,30 @@ fun DiagnosticsScreen(
             .padding(PaddingValues(start = 14.dp, end = 14.dp, top = 0.dp, bottom = 16.dp)),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
+        TokenCard(borderColor = WhiteBorder) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text(tr("Tryb testowy", "Test mode"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary)
+                    Text(
+                        tr("Wymusza skrajne wartości na Kokpicie - test układu ekranu", "Forces extreme values on the Cockpit - screen layout test"),
+                        fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .background(if (state.testMode) Tokens.Blue else Tokens.Elevated, RoundedCornerShape(10.dp))
+                        .clickable { onToggleTestMode() }
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        "TEST", fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 13.sp,
+                        color = if (state.testMode) Tokens.OnAccent else Tokens.TextPrimary,
+                    )
+                }
+            }
+        }
+
         CollapsibleInfoBanner(
             title = if (!connected) tr("Połącz się, żeby zeskanować rejestry", "Connect to scan registers") else tr("O pełnym skanie rejestrów", "About the full register scan"),
             text = buildString {

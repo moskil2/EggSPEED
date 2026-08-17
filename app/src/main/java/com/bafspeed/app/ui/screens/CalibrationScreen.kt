@@ -19,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,7 +50,15 @@ fun CalibrationScreen(
     telemetry: Telemetry,
     onFactorChange: (Double) -> Unit,
     onVoltageOffsetChange: (Double) -> Unit,
+    onStartDisplay: () -> Unit,
+    onStopDisplay: () -> Unit,
 ) {
+    // Podgląd napięcia poniżej potrzebuje żywej telemetrii - bez tego, wejście tu bez
+    // wcześniejszego pobytu na Kokpicie zostawiało telemetry na domyślnych 0,0 (patrz DashboardScreen).
+    DisposableEffect(Unit) {
+        onStartDisplay()
+        onDispose { onStopDisplay() }
+    }
     val connected = state.connection == ConnectionStatus.CONNECTED
     val factor = state.currentCalibrationFactor
     val declaredLimitA = state.basicOrDefault.currentLimit.toDouble()
@@ -118,7 +127,7 @@ fun CalibrationScreen(
             }
         }
 
-        MicroLabel(tr("Podgląd", "Preview"))
+        MicroLabel(tr("Podgląd prądu", "Current preview"))
         TokenCard(borderColor = WhiteBorder) {
             InfoRow(tr("Limit prądu (zadeklarowany)", "Current limit (declared)"), String.format("%.1f A", declaredLimitA))
             HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
@@ -183,11 +192,19 @@ fun CalibrationScreen(
             }
         }
 
-        MicroLabel(tr("Podgląd", "Preview"))
+        MicroLabel(tr("Podgląd napięcia", "Voltage preview"))
         TokenCard(borderColor = WhiteBorder) {
-            InfoRow(tr("Napięcie odczytane", "Voltage read"), if (connected) String.format("%.1f V", telemetry.estimatedVoltageV) else "-")
+            // Offline: pokazujemy ostatnie znane napięcie sprzed rozłączenia (state.lastKnownVoltageV),
+            // a jeśli go nigdy nie było (0,0 - apka jeszcze się nie łączyła) - estymatę z napięcia
+            // nominalnego pakietu (np. 52V dla 14S), żeby podgląd korekty miał sens nawet offline.
+            val readV = when {
+                connected -> telemetry.estimatedVoltageV
+                state.lastKnownVoltageV > 0.0 -> state.lastKnownVoltageV
+                else -> nominalVoltageV
+            }
+            InfoRow(tr("Napięcie odczytane", "Voltage read"), String.format("%.1f V", readV))
             HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
-            InfoRow(tr("Napięcie po korekcie", "Voltage after correction"), if (connected) String.format("%.1f V", telemetry.voltageV) else "-")
+            InfoRow(tr("Napięcie po korekcie", "Voltage after correction"), String.format("%.1f V", readV + voltageOffsetV))
         }
         Spacer(Modifier.height(8.dp))
     }

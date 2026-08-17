@@ -71,6 +71,7 @@ import com.bafspeed.app.ui.screens.PedalScreen
 import com.bafspeed.app.ui.screens.ProfilesScreen
 import com.bafspeed.app.ui.screens.ThrottleScreen
 import com.bafspeed.app.ui.screens.SettingsScreen
+import com.bafspeed.app.ui.screens.ServiceScreen
 import com.bafspeed.app.ui.screens.TemperatureControlScreen
 import com.bafspeed.app.ui.components.EggSpeedWordmark
 import com.bafspeed.app.ui.components.WriteFlowDialogs
@@ -93,6 +94,7 @@ private enum class Screen {
     BATTERY,
     TEMPERATURE_CONTROL,
     SETTINGS,
+    SERVICE,
     CALIBRATION,
     DIAGNOSTICS,
     PROFILES,
@@ -123,6 +125,7 @@ private fun Screen.title(): String = when (this) {
     Screen.BATTERY -> tr("Bateria", "Battery")
     Screen.TEMPERATURE_CONTROL -> tr("Kontrola temperatury", "Temperature control")
     Screen.SETTINGS -> tr("Ustawienia", "Settings")
+    Screen.SERVICE -> tr("Serwis", "Service")
     Screen.CALIBRATION -> tr("Kalibracja", "Calibration")
     Screen.DIAGNOSTICS -> tr("Wszystko (podgląd)", "All in View")
     Screen.PROFILES -> tr("Profile", "Profiles")
@@ -259,6 +262,7 @@ private fun App(vm: AppViewModel) {
                         onGoToConnect = { go(Screen.CONNECT) },
                         onResetTrip = vm::resetTrip,
                         onResetAvgSpeed = vm::resetAvgSpeed,
+                        onActivateProtect = vm::activateProtect,
                     )
                     Screen.ASSIST -> AssistLevelsScreen(
                         state = state,
@@ -375,6 +379,8 @@ private fun App(vm: AppViewModel) {
                         telemetry = telemetry,
                         onFactorChange = vm::setCurrentCalibrationFactor,
                         onVoltageOffsetChange = vm::setVoltageCalibrationOffsetV,
+                        onStartDisplay = vm::startDisplayMode,
+                        onStopDisplay = vm::stopDisplayMode,
                     )
                     Screen.REGISTER_DIAGNOSTICS -> DiagnosticsScreen(
                         state = state,
@@ -383,6 +389,7 @@ private fun App(vm: AppViewModel) {
                         scanning = scanning,
                         fullScanHistory = fullScanHistory,
                         onStartScan = vm::startFullDiagnosticScan,
+                        onToggleTestMode = vm::toggleTestMode,
                     )
                     Screen.DIAGNOSTICS -> ParametersScreen(state = state, onRefresh = vm::readAllConfig)
                     Screen.PROFILES -> ProfilesScreen(
@@ -401,8 +408,13 @@ private fun App(vm: AppViewModel) {
                         state = state,
                         onUnitsChange = vm::setUnits,
                         onOdoOffsetChange = vm::setOdoOffsetKm,
-                        onToggleTestMode = vm::toggleTestMode,
                         onFirmwareTypeChange = vm::setFirmwareType,
+                    )
+                    Screen.SERVICE -> ServiceScreen(
+                        state = state,
+                        onProtectFeatureEnabledChange = vm::setProtectFeatureEnabled,
+                        onDeactivateProtect = vm::deactivateProtect,
+                        onSetServicePin = vm::setServicePin,
                     )
                     Screen.LANGUAGE -> LanguageScreen(current = state.language, onSelect = vm::setLanguage)
                     Screen.ABOUT -> AboutScreen()

@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -37,7 +38,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bafspeed.app.FirmwareType
@@ -59,7 +59,6 @@ fun SettingsScreen(
     state: UiState,
     onUnitsChange: (SpeedUnit) -> Unit,
     onOdoOffsetChange: (Double) -> Unit,
-    onToggleTestMode: () -> Unit,
     onFirmwareTypeChange: (FirmwareType) -> Unit,
 ) {
     val unit = state.units
@@ -120,30 +119,6 @@ fun SettingsScreen(
                     modifier = Modifier.width(180.dp),
                 )
             }
-            HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
-            InfoRow(tr("Typ połączenia", "Connection type"), state.deviceLabel?.let { "USB · $it" } ?: tr("USB (kabel)", "USB (cable)"))
-            HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
-            Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f)) {
-                    Text(tr("Tryb testowy", "Test mode"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary)
-                    Text(
-                        tr("Wymusza skrajne wartości na Kokpicie - test układu ekranu", "Forces extreme values on the Cockpit - screen layout test"),
-                        fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
-                    )
-                }
-                Box(
-                    modifier = Modifier
-                        .background(if (state.testMode) Tokens.Blue else Tokens.Elevated, RoundedCornerShape(10.dp))
-                        .clickable { onToggleTestMode() }
-                        .padding(horizontal = 16.dp, vertical = 10.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        "TEST", fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 13.sp,
-                        color = if (state.testMode) Tokens.OnAccent else Tokens.TextPrimary,
-                    )
-                }
-            }
         }
 
         ExpandableParamTile(
@@ -174,13 +149,24 @@ fun SettingsScreen(
             }
         }
 
-        Spacer(Modifier.height(8.dp))
-        Text(
-            tr("Zapis parametrów wymaga jawnego potwierdzenia i weryfikacji po zapisie", "Saving parameters requires explicit confirmation and verification after writing"),
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
-        )
+        MicroLabel(tr("Połączenie", "Connection"))
+        TokenCard(borderColor = WhiteBorder, modifier = Modifier.alpha(0.55f)) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text(tr("Typ połączenia", "Connection type"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary)
+                    Text(
+                        tr("Bluetooth - wkrótce", "Bluetooth - coming soon"),
+                        fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
+                    )
+                }
+                SegmentedControl(
+                    options = listOf("USB", "Bluetooth"),
+                    selectedIndex = 0,
+                    onSelect = {},
+                    modifier = Modifier.width(180.dp),
+                )
+            }
+        }
         Spacer(Modifier.height(8.dp))
     }
 }
@@ -195,14 +181,6 @@ private fun FirmwareDescriptionParagraph(label: String, text: String) {
         },
         fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
     )
-}
-
-@Composable
-private fun InfoRow(label: String, value: String) {
-    Row(Modifier.fillMaxWidth().padding(vertical = 9.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(label, fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary, modifier = Modifier.weight(1f))
-        Text(value, fontFamily = Sora, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = Tokens.TextPrimary)
-    }
 }
 
 @Composable
