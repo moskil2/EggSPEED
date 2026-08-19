@@ -48,6 +48,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
@@ -77,6 +78,24 @@ enum class SpeedUnit(val label: String, val distanceLabel: String) {
     fun toKmh(value: Double): Double = if (this == MPH) value / 0.621371 else value
 }
 
+/** Jeden z czterech wykresów zakładki Monitoring. */
+enum class MonitoringChart { POWER, CURRENT, VOLTAGE, SPEED }
+
+/**
+ * Jedna próbka telemetrii zapisana do bufora Monitoringu. Wartości brane wprost z [Telemetry]
+ * (już po kalibracji prądu/napięcia i po korekcie napięcia zależnej od firmware - patrz
+ * DisplayStateMachine.useRealVoltage), więc różnice OEM/bbs-fw (np. w prądzie, gdy kontroler ma
+ * shunt mod - patrz currentCalibrationFactor) są tu automatycznie uwzględnione, bez przeliczania
+ * na nowo w tym ekranie.
+ */
+data class MonitoringSample(val tMs: Long, val powerW: Double, val currentA: Double, val voltageV: Double, val speedKmh: Double)
+
+data class MonitoringState(
+    val masterEnabled: Boolean = false,
+    val enabledCharts: Set<MonitoringChart> = MonitoringChart.entries.toSet(),
+    val samples: List<MonitoringSample> = emptyList(),
+)
+
 /** Znane prefiksy modeli silników Bafang. */
 private val KNOWN_MODEL_PREFIXES = listOf("BBS", "SZZ", "SW06") // BBS01/02/HD i warianty hub
 
@@ -86,6 +105,11 @@ private const val MAX_RECONNECT_ATTEMPTS = 3
 private const val RECONNECT_FIRST_DELAY_MS = 3000L
 /** Odczekanie przed KAŻDĄ KOLEJNĄ próbą (2., 3.) po nieudanej poprzedniej. */
 private const val RECONNECT_RETRY_DELAY_MS = 5000L
+
+/** Krok próbkowania zakładki Monitoring. */
+private const val MONITORING_SAMPLE_MS = 500L
+/** Okno historii wykresów Monitoring - 10 minut przy próbkowaniu co 0,5s. */
+private const val MONITORING_MAX_SAMPLES = (10 * 60 * 1000L / MONITORING_SAMPLE_MS).toInt()
 
 /** Odstęp między ponowieniami identyfikacji bbs-fw - jak oficjalny BBSFWTool.exe (Thread.Sleep(200)). */
 private const val BBS_FW_IDENTIFY_RETRY_INTERVAL_MS = 200L
@@ -433,6 +457,12 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     val scanHistory: StateFlow<List<ScanSnapshot>> = display.scanHistory
     val fullScanHistory: StateFlow<List<ScanSnapshot>> = display.fullScanHistory
 
+    // Osobny StateFlow od _state (jak telemetry) - próbki dopisywane co 0,5s, żeby nie odświeżać
+    // całego UiState (i wszystkich ekranów) przy każdym ticku Monitoringu.
+    private val _monitoring = MutableStateFlow(MonitoringState())
+    val monitoring: StateFlow<MonitoringState> = _monitoring.asStateFlow()
+    private var monitoringJob: Job? = null
+
     private var tripJob: Job? = null
     private var configTimeoutJob: Job? = null
     /** Pętla ponawiająca identyfikację bbs-fw (READ_FW_VERSION) - patrz [startBbsFwIdentifyRetry]. */
@@ -714,6 +744,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         display.lowBatteryProtectionV = _state.value.basicOrDefault.lowBatteryProtection
         display.cellCount = _state.value.cellCount
         display.useRealVoltage = _state.value.firmwareType == FirmwareType.BBS_FW
+        display.extendedRegistersEnabled = _state.value.firmwareType == FirmwareType.BBS_FW
         tempAlarmArmed = true
         display.start()
         startTripIntegration()
@@ -1686,6 +1717,44 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 )
             }
         }
+    }
+
+    /** Główny przełącznik zakładki Monitoring - włącza/wyłącza próbkowanie wszystkich wykresów naraz. */
+    fun setMonitoringEnabled(enabled: Boolean) {
+        _monitoring.value = _monitoring.value.copy(masterEnabled = enabled)
+        if (enabled) startMonitoringSampling() else stopMonitoringSampling()
+    }
+
+    /** Przełącznik pojedynczego wykresu (Moc/Prąd/Napięcie/Prędkość) - próbkowanie idzie dalej, wykres tylko się nie rysuje. */
+    fun setMonitoringChartEnabled(chart: MonitoringChart, enabled: Boolean) {
+        val current = _monitoring.value.enabledCharts
+        _monitoring.value = _monitoring.value.copy(
+            enabledCharts = if (enabled) current + chart else current - chart,
+        )
+    }
+
+    /**
+     * Próbkowanie co [MONITORING_SAMPLE_MS] z [telemetry] (już po kalibracji prądu i korekcie
+     * napięcia zależnej od firmware - patrz [MonitoringSample]), bufor przycięty do ostatnich
+     * [MONITORING_MAX_SAMPLES] (10 minut). Działa niezależnie od tego, który ekran jest aktualnie
+     * widoczny - tylko główny przełącznik go zatrzymuje.
+     */
+    private fun startMonitoringSampling() {
+        if (monitoringJob?.isActive == true) return
+        monitoringJob = viewModelScope.launch {
+            while (isActive) {
+                val t = telemetry.value
+                val sample = MonitoringSample(System.currentTimeMillis(), t.powerW, t.currentA, t.voltageV, t.speedKmh)
+                val updated = (_monitoring.value.samples + sample).takeLast(MONITORING_MAX_SAMPLES)
+                _monitoring.value = _monitoring.value.copy(samples = updated)
+                delay(MONITORING_SAMPLE_MS)
+            }
+        }
+    }
+
+    private fun stopMonitoringSampling() {
+        monitoringJob?.cancel()
+        monitoringJob = null
     }
 
     /**

@@ -87,7 +87,10 @@ fun ServiceScreen(
                     checked = state.protectFeatureEnabled,
                     onCheckedChange = onProtectFeatureEnabledChange,
                     accent = Tokens.Blue,
-                    description = tr("Gdy wyłączona, przycisk PROTECT w ogóle nie pojawia się na Kokpicie.", "When off, the PROTECT button doesn't appear on the Cockpit at all."),
+                    description = tr(
+                        "Gdy włączona, na Kokpicie pojawia się dodatkowy przycisk, który pozwala użyć funkcji PROTECT w razie potrzeby.",
+                        "When on, an extra button appears on the Cockpit that lets you use the PROTECT feature whenever needed.",
+                    ),
                 )
             }
 

@@ -35,6 +35,9 @@ import com.bafspeed.app.ui.theme.Tokens
 fun TokenCard(
     modifier: Modifier = Modifier,
     contentPadding: Dp = 18.dp,
+    // Pozwala zwęzić ramkę tylko w pionie (np. Monitoring), bez ruszania paddingu poziomego -
+    // domyślnie równy contentPadding, więc dotychczasowe wywołania z jednym parametrem się nie zmieniają.
+    contentPaddingVertical: Dp = contentPadding,
     borderColor: Color = Tokens.Border,
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -43,7 +46,7 @@ fun TokenCard(
             .fillMaxWidth()
             .border(1.dp, borderColor, RoundedCornerShape(18.dp))
             .background(Tokens.Card, RoundedCornerShape(18.dp))
-            .padding(contentPadding),
+            .padding(horizontal = contentPadding, vertical = contentPaddingVertical),
         content = content,
     )
 }

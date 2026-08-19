@@ -142,12 +142,11 @@ fun DashboardScreen(
             .verticalScroll(rememberScrollState())
             .padding(start = 8.dp, end = 8.dp, top = 2.dp, bottom = 10.dp),
     ) {
-        // Status row - kropka 200%, ONLINE/OFFLINE jako klikalny przycisk → zakładka Połączenie.
+        // Status row - ONLINE/OFFLINE jako klikalny przycisk → zakładka Połączenie (symetrycznie
+        // do kafelka PROTECT/SAFE, bez osobnej kropki koloru - kolor niesie już obramowanie+tekst).
         // PROTECT/SAFE (antynapadowy, patrz ServiceScreen) dosunięty do prawej krawędzi tego samego
         // wiersza - stąd fillMaxWidth() + Spacer(weight(1f)), czego reszta wiersza wcześniej nie miała.
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            Box(Modifier.size(18.dp).background(if (connected) Tokens.Emerald else Tokens.Red, CircleShape))
-            Spacer(Modifier.size(10.dp))
             if (connected) {
                 Text(
                     state.general?.model?.trim() ?: "",

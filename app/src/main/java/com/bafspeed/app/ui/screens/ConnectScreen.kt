@@ -12,8 +12,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bafspeed.app.ConnectionStatus
+import com.bafspeed.app.FirmwareType
 import com.bafspeed.app.R
 import com.bafspeed.app.UiState
 import com.bafspeed.app.i18n.tr
@@ -163,6 +166,23 @@ fun ConnectScreen(
             }
             Spacer(Modifier.height(10.dp))
         }
+
+        // Aktualnie wybrany firmware (ustawiany w zakładce Ustawienia) - aktywny wariant na
+        // zielono, drugi wyszarzony, żeby było widać na pierwszy rzut oka co apka skonfiguruje.
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            Text(
+                "OEM Bafang",
+                fontFamily = Manrope, fontSize = 11.sp, fontWeight = FontWeight.SemiBold,
+                color = if (state.firmwareType == FirmwareType.OEM_BAFANG) Tokens.Emerald else Tokens.TextTertiary,
+            )
+            Text("   •   ", fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextTertiary)
+            Text(
+                "BBS-FW",
+                fontFamily = Manrope, fontSize = 11.sp, fontWeight = FontWeight.SemiBold,
+                color = if (state.firmwareType == FirmwareType.BBS_FW) Tokens.Emerald else Tokens.TextTertiary,
+            )
+        }
+        Spacer(Modifier.height(10.dp))
 
         // CTA - podniesiony wyżej od dolnej krawędzi (dodatkowy odstęp pod spodem o wysokość
         // ok. jednego przycisku) i z większym napisem niż reszta przycisków na ekranie.

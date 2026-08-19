@@ -66,6 +66,7 @@ import com.bafspeed.app.ui.screens.DashboardScreen
 import com.bafspeed.app.ui.screens.DiagnosticsScreen
 import com.bafspeed.app.ui.screens.GeneralScreen
 import com.bafspeed.app.ui.screens.LanguageScreen
+import com.bafspeed.app.ui.screens.MonitoringScreen
 import com.bafspeed.app.ui.screens.ParametersScreen
 import com.bafspeed.app.ui.screens.PedalScreen
 import com.bafspeed.app.ui.screens.ProfilesScreen
@@ -92,6 +93,7 @@ private enum class Screen {
     BBSFW_SYSTEM,
     BBSFW_ASSIST,
     BATTERY,
+    MONITORING,
     TEMPERATURE_CONTROL,
     SETTINGS,
     SERVICE,
@@ -109,25 +111,35 @@ private val OEM_ONLY_SCREENS = setOf(Screen.BAFANG_TYPE, Screen.MOTOR, Screen.PE
 /** Ekrany specyficzne dla bbs-fw - protokół konfiguracji jest inny, więc mają osobny komplet zakładek. */
 private val BBS_FW_ONLY_SCREENS = setOf(Screen.BBSFW_INFO, Screen.BBSFW_SYSTEM, Screen.BBSFW_ASSIST, Screen.TEMPERATURE_CONTROL)
 
-/** Tytuł zakładki - zależny od języka (patrz [LocalAppLanguage]). */
+/**
+ * Tytuł zakładki - zależny od języka (patrz [LocalAppLanguage]). [Screen.DIAGNOSTICS] dodatkowo
+ * zależy od aktywnego firmware - to jedyna pozycja menu wspólna dla obu firmware, więc dostaje
+ * dopisek "Bafang"/"BBS-FW" (patrz [DrawerContent], gdzie jest wstawiana zaraz po zakładce
+ * poziomów wspomagania właściwej dla danego firmware).
+ */
 @Composable
-private fun Screen.title(): String = when (this) {
+private fun Screen.title(firmwareType: FirmwareType): String = when (this) {
     Screen.CONNECT -> tr("Połączenie", "Connect")
     Screen.DASHBOARD -> tr("Kokpit", "Cockpit")
     Screen.BAFANG_TYPE -> tr("Bafang - Typ silnika", "Bafang Motor Type")
     Screen.MOTOR -> tr("Bafang - Ustawienia podstawowe", "Bafang Basic")
     Screen.PEDAL -> tr("Bafang - Pedałowanie (PAS)", "Bafang Pedal (PAS)")
     Screen.THROTTLE -> tr("Bafang - Manetka", "Bafang Throttle")
-    Screen.ASSIST -> tr("Poziomy wspomagania", "Assist levels")
+    Screen.ASSIST -> tr("Bafang - Poziomy wspomagania", "Bafang Assist levels")
     Screen.BBSFW_INFO -> "BBS-FW Version"
-    Screen.BBSFW_SYSTEM -> "System"
-    Screen.BBSFW_ASSIST -> "Assist Levels"
+    Screen.BBSFW_SYSTEM -> "BBS-FW System"
+    Screen.BBSFW_ASSIST -> "BBS-FW Assist Levels"
     Screen.BATTERY -> tr("Bateria", "Battery")
+    Screen.MONITORING -> tr("Monitoring", "Monitoring")
     Screen.TEMPERATURE_CONTROL -> tr("Kontrola temperatury", "Temperature control")
     Screen.SETTINGS -> tr("Ustawienia", "Settings")
     Screen.SERVICE -> tr("Serwis", "Service")
     Screen.CALIBRATION -> tr("Kalibracja", "Calibration")
-    Screen.DIAGNOSTICS -> tr("Wszystko (podgląd)", "All in View")
+    Screen.DIAGNOSTICS -> if (firmwareType == FirmwareType.BBS_FW) {
+        tr("BBS-FW - Widok wszystkiego", "BBS-FW All in View")
+    } else {
+        tr("Bafang - Widok wszystkiego", "Bafang All in View")
+    }
     Screen.PROFILES -> tr("Profile", "Profiles")
     Screen.REGISTER_DIAGNOSTICS -> tr("Diagnostyka", "Diagnostics")
     Screen.LANGUAGE -> tr("Język", "Language")
@@ -149,6 +161,7 @@ class MainActivity : ComponentActivity() {
 private fun App(vm: AppViewModel) {
     val state by vm.state.collectAsState()
     val telemetry by vm.telemetry.collectAsState()
+    val monitoring by vm.monitoring.collectAsState()
     val scanResults by vm.scanResults.collectAsState()
     val scanProgress by vm.scanProgress.collectAsState()
     val scanning by vm.scanning.collectAsState()
@@ -224,7 +237,7 @@ private fun App(vm: AppViewModel) {
                 .statusBarsPadding(),
         ) {
             TopBar(
-                title = screen.title(),
+                title = screen.title(state.firmwareType),
                 onMenu = { scope.launch { drawerState.open() } },
                 trailing = when {
                     screen == Screen.DASHBOARD -> {
@@ -367,6 +380,11 @@ private fun App(vm: AppViewModel) {
                         onCapacityAhChange = vm::setCapacityAh,
                         onCapacityWhChange = vm::setCapacityWh,
                     )
+                    Screen.MONITORING -> MonitoringScreen(
+                        monitoring = monitoring,
+                        onMasterEnabledChange = vm::setMonitoringEnabled,
+                        onChartEnabledChange = vm::setMonitoringChartEnabled,
+                    )
                     Screen.TEMPERATURE_CONTROL -> TemperatureControlScreen(
                         state = state,
                         onShowChange = vm::setShowTempOnCockpit,
@@ -499,11 +517,11 @@ private fun DrawerContent(
     Column(
         Modifier
             .fillMaxHeight()
-            .width(288.dp)
+            .width(320.dp)
             .background(Tokens.Card)
             .verticalScroll(rememberScrollState())
             .statusBarsPadding()
-            .padding(16.dp),
+            .padding(horizontal = 14.dp, vertical = 16.dp),
     ) {
         EggSpeedWordmark(fontSize = 15.sp, letterSpacing = 3.sp)
         Text(tr("konfigurator Bafang", "Bafang configurator"), fontFamily = Manrope, fontSize = 12.sp, color = Tokens.TextTertiary)
@@ -511,17 +529,24 @@ private fun DrawerContent(
 
         // "Menu" (About) na samej górze (ocena w Google Play, kontakt, itd. są w środku) - zwykły
         // wygląd jak reszta pozycji, tylko kolejność wyróżnia je jako pierwsze.
-        DrawerItem(Screen.ABOUT.title(), selected = current == Screen.ABOUT) { onNavigate(Screen.ABOUT) }
+        DrawerItem(Screen.ABOUT.title(firmwareType), selected = current == Screen.ABOUT) { onNavigate(Screen.ABOUT) }
         Spacer(Modifier.height(10.dp))
 
         // Ekrany OEM i bbs-fw są wzajemnie wykluczające się (różne protokoły konfiguracji, patrz
         // FirmwareType) - w menu widoczny jest tylko komplet pasujący do aktualnie wybranego firmware.
         val hidden = if (firmwareType == FirmwareType.BBS_FW) OEM_ONLY_SCREENS else BBS_FW_ONLY_SCREENS
-        Screen.entries.filter { it !in hidden && it != Screen.ABOUT }.forEach { s ->
+        // "Widok wszystkiego" (DIAGNOSTICS) jest wspólny dla obu firmware, więc nie ma stałej
+        // pozycji w enumie Screen - wyjęty z normalnej iteracji i wstawiany ręcznie zaraz po
+        // zakładce poziomów wspomagania właściwej dla aktywnego firmware (ASSIST / BBSFW_ASSIST).
+        val allInViewAnchor = if (firmwareType == FirmwareType.BBS_FW) Screen.BBSFW_ASSIST else Screen.ASSIST
+        Screen.entries.filter { it !in hidden && it != Screen.ABOUT && it != Screen.DIAGNOSTICS }.forEach { s ->
             // Pozycja "Language" dostaje flagę bieżącego języka jako prefiks - jedyna pozycja menu
             // z ikoną, zeby była łatwo rozpoznawalna wśród tekstowych etykiet.
             val icon = if (s == Screen.LANGUAGE) LocalAppLanguage.current.flag else null
-            DrawerItem(s.title(), icon = icon, selected = s == current) { onNavigate(s) }
+            DrawerItem(s.title(firmwareType), icon = icon, selected = s == current) { onNavigate(s) }
+            if (s == allInViewAnchor) {
+                DrawerItem(Screen.DIAGNOSTICS.title(firmwareType), selected = current == Screen.DIAGNOSTICS) { onNavigate(Screen.DIAGNOSTICS) }
+            }
         }
     }
 }
@@ -531,10 +556,9 @@ private fun DrawerItem(label: String, icon: String? = null, selected: Boolean, o
     Box(
         Modifier
             .fillMaxWidth()
-            .padding(vertical = 1.dp)
             .background(if (selected) Tokens.Elevated else Tokens.Card, RoundedCornerShape(12.dp))
             .clickable { onClick() }
-            .padding(horizontal = 14.dp, vertical = 8.dp),
+            .padding(horizontal = 12.dp, vertical = 5.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (icon != null) {
@@ -546,6 +570,7 @@ private fun DrawerItem(label: String, icon: String? = null, selected: Boolean, o
                 fontFamily = Manrope,
                 fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
                 fontSize = 15.sp,
+                maxLines = 1,
                 color = if (selected) Tokens.Blue else Tokens.TextSecondary,
             )
         }

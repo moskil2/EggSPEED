@@ -28,9 +28,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bafspeed.app.FirmwareType
@@ -76,47 +79,30 @@ fun BatteryScreen(
 
         MicroLabel(tr("Twoja bateria", "Your battery"))
 
-        // Trzy progi napięcia baterii, rosnąco: dolny limit rozładowania (LBP, realny odczyt/edycja
-        // w Bafang Basic / bbs-fw General - jedno źródło prawdy), napięcie nominalne (wyliczone z
-        // liczby cel, tak samo jak w kafelku "Liczba cel" niżej i na ekranie Kalibracji) i górny limit
-        // naładowania (wyliczony ze specyfikacji ogniw Li-ion, cellCount x 4,2V). Nominalne i górny
-        // limit celowo liczone tą samą metodą (z cellCount), żeby nie mieszać realnego odczytu z
-        // wyliczoną estymatą w jednej karcie - to myliło się wcześniej jako "dwa razy to samo".
+        // Trzy progi napięcia baterii scalone w jeden kafelek - to same dane informacyjne (odczyt
+        // lub wyliczone z liczby cel), użytkownik nic tu nie ustawia, więc osobne karty tylko
+        // rozpraszały. Rosnąco: dolny limit rozładowania (LBP, realny odczyt - edycja w Bafang
+        // Basic / bbs-fw General, jedno źródło prawdy), napięcie nominalne (z liczby cel, tak samo
+        // jak w kafelku "Liczba cel" niżej) i górny limit naładowania (cellCount x 4,2V). Nominalne
+        // i górny limit celowo liczone tą samą metodą (z cellCount), żeby nie mieszać realnego
+        // odczytu z wyliczoną estymatą.
+        val lbpV = if (isBbsFw) bbsFwCfg.lowCutOffV else basic.lowBatteryProtection
         ExpandableParamTile(
-            label = tr("Odcięcie niskiego napięcia (LBP)", "Low voltage cutoff (LBP)"),
-            valueLabel = "${if (isBbsFw) bbsFwCfg.lowCutOffV else basic.lowBatteryProtection} V",
-            description = tr(
-                "Napięcie, przy którym sterownik odcina zasilanie, żeby chronić ogniwa przed głębokim " +
-                    "rozładowaniem. " + (if (isBbsFw) "Edytowalne w zakładce bbs-fw - Ustawienia podstawowe."
-                    else "Edytowalne w zakładce Bafang Basic."),
-                "The voltage at which the controller cuts power to protect the cells from deep discharge. " +
-                    (if (isBbsFw) "Editable in the bbs-fw General tab." else "Editable in the Bafang Basic tab."),
-            ),
-        ) {}
-
-        ExpandableParamTile(
-            label = tr("Nominalne napięcie", "Nominal voltage"),
-            valueLabel = "${state.nominalPackVoltage} V",
-            description = tr(
-                "Napięcie nominalne pakietu wyliczone z liczby cel (${state.cellCount}S x ok. 3,7V/ogniwo) - " +
-                    "ta sama wartość, co w kafelku \"Liczba cel\" niżej. To wartość orientacyjna - rzeczywiste " +
-                    "napięcie pod obciążeniem zmienia się w zależności od poziomu naładowania.",
-                "The pack's nominal voltage, calculated from cell count (${state.cellCount}S x approx. " +
-                    "3.7V/cell) - the same value shown in the \"Cell count\" tile below. This is an approximate " +
-                    "value - the real voltage under load varies with charge level.",
-            ),
-        ) {}
-
-        ExpandableParamTile(
-            label = tr("Górny limit naładowania", "Upper charge limit"),
-            valueLabel = "${String.format("%.1f", state.cellCount * 4.2)} V",
-            description = tr(
-                "Wartość wyliczona ze specyfikacji ogniw Li-ion (4,2V x liczba cel) - orientacyjny górny próg " +
-                    "naładowania Twojej baterii.",
-                "Calculated from Li-ion cell spec (4.2V x cell count) - an approximate upper charge threshold " +
-                    "for your battery.",
-            ),
-        ) {}
+            label = tr("Napięcie baterii", "Battery voltage"),
+            // Puste - kafelek jest rozwijalnym zestawieniem trzech progów, więc nagłówek nie
+            // powiela żadnego z nich osobną wartością (dawniej powtarzał tu napięcie nominalne).
+            valueLabel = "",
+            description = "",
+            descriptionContent = {
+                BatteryVoltageDescription(isBbsFw = isBbsFw, cellCount = state.cellCount)
+            },
+        ) {
+            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                VoltageReadout(tr("Dolne napięcie odcięcia (LBP)", "Low voltage cutoff (LBP)"), "$lbpV V")
+                VoltageReadout(tr("Napięcie nominalne", "Nominal voltage"), "${state.nominalPackVoltage} V")
+                VoltageReadout(tr("Górny limit naładowania", "Upper charge limit"), "${String.format("%.1f", state.cellCount * 4.2)} V")
+            }
+        }
 
         ExpandableParamTile(
             label = tr("Liczba cel", "Cell count"),
@@ -177,6 +163,96 @@ fun BatteryScreen(
             }
         }
         Spacer(Modifier.height(8.dp))
+    }
+}
+
+/**
+ * Opis kafelka "Napięcie baterii" - wstęp plus trzy osobne akapity (po jednym na próg napięcia),
+ * każdy zaczynający się nazwą progu na zielono (ten sam odcień co trójkącik rozwijania), reszta
+ * zdania białym tekstem - zamiast jednego zbitego akapitu jak wcześniej.
+ */
+@Composable
+private fun BatteryVoltageDescription(isBbsFw: Boolean, cellCount: Int) {
+    val nameStyle = SpanStyle(color = Tokens.Emerald, fontWeight = FontWeight.Bold)
+    val bodyStyle = SpanStyle(color = Tokens.TextPrimary)
+
+    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            tr(
+                "Trzy informacyjne progi napięcia - żadnego z nich nie ustawiasz tutaj.",
+                "Three informational voltage thresholds - none of them is set here.",
+            ),
+            fontFamily = Manrope, fontSize = 11.sp, lineHeight = 15.sp, color = Tokens.TextSecondary,
+        )
+        Text(
+            buildAnnotatedString {
+                withStyle(nameStyle) { append(tr("Dolne napięcie odcięcia (LBP)", "Low voltage cutoff (LBP)")) }
+                withStyle(bodyStyle) {
+                    append(
+                        tr(
+                            " - realny odczyt ze sterownika: próg, przy którym odcina zasilanie, żeby chronić " +
+                                "ogniwa przed głębokim rozładowaniem. Edytowalne w zakładce " +
+                                (if (isBbsFw) "bbs-fw - Ustawienia podstawowe." else "Bafang Basic."),
+                            " - a real reading from the controller: the point at which it cuts power to protect " +
+                                "the cells from deep discharge. Editable in the " +
+                                (if (isBbsFw) "bbs-fw General tab." else "Bafang Basic tab."),
+                        ),
+                    )
+                }
+            },
+            fontFamily = Manrope, fontSize = 11.sp, lineHeight = 15.sp,
+        )
+        Text(
+            buildAnnotatedString {
+                withStyle(nameStyle) { append(tr("Napięcie nominalne", "Nominal voltage")) }
+                withStyle(bodyStyle) {
+                    append(
+                        tr(
+                            " - wartość wyliczona z liczby cel (${cellCount}S x ok. 3,7V/ogniwo) - ta sama, co w " +
+                                "kafelku \"Liczba cel\" niżej.",
+                            " - calculated from cell count (${cellCount}S x approx. 3.7V/cell) - the same value " +
+                                "shown in the \"Cell count\" tile below.",
+                        ),
+                    )
+                }
+            },
+            fontFamily = Manrope, fontSize = 11.sp, lineHeight = 15.sp,
+        )
+        Text(
+            buildAnnotatedString {
+                withStyle(nameStyle) { append(tr("Górny limit naładowania", "Upper charge limit")) }
+                withStyle(bodyStyle) {
+                    append(
+                        tr(
+                            " - wartość wyliczona ze specyfikacji ogniw Li-ion (4,2V x liczba cel). Nominalne i " +
+                                "górny limit to orientacyjne estymaty - rzeczywiste napięcie pod obciążeniem " +
+                                "zmienia się w zależności od poziomu naładowania.",
+                            " - calculated from Li-ion cell spec (4.2V x cell count). Nominal and upper limit are " +
+                                "approximate estimates - the real voltage under load varies with charge level.",
+                        ),
+                    )
+                }
+            },
+            fontFamily = Manrope, fontSize = 11.sp, lineHeight = 15.sp,
+        )
+    }
+}
+
+/** Jeden z trzech wierszy w kafelku "Napięcie baterii" - etykieta po lewej, wartość po prawej, jak w oryginalnych osobnych kafelkach. */
+@Composable
+private fun VoltageReadout(label: String, valueText: String) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .background(Tokens.Elevated, RoundedCornerShape(10.dp))
+            .padding(horizontal = 10.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            label.uppercase(), fontFamily = Manrope, fontWeight = FontWeight.SemiBold, fontSize = 11.sp,
+            letterSpacing = 0.5.sp, color = Tokens.TextSecondary, modifier = Modifier.weight(1f),
+        )
+        Text(valueText, fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Tokens.TextPrimary)
     }
 }
 

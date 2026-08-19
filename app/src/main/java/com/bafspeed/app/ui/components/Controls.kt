@@ -20,6 +20,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,10 +32,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -120,6 +123,9 @@ fun ExpandableParamTile(
     valueLabel: String,
     description: String,
     descriptionColor: Color = Tokens.Amber,
+    // Nadpisuje domyślny jednokolorowy Text(description) bogatszą treścią (np. wieloakapitowy
+    // opis z fragmentami w innym kolorze) - opcjonalne, żeby nie ruszać pozostałych wywołań.
+    descriptionContent: (@Composable () -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -151,10 +157,14 @@ fun ExpandableParamTile(
         }
         if (expanded) {
             Spacer(Modifier.height(6.dp))
-            Text(
-                description,
-                fontFamily = Manrope, fontSize = 11.sp, lineHeight = 15.sp, color = descriptionColor,
-            )
+            if (descriptionContent != null) {
+                descriptionContent()
+            } else {
+                Text(
+                    description,
+                    fontFamily = Manrope, fontSize = 11.sp, lineHeight = 15.sp, color = descriptionColor,
+                )
+            }
         }
         Spacer(Modifier.height(6.dp))
         content()
@@ -217,19 +227,31 @@ fun IntEntryField(value: Int, onValueChange: (Int) -> Unit, range: IntRange, mod
 }
 
 @Composable
-fun TokenSwitch(checked: Boolean, onCheckedChange: (Boolean) -> Unit, accent: Color = Tokens.Blue, enabled: Boolean = true) {
-    Switch(
-        checked = checked,
-        onCheckedChange = onCheckedChange,
-        enabled = enabled,
-        colors = SwitchDefaults.colors(
-            checkedThumbColor = Color.White,
-            checkedTrackColor = accent,
-            uncheckedThumbColor = Tokens.TextTertiary,
-            uncheckedTrackColor = Tokens.Elevated,
-            uncheckedBorderColor = Tokens.Border,
-        ),
-    )
+fun TokenSwitch(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    accent: Color = Tokens.Blue,
+    enabled: Boolean = true,
+    // Skaluje przełącznik przez lokalną gęstość zamiast Modifier.scale - dzięki temu naprawdę
+    // zajmuje mniej miejsca w layoucie (łącznie z niewidocznym minimalnym touch targetem M3),
+    // a nie tylko wygląda mniejszy przy tym samym, "pustym" obszarze dookoła.
+    scale: Float = 1f,
+) {
+    val density = LocalDensity.current
+    CompositionLocalProvider(LocalDensity provides Density(density.density * scale, density.fontScale)) {
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            enabled = enabled,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Color.White,
+                checkedTrackColor = accent,
+                uncheckedThumbColor = Tokens.TextTertiary,
+                uncheckedTrackColor = Tokens.Elevated,
+                uncheckedBorderColor = Tokens.Border,
+            ),
+        )
+    }
 }
 
 /** Wiersz przełącznika: etykieta (+opcjonalny opis) po lewej, switch po prawej. */
