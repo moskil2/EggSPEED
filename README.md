@@ -37,7 +37,7 @@
 7. **Instantaneous power draw** - live battery power usage in watts.
 8. **Average energy usage** - trip-average and short-term energy consumption in Wh/km.
 9. **Firmware-aware profiles** - save/export/import named configuration profiles; loading is blocked with a clear error if the profile's firmware doesn't match the one currently selected, instead of silently writing into the wrong fields.
-10. **PROTECT anti-theft mode** - lock assist to 0 with one tap on the Cockpit while the screen keeps responding normally to +/- taps, so it looks unchanged at a glance. A PIN-gated Service tab is the only way to turn it back off.
+10. **PROTECT Police Control mode** - lock assist to 0 with one tap on the Cockpit while the screen keeps responding normally to +/- taps, so it looks unchanged at a glance. A PIN-gated Service tab is the only way to turn it back off.
 11. **Live monitoring charts** - power, current, voltage, and speed plotted over time, each independently toggleable, with a 10-minute rolling history.
 
 ### BBS-FW screens
