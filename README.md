@@ -37,6 +37,8 @@
 7. **Instantaneous power draw** - live battery power usage in watts.
 8. **Average energy usage** - trip-average and short-term energy consumption in Wh/km.
 9. **Firmware-aware profiles** - save/export/import named configuration profiles; loading is blocked with a clear error if the profile's firmware doesn't match the one currently selected, instead of silently writing into the wrong fields.
+10. **PROTECT anti-theft mode** - lock assist to 0 with one tap on the Cockpit while the screen keeps responding normally to +/- taps, so it looks unchanged at a glance. A PIN-gated Service tab is the only way to turn it back off.
+11. **Live monitoring charts** - power, current, voltage, and speed plotted over time, each independently toggleable, with a 10-minute rolling history.
 
 ### BBS-FW screens
 
@@ -149,6 +151,15 @@ app/src/main/java/com/bafspeed/app/
 4. **`try_process_bafang_read_request` (bbs-fw's display-compat layer) only implements 9 opcodes** - it silently ignores everything else, including the OEM Configuration Tool's GEN/BAS/PAS/THR block reads (`0x51`-`0x54`) - by design, not a bug.
 
 ## Changelog
+
+## v0.3.45 - 2026-08-19 (versionCode 47)
+- Fixed speed/current/distance stuck at zero and frequent USB disconnects on OEM Bafang controllers - the telemetry polling loop queried several registers (Normal/Sport mode, real ADC voltage, controller/motor temperature, status/unknown3/moving diagnostics) that OEM firmware doesn't reliably answer; if one didn't respond, the sequential state machine got stuck before ever reaching speed/current. New `extendedRegistersEnabled` flag (mirrors the existing bbs-fw-only `useRealVoltage`) skips those extra registers on OEM, going straight brake -> battery -> speed -> current -> light. bbs-fw unaffected. Confirmed fixed by an affected BBS01 tester.
+- New Monitoring tab: live power/current/voltage/speed charts, each independently toggleable, sampled every 0.5s with a 10-minute rolling buffer
+- Battery screen: merged the three separate voltage tiles (low voltage cutoff, nominal voltage, upper charge limit) into one expandable "Battery voltage" tile with a color-coded per-threshold explanation
+- Connect screen: now shows which firmware is currently selected (OEM Bafang / BBS-FW), active one highlighted green
+- Menu: clearer tab names (e.g. "Bafang Assist levels", "BBS-FW System", "BBS-FW Assist Levels"), "All in View" moved to sit right after its matching Assist Levels tab instead of floating separately in the list
+- Service tab: reworded the PROTECT feature toggle description
+- Cockpit: removed the redundant colored status dot next to the ONLINE/OFFLINE badge (the badge's own color and text already convey connection state)
 
 ## v0.3.37 - 2026-08-16 (versionCode 39)
 - Battery: fixed "Your battery" showing two near-identical high-voltage rows (bbs-fw's real "Max voltage" register next to the calculated "Upper charge limit") - now three consistently-calculated, expandable tiles in ascending order: Low voltage cutoff (LBP), Nominal voltage, Upper charge limit, each with a green-triangle expandable explanation
