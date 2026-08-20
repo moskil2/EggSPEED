@@ -1,6 +1,12 @@
 # Changelog
 
 
+## v0.3.46 - 2026-08-19 (versionCode 48)
+- New "High contrast" toggle in Settings (right after Odometer) - brightens the app's faded gray text (menu items, labels throughout the app, Cockpit) to near-full white for readability in direct sunlight
+- Hamburger menu: larger list item font
+- Battery voltage tile: the three threshold labels (LBP / Nominal / Upper limit) now render at higher contrast, independent of the new High contrast toggle
+- Cockpit: larger text on the Light/Brake/Mode tiles (tile size unchanged)
+
 ## v0.3.45 - 2026-08-19 (versionCode 47)
 - Fixed speed/current/distance stuck at zero and frequent USB disconnects on OEM Bafang controllers - the telemetry polling loop queried several registers (Normal/Sport mode, real ADC voltage, controller/motor temperature, status/unknown3/moving diagnostics) that OEM firmware doesn't reliably answer; if one didn't respond, the sequential state machine got stuck before ever reaching speed/current. New `extendedRegistersEnabled` flag (mirrors the existing bbs-fw-only `useRealVoltage`) skips those extra registers on OEM, going straight brake -> battery -> speed -> current -> light. bbs-fw unaffected. Confirmed fixed by an affected BBS01 tester.
 - New Monitoring tab: live power/current/voltage/speed charts, each independently toggleable, sampled every 0.5s with a 10-minute rolling buffer
