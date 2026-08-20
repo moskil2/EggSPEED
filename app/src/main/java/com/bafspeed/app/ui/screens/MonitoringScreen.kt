@@ -242,6 +242,9 @@ private fun MultiLineChart(samples: List<MonitoringSample>, series: List<SeriesS
     var cursorFraction by remember { mutableFloatStateOf(1f) }
     val index = (cursorFraction * (samples.size - 1)).roundToInt().coerceIn(0, samples.size - 1)
     val cursorSample = samples[index]
+    // Kolor odczytany tutaj (kontekst @Composable) - wnętrze Canvas to DrawScope, nie @Composable,
+    // więc nie może odpytać Tokens.TextSecondary bezpośrednio (zależy od LocalHighContrast).
+    val cursorLineColor = Tokens.TextSecondary
 
     Canvas(
         Modifier
@@ -273,7 +276,7 @@ private fun MultiLineChart(samples: List<MonitoringSample>, series: List<SeriesS
 
         val cx = cursorFraction * w
         drawLine(
-            color = Tokens.TextSecondary,
+            color = cursorLineColor,
             start = Offset(cx, 0f),
             end = Offset(cx, h),
             strokeWidth = 1.dp.toPx(),
@@ -322,6 +325,8 @@ private fun LineChart(
     val index = (cursorFraction * (values.size - 1)).roundToInt().coerceIn(0, values.size - 1)
     val cursorSample = samples[index]
     val ageS = (samples.last().tMs - cursorSample.tMs) / 1000.0
+    // Jw. - Canvas to DrawScope, nie @Composable, kolor trzeba odczytać przed wejściem do niego.
+    val cursorLineColor = Tokens.TextSecondary
 
     Canvas(
         Modifier
@@ -350,7 +355,7 @@ private fun LineChart(
 
         val cx = cursorFraction * w
         drawLine(
-            color = Tokens.TextSecondary,
+            color = cursorLineColor,
             start = Offset(cx, 0f),
             end = Offset(cx, h),
             strokeWidth = 1.dp.toPx(),

@@ -361,7 +361,7 @@ fun DashboardScreen(
         // potrzebne tylko po to, żeby zmieścić 3 elementy w miejscu jednego przycisku −/+.
         val showSportMode = state.firmwareType == FirmwareType.BBS_FW
         val toggleTileHeight = if (showSportMode) COMPACT_TILE_HEIGHT else 56.dp
-        val toggleTileFontSize = if (showSportMode) 12.sp else 14.sp
+        val toggleTileFontSize = if (showSportMode) 13.sp else 15.sp
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             SquareButton("−") { onAssistChange(state.assistLevel - 1) }
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(COMPACT_TILE_GAP)) {
@@ -396,7 +396,7 @@ fun DashboardScreen(
                         activeTextColor = Color.White,
                         modifier = Modifier.fillMaxWidth(),
                         height = COMPACT_TILE_HEIGHT,
-                        fontSize = 12.sp,
+                        fontSize = 13.sp,
                         onClick = onSportModeToggle,
                     )
                 }

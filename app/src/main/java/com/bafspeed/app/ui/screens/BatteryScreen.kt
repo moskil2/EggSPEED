@@ -250,7 +250,7 @@ private fun VoltageReadout(label: String, valueText: String) {
     ) {
         Text(
             label.uppercase(), fontFamily = Manrope, fontWeight = FontWeight.SemiBold, fontSize = 11.sp,
-            letterSpacing = 0.5.sp, color = Tokens.TextSecondary, modifier = Modifier.weight(1f),
+            letterSpacing = 0.5.sp, color = Tokens.TextBright80, modifier = Modifier.weight(1f),
         )
         Text(valueText, fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Tokens.TextPrimary)
     }

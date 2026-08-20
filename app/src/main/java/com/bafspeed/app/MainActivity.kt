@@ -76,6 +76,7 @@ import com.bafspeed.app.ui.screens.ServiceScreen
 import com.bafspeed.app.ui.screens.TemperatureControlScreen
 import com.bafspeed.app.ui.components.EggSpeedWordmark
 import com.bafspeed.app.ui.components.WriteFlowDialogs
+import com.bafspeed.app.ui.theme.LocalHighContrast
 import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
 import com.bafspeed.app.ui.theme.Tokens
@@ -217,7 +218,7 @@ private fun App(vm: AppViewModel) {
         }
     }
 
-    CompositionLocalProvider(LocalAppLanguage provides state.language) {
+    CompositionLocalProvider(LocalAppLanguage provides state.language, LocalHighContrast provides state.highContrast) {
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -427,6 +428,7 @@ private fun App(vm: AppViewModel) {
                         onUnitsChange = vm::setUnits,
                         onOdoOffsetChange = vm::setOdoOffsetKm,
                         onFirmwareTypeChange = vm::setFirmwareType,
+                        onHighContrastChange = vm::setHighContrast,
                     )
                     Screen.SERVICE -> ServiceScreen(
                         state = state,
@@ -569,7 +571,7 @@ private fun DrawerItem(label: String, icon: String? = null, selected: Boolean, o
                 label,
                 fontFamily = Manrope,
                 fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                fontSize = 15.sp,
+                fontSize = 17.sp,
                 maxLines = 1,
                 color = if (selected) Tokens.Blue else Tokens.TextSecondary,
             )

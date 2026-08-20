@@ -47,6 +47,7 @@ import com.bafspeed.app.i18n.tr
 import com.bafspeed.app.ui.components.ExpandableParamTile
 import com.bafspeed.app.ui.components.MicroLabel
 import com.bafspeed.app.ui.components.SegmentedControl
+import com.bafspeed.app.ui.components.ToggleRow
 import com.bafspeed.app.ui.components.TokenCard
 import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
@@ -60,6 +61,7 @@ fun SettingsScreen(
     onUnitsChange: (SpeedUnit) -> Unit,
     onOdoOffsetChange: (Double) -> Unit,
     onFirmwareTypeChange: (FirmwareType) -> Unit,
+    onHighContrastChange: (Boolean) -> Unit,
 ) {
     val unit = state.units
 
@@ -147,6 +149,19 @@ fun SettingsScreen(
                     onValueChange = { onOdoOffsetChange(unit.toKmh(it)) },
                 )
             }
+        }
+
+        TokenCard(borderColor = WhiteBorder) {
+            ToggleRow(
+                label = tr("Wysoki kontrast", "High contrast"),
+                checked = state.highContrast,
+                onCheckedChange = onHighContrastChange,
+                accent = Tokens.Blue,
+                description = tr(
+                    "Rozjaśnia wyblakłe szare napisy w menu i na Kokpicie do niemal pełnej bieli - przydatne przy jeździe w pełnym słońcu.",
+                    "Brightens faded gray text in menus and on the Cockpit to near-full white - useful when riding in bright sunlight.",
+                ),
+            )
         }
 
         MicroLabel(tr("Połączenie", "Connection"))

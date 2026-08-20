@@ -211,6 +211,8 @@ data class UiState(
     val tempAlarmC: Int = 80,
     /** Dźwięk przy przekroczeniu progu Alarm (jednorazowo, do ponownego uzbrojenia po spadku poniżej progu) - trwały. */
     val tempAlarmSoundEnabled: Boolean = true,
+    /** Wysoki kontrast (Ustawienia, po ODOMETER) - podbija wyblakłe szarości (TextSecondary/TextTertiary) do niemal pełnej bieli w całej apce, do czytania w pełnym słońcu. Trwały. */
+    val highContrast: Boolean = false,
 ) {
     val basicOrDefault: BasicSettings get() = basic ?: BasicSettings.DEFAULT
     val pasOrDefault: PedalAssistSettings get() = pedalAssist ?: PedalAssistSettings.DEFAULT
@@ -429,6 +431,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             tempWarningC = prefs.getInt("temp_warning_c", 60),
             tempAlarmC = prefs.getInt("temp_alarm_c", 80),
             tempAlarmSoundEnabled = prefs.getBoolean("temp_alarm_sound_enabled", true),
+            highContrast = prefs.getBoolean("high_contrast", false),
             tripKm = prefs.getFloat("trip_km", 0f).toDouble(),
             avgSpeedDistanceKm = prefs.getFloat("avg_speed_distance_km", 0f).toDouble(),
             avgSpeedMovingTimeH = prefs.getFloat("avg_speed_moving_time_h", 0f).toDouble(),
@@ -820,6 +823,11 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     fun setShowTempOnCockpit(show: Boolean) {
         _state.value = _state.value.copy(showTempOnCockpit = show)
         prefs.edit().putBoolean("show_temp_controller", show).apply()
+    }
+
+    fun setHighContrast(enabled: Boolean) {
+        _state.value = _state.value.copy(highContrast = enabled)
+        prefs.edit().putBoolean("high_contrast", enabled).apply()
     }
 
     fun setTempWarningC(c: Int) {
