@@ -39,6 +39,9 @@
 9. **Firmware-aware profiles** - save/export/import named configuration profiles; loading is blocked with a clear error if the profile's firmware doesn't match the one currently selected, instead of silently writing into the wrong fields.
 10. **PROTECT Police Control mode** - lock assist to 0 with one tap on the Cockpit while the screen keeps responding normally to +/- taps, so it looks unchanged at a glance. A PIN-gated PROTECT tab is the only way to turn it back off.
 11. **Live monitoring charts** - power, current, voltage, and speed plotted over time, each independently toggleable, with a 10-minute rolling history.
+12. **Light/Dark theme** - switchable in the Screen tab; High Contrast works in both.
+13. **Cockpit on lock screen/AOD** - optional, shows speed/power/assist via a "now playing"-style media notification so the screen can actually sleep while riding, saving real battery. Optional +/- assist controls repurpose the previous/next media buttons.
+14. **SAG (battery voltage sag under load)** - an Estimated SAG calculated continuously from your normal riding, plus a guided SAG Measurement procedure (rest → full load → rest) for a controlled, comparable reading with a battery-quality legend.
 
 ### BBS-FW screens
 
