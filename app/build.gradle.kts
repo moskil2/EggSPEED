@@ -17,8 +17,8 @@ android {
         applicationId = "app.spotrobotics.eggspeed"
         minSdk = 26
         targetSdk = 36
-        versionCode = 48
-        versionName = "0.3.46"
+        versionCode = 50
+        versionName = "0.3.48"
 
         val buildStamp = SimpleDateFormat("yyyyMMdd.HHmm").format(Date())
         buildConfigField("String", "BUILD_STAMP", "\"$buildStamp\"")
@@ -70,6 +70,9 @@ dependencies {
     implementation(composeBom)
 
     implementation("androidx.core:core-ktx:1.15.0")
+    // MediaSession/NotificationCompat.MediaStyle - wymagane w runtime przez app/libs/bafspeed-aod-release.aar
+    // (plik .aar nie sciaga wlasnych zaleznosci automatycznie, trzeba je zadeklarowac tutaj tak samo)
+    implementation("androidx.media:media:1.7.0")
     implementation("androidx.activity:activity-compose:1.9.3")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
@@ -87,6 +90,9 @@ dependencies {
 
     // Prywatny moduł protokołu (BafSPEED-protocol), dostarczany jako skompilowany .aar
     implementation(files("libs/bafspeed-protocol-release.aar"))
+
+    // Kokpit na ekranie blokady/AOD, dostarczany jako skompilowany .aar
+    implementation(files("libs/bafspeed-aod-release.aar"))
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")

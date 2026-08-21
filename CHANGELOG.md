@@ -1,6 +1,14 @@
 # Changelog
 
 
+## v0.3.48 - 2026-08-20 (versionCode 50)
+- New "Screen" tab (menu, under Settings) - moved Theme/High contrast here from Settings, plus a new optional "Show Cockpit on lock screen/AOD" feature: speed/power/assist level shown via a "now playing"-style media notification (the only public Android mechanism that lets the screen actually sleep while still showing content) - real battery saving vs. keeping the screen lit. Optional +/- assist controls repurpose the previous/next media buttons (off by default - can conflict with real music/Bluetooth controls). Requires notification permission.
+
+## v0.3.47 - 2026-08-20 (versionCode 49)
+- New Light theme (Settings, next to High contrast) - dark stays the default, unchanged look; High contrast now works in both themes
+- Menu: added a GitHub link (source code) next to Contact/Website
+- Renamed the "Service" tab to "PROTECT" (drawer menu and its own screen)
+
 ## v0.3.46 - 2026-08-19 (versionCode 48)
 - New "High contrast" toggle in Settings (right after Odometer) - brightens the app's faded gray text (menu items, labels throughout the app, Cockpit) to near-full white for readability in direct sunlight
 - Hamburger menu: larger list item font
