@@ -44,10 +44,8 @@ import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
 import com.bafspeed.app.ui.theme.Tokens
 
-private val WhiteBorder = Color(0x59FFFFFF)
-
 /**
- * Zakładka "Serwis" - domyślnie otwarta (pusty PIN = brak ochrony). Użytkownik może w środku
+ * Zakładka "PROTECT" - domyślnie otwarta (pusty PIN = brak ochrony). Użytkownik może w środku
  * ustawić własny PIN, od tego momentu wejście wymaga go podania. Steruje funkcją PROTECT
  * (kafelek na Kokpicie, patrz DashboardScreen) - włączenie/wyłączenie jej istnienia oraz
  * jedyny sposób odblokowania aktywnej ochrony (poza tym apka nie daje żadnej drogi wyjścia
@@ -75,13 +73,13 @@ fun ServiceScreen(
         } else {
             PreviewBanner(
                 tr(
-                    "PROTECT to funkcja bezpieczeństwa, która pozwala Ci szybko i niepostrzeżenie zablokować rower, kiedy tego potrzebujesz. Po naciśnięciu przycisku PROTECT na Kokpicie rower przechodzi w tryb 0, ale ekran w dalszym ciągu pozoruje możliwość zmiany poziomu wspomagania. Odblokowanie roweru wymaga wejścia do zakładki Serwis i wciśnięcia przycisku odblokowania. Ikona SAFE na Kokpicie sygnalizuje aktywną blokadę roweru.",
-                    "PROTECT is a safety feature that lets you lock the bike down quickly and inconspicuously whenever you need to. Pressing the PROTECT button on the Cockpit switches the bike to mode 0, while the screen keeps pretending you can still change the assist level. Unlocking the bike requires opening the Service tab and pressing the unlock button. The SAFE icon on the Cockpit signals that the bike's lock is active.",
+                    "PROTECT to funkcja bezpieczeństwa, która pozwala Ci szybko i niepostrzeżenie zablokować rower, kiedy tego potrzebujesz. Po naciśnięciu przycisku PROTECT na Kokpicie rower przechodzi w tryb 0, ale ekran w dalszym ciągu pozoruje możliwość zmiany poziomu wspomagania. Odblokowanie roweru wymaga wejścia do zakładki PROTECT i wciśnięcia przycisku odblokowania. Ikona SAFE na Kokpicie sygnalizuje aktywną blokadę roweru.",
+                    "PROTECT is a safety feature that lets you lock the bike down quickly and inconspicuously whenever you need to. Pressing the PROTECT button on the Cockpit switches the bike to mode 0, while the screen keeps pretending you can still change the assist level. Unlocking the bike requires opening the PROTECT tab and pressing the unlock button. The SAFE icon on the Cockpit signals that the bike's lock is active.",
                 ),
             )
 
             MicroLabel(tr("PROTECT", "PROTECT"))
-            TokenCard(borderColor = WhiteBorder) {
+            TokenCard(borderColor = Tokens.WhiteBorder) {
                 ToggleRow(
                     label = tr("Funkcja PROTECT", "PROTECT feature"),
                     checked = state.protectFeatureEnabled,
@@ -120,12 +118,12 @@ fun ServiceScreen(
                 }
             }
 
-            MicroLabel(tr("PIN serwisu", "Service PIN"))
-            TokenCard(borderColor = WhiteBorder) {
+            MicroLabel(tr("PIN PROTECT", "PROTECT PIN"))
+            TokenCard(borderColor = Tokens.WhiteBorder) {
                 Text(
                     tr(
-                        "Ustawiony PIN blokuje dostęp do tej zakładki - wejście do Serwisu wymaga wtedy jego podania.",
-                        "A set PIN locks access to this tab - entering Service then requires it.",
+                        "Ustawiony PIN blokuje dostęp do tej zakładki - wejście do PROTECT wymaga wtedy jego podania.",
+                        "A set PIN locks access to this tab - entering PROTECT then requires it.",
                     ),
                     fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
                 )
@@ -144,7 +142,7 @@ private fun PinGate(onUnlock: () -> Unit, correctPin: String) {
 
     Spacer(Modifier.height(40.dp))
     Text(
-        tr("Wpisz PIN, żeby wejść do Serwisu", "Enter the PIN to access Service"),
+        tr("Wpisz PIN, żeby wejść do PROTECT", "Enter the PIN to access PROTECT"),
         modifier = Modifier.fillMaxWidth(),
         textAlign = TextAlign.Center,
         fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary,

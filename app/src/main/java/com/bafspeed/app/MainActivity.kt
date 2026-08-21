@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,7 +48,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,6 +69,7 @@ import com.bafspeed.app.ui.screens.CalibrationScreen
 import com.bafspeed.app.ui.screens.ConnectScreen
 import com.bafspeed.app.ui.screens.DashboardScreen
 import com.bafspeed.app.ui.screens.DiagnosticsScreen
+import com.bafspeed.app.ui.screens.DisplayScreen
 import com.bafspeed.app.ui.screens.GeneralScreen
 import com.bafspeed.app.ui.screens.LanguageScreen
 import com.bafspeed.app.ui.screens.MonitoringScreen
@@ -77,6 +83,7 @@ import com.bafspeed.app.ui.screens.TemperatureControlScreen
 import com.bafspeed.app.ui.components.EggSpeedWordmark
 import com.bafspeed.app.ui.components.WriteFlowDialogs
 import com.bafspeed.app.ui.theme.LocalHighContrast
+import com.bafspeed.app.ui.theme.LocalLightMode
 import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
 import com.bafspeed.app.ui.theme.Tokens
@@ -97,6 +104,7 @@ private enum class Screen {
     MONITORING,
     TEMPERATURE_CONTROL,
     SETTINGS,
+    DISPLAY,
     SERVICE,
     CALIBRATION,
     DIAGNOSTICS,
@@ -134,7 +142,8 @@ private fun Screen.title(firmwareType: FirmwareType): String = when (this) {
     Screen.MONITORING -> tr("Monitoring", "Monitoring")
     Screen.TEMPERATURE_CONTROL -> tr("Kontrola temperatury", "Temperature control")
     Screen.SETTINGS -> tr("Ustawienia", "Settings")
-    Screen.SERVICE -> tr("Serwis", "Service")
+    Screen.DISPLAY -> tr("Ekran", "Screen")
+    Screen.SERVICE -> "PROTECT"
     Screen.CALIBRATION -> tr("Kalibracja", "Calibration")
     Screen.DIAGNOSTICS -> if (firmwareType == FirmwareType.BBS_FW) {
         tr("BBS-FW - Widok wszystkiego", "BBS-FW All in View")
@@ -155,6 +164,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         viewModel.refreshProfiles()
         setContent { App(viewModel) }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.onAppResumed()
     }
 }
 
@@ -218,7 +232,25 @@ private fun App(vm: AppViewModel) {
         }
     }
 
-    CompositionLocalProvider(LocalAppLanguage provides state.language, LocalHighContrast provides state.highContrast) {
+    CompositionLocalProvider(
+        LocalAppLanguage provides state.language,
+        LocalHighContrast provides state.highContrast,
+        LocalLightMode provides state.lightMode,
+    ) {
+    // Pasek statusu i nawigacyjny Androida sa ustawiane w themes.xml (statyczne, tylko ciemne) -
+    // tutaj nadpisujemy je w locie kolorem Tokens.Bg, zeby realnie podazaly za Trybem jasnym/ciemnym.
+    val view = LocalView.current
+    val systemBarColor = Tokens.Bg
+    val lightSystemBars = state.lightMode
+    SideEffect {
+        val window = (context as ComponentActivity).window
+        window.statusBarColor = systemBarColor.toArgb()
+        window.navigationBarColor = systemBarColor.toArgb()
+        WindowCompat.getInsetsController(window, view).apply {
+            isAppearanceLightStatusBars = lightSystemBars
+            isAppearanceLightNavigationBars = lightSystemBars
+        }
+    }
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -428,7 +460,13 @@ private fun App(vm: AppViewModel) {
                         onUnitsChange = vm::setUnits,
                         onOdoOffsetChange = vm::setOdoOffsetKm,
                         onFirmwareTypeChange = vm::setFirmwareType,
+                    )
+                    Screen.DISPLAY -> DisplayScreen(
+                        state = state,
                         onHighContrastChange = vm::setHighContrast,
+                        onLightModeChange = vm::setLightMode,
+                        onAodEnabledChange = vm::setAodEnabled,
+                        onAodAssistControlsChange = vm::setAodAssistControlsEnabled,
                     )
                     Screen.SERVICE -> ServiceScreen(
                         state = state,
@@ -483,7 +521,14 @@ private fun TopBar(
             }
         }
         if (showWordmark) {
-            EggSpeedWordmark(fontSize = 18.sp, letterSpacing = 3.sp, modifier = Modifier.align(Alignment.Center))
+            Box(
+                Modifier
+                    .align(Alignment.Center)
+                    .border(1.dp, Tokens.WhiteBorder, RoundedCornerShape(8.dp))
+                    .padding(horizontal = 10.dp, vertical = 4.dp),
+            ) {
+                EggSpeedWordmark(fontSize = 18.sp, letterSpacing = 3.sp)
+            }
         }
         if (trailing != null) {
             // Blisko prawej krawedzi ekranu (minimalny margines) - zeby wskaznik baterii mial
@@ -495,12 +540,13 @@ private fun TopBar(
 
 @Composable
 private fun HamburgerIcon() {
+    val lineColor = Tokens.TextPrimary
     Canvas(Modifier.size(22.dp)) {
         val w = size.width
         val stroke = 2.dp.toPx()
         listOf(0.2f, 0.5f, 0.8f).forEach { fy ->
             drawLine(
-                color = Tokens.TextPrimary,
+                color = lineColor,
                 start = Offset(0f, size.height * fy),
                 end = Offset(w, size.height * fy),
                 strokeWidth = stroke,

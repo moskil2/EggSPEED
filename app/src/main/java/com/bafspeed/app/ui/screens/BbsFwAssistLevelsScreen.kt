@@ -44,8 +44,6 @@ import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
 import com.bafspeed.app.ui.theme.Tokens
 
-private val WhiteBorder = Color(0x59FFFFFF)
-
 /** Kolejność WYŚWIETLANIA w oficjalnej apce autora (ConfigurationViewModel.AssistModeSelectOptions) - NIE pokrywa się z kolejnością numeryczną enuma (BrakesOnBoot=13 pokazywane jako 4. pozycja). */
 private val ASSIST_MODE_SELECT_DISPLAY_ORDER = listOf(0, 1, 2, 13, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
 
@@ -120,7 +118,7 @@ fun BbsFwAssistLevelsScreen(
         }
 
         // --- Level N: Type ---
-        TokenCard(borderColor = WhiteBorder) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             Text("Level $selected", fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Tokens.TextPrimary)
             Spacer(Modifier.height(10.dp))
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -135,7 +133,7 @@ fun BbsFwAssistLevelsScreen(
 
         when (baseType) {
             BbsFwAssistBaseType.PAS -> {
-                TokenCard(borderColor = WhiteBorder) {
+                TokenCard(borderColor = Tokens.WhiteBorder) {
                     LabeledStepRow("Variant:", pasVariantLabel(pasVariant), { onPasVariant(profile, selected, (pasVariant - 1).coerceIn(0, 2)) }, { onPasVariant(profile, selected, (pasVariant + 1).coerceIn(0, 2)) })
 
                     if (pasVariant == BbsFwAssistPasVariant.TORQUE) {
@@ -185,7 +183,7 @@ fun BbsFwAssistLevelsScreen(
                 }
             }
             BbsFwAssistBaseType.THROTTLE -> {
-                TokenCard(borderColor = WhiteBorder) {
+                TokenCard(borderColor = Tokens.WhiteBorder) {
                     LabeledSliderRow("Max Current (%)", level.maxThrottleCurrentPercent, Tokens.Amber) { onMaxThrottleCurrent(profile, selected, it) }
                     HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
                     LabeledSliderRow("Max Cadence (%)", level.maxCadencePercent, Tokens.Emerald) { onMaxCadence(profile, selected, it) }
@@ -198,7 +196,7 @@ fun BbsFwAssistLevelsScreen(
                     "Uwaga: tempomat (Cruise) - załączany pedałowaniem + manetką, wyłączany pedałowaniem wstecz, dotknięciem manetki albo hamulcem. Używaj ostrożnie.",
                     "Warning: Cruise mode - engaged by pedaling + throttle, disengaged by backpedaling, touching the throttle, or braking. Use with caution!",
                 ))
-                TokenCard(borderColor = WhiteBorder) {
+                TokenCard(borderColor = Tokens.WhiteBorder) {
                     LabeledSliderRow("Max Current (%)", level.targetCurrentPercent, Tokens.Amber) { onTargetCurrent(profile, selected, it) }
                     HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
                     LabeledSliderRow("Max Cadence (%)", level.maxCadencePercent, Tokens.Emerald) { onMaxCadence(profile, selected, it) }
@@ -207,7 +205,7 @@ fun BbsFwAssistLevelsScreen(
                 }
             }
             else -> {
-                TokenCard(borderColor = WhiteBorder) {
+                TokenCard(borderColor = Tokens.WhiteBorder) {
                     Text(
                         tr("Silnik wyłączony na tym poziomie - manetka i pedałowanie nie dają wspomagania.", "Motor disabled at this level - throttle and pedaling give no assist."),
                         fontFamily = Manrope, fontSize = 12.sp, color = Tokens.TextSecondary,
@@ -221,7 +219,7 @@ fun BbsFwAssistLevelsScreen(
         Spacer(Modifier.height(4.dp))
 
         // --- Operation Mode Toggle / Startup Assist Level (globalne, nie per-profil) ---
-        TokenCard(borderColor = WhiteBorder) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             LabeledStepRow(
                 "Operation Mode Toggle:", assistModeSelectLabel(cfg.assistModeSelect),
                 { onAssistModeSelect(stepInOrder(ASSIST_MODE_SELECT_DISPLAY_ORDER, cfg.assistModeSelect, -1)) },

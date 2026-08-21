@@ -54,15 +54,23 @@ import com.bafspeed.app.SpeedUnit
 import com.bafspeed.app.UiState
 import com.bafspeed.app.i18n.tr
 import com.bafspeed.app.protocol.Telemetry
+import com.bafspeed.app.ui.theme.LocalLightMode
 import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
 import com.bafspeed.app.ui.theme.Tokens
 import kotlin.math.roundToInt
 
-/** Kokpit: wysoki kontrast do czytelności w pełnym słońcu - mocniejsze obramowania niż reszta apki. */
-private val HighContrastBorder = Color(0x40FFFFFF) // ~25% biały, znacznie mocniejszy niż Tokens.Border (6%)
-private val HighContrastText = Color(0xFFFFFFFF)
-private val TileBg = Color(0xFF121418)
+/** Kokpit: wysoki kontrast do czytelności w pełnym słońcu - mocniejsze obramowania niż reszta apki. Motyw jasny odwraca jasność 1:1, zachowując ten sam poziom kontrastu. */
+private val HighContrastBorder: Color
+    @Composable get() = if (LocalLightMode.current) Color(0x40000000) else Color(0x40FFFFFF) // ~25% czarny/biały, znacznie mocniejszy niż Tokens.Border (6%)
+private val HighContrastText: Color
+    @Composable get() = if (LocalLightMode.current) Color(0xFF0A0B0C) else Color(0xFFFFFFFF)
+private val TileBg: Color
+    @Composable get() = if (LocalLightMode.current) Color(0xFFE9EAEC) else Color(0xFF121418)
+
+/** Tło całego Kokpitu - w motywie ciemnym czysta czerń (mocniejsza niż Tokens.Bg, celowo dla OLED/nocnej jazdy), w jasnym to samo tło co reszta apki. */
+private val CockpitBg: Color
+    @Composable get() = if (LocalLightMode.current) Tokens.Bg else Color(0xFF000000)
 
 /** Odstęp między rzędem Światło/Hamulec a rzędem Sport (na wyraźne życzenie: oba rzędy razem
  * nie wyższe niż pojedynczy przycisk −/+, czyli 2×COMPACT_TILE_HEIGHT + COMPACT_TILE_GAP ≤ 70.dp). */
@@ -138,7 +146,7 @@ fun DashboardScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(CockpitBg)
             .verticalScroll(rememberScrollState())
             .padding(start = 8.dp, end = 8.dp, top = 2.dp, bottom = 10.dp),
     ) {

@@ -47,13 +47,10 @@ import com.bafspeed.app.i18n.tr
 import com.bafspeed.app.ui.components.ExpandableParamTile
 import com.bafspeed.app.ui.components.MicroLabel
 import com.bafspeed.app.ui.components.SegmentedControl
-import com.bafspeed.app.ui.components.ToggleRow
 import com.bafspeed.app.ui.components.TokenCard
 import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
 import com.bafspeed.app.ui.theme.Tokens
-
-private val WhiteBorder = Color(0x59FFFFFF)
 
 @Composable
 fun SettingsScreen(
@@ -61,7 +58,6 @@ fun SettingsScreen(
     onUnitsChange: (SpeedUnit) -> Unit,
     onOdoOffsetChange: (Double) -> Unit,
     onFirmwareTypeChange: (FirmwareType) -> Unit,
-    onHighContrastChange: (Boolean) -> Unit,
 ) {
     val unit = state.units
 
@@ -74,7 +70,7 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         MicroLabel(tr("Firmware sterownika", "Controller firmware"))
-        TokenCard(borderColor = WhiteBorder) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(tr("Firmware", "Firmware"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary, modifier = Modifier.weight(1f))
                 SegmentedControl(
@@ -111,7 +107,7 @@ fun SettingsScreen(
         }
 
         MicroLabel(tr("Aplikacja", "Application"))
-        TokenCard(borderColor = WhiteBorder) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(tr("Jednostki", "Units"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary, modifier = Modifier.weight(1f))
                 SegmentedControl(
@@ -151,21 +147,8 @@ fun SettingsScreen(
             }
         }
 
-        TokenCard(borderColor = WhiteBorder) {
-            ToggleRow(
-                label = tr("Wysoki kontrast", "High contrast"),
-                checked = state.highContrast,
-                onCheckedChange = onHighContrastChange,
-                accent = Tokens.Blue,
-                description = tr(
-                    "Rozjaśnia wyblakłe szare napisy w menu i na Kokpicie do niemal pełnej bieli - przydatne przy jeździe w pełnym słońcu.",
-                    "Brightens faded gray text in menus and on the Cockpit to near-full white - useful when riding in bright sunlight.",
-                ),
-            )
-        }
-
         MicroLabel(tr("Połączenie", "Connection"))
-        TokenCard(borderColor = WhiteBorder, modifier = Modifier.alpha(0.55f)) {
+        TokenCard(borderColor = Tokens.WhiteBorder, modifier = Modifier.alpha(0.55f)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(tr("Typ połączenia", "Connection type"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary)

@@ -17,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,8 +29,6 @@ import com.bafspeed.app.ui.components.TokenCard
 import com.bafspeed.app.ui.components.ToggleRow
 import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Tokens
-
-private val WhiteBorderTemp = Color(0x59FFFFFF)
 
 /**
  * Zakładka sterująca kafelkiem Tc (temp. sterownika) na Kokpicie - tylko bbs-fw (patrz MainActivity.kt
@@ -57,7 +54,7 @@ fun TemperatureControlScreen(
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         MicroLabel(tr("Wyświetlanie na Kokpicie", "Cockpit display"))
-        TokenCard(borderColor = WhiteBorderTemp) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             ToggleRow(
                 tr("Temp. sterownika (Tc)", "Controller temp. (Tc)"),
                 state.showTempOnCockpit, onShowChange, accent = Tokens.Amber,
@@ -92,7 +89,7 @@ fun TemperatureControlScreen(
         ) {
             FlankedSlider(value = state.tempAlarmC, range = 30..150, accent = Tokens.Red, onValueChange = onAlarmChange)
         }
-        TokenCard(borderColor = WhiteBorderTemp) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             ToggleRow(
                 tr("Dźwięk przy Alarm", "Sound on Alarm"),
                 state.tempAlarmSoundEnabled, onAlarmSoundChange, accent = Tokens.Red,
@@ -104,7 +101,7 @@ fun TemperatureControlScreen(
         }
 
         MicroLabel(tr("Czujniki w firmware", "Firmware sensors"))
-        TokenCard(borderColor = WhiteBorderTemp) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             val mode = state.bbsFwConfigOrDefault.temperatureSensorMode
             val modeLabel = listOf(
                 tr("Wyłączony", "Disabled"), tr("Sterownika", "Controller"), tr("Silnika", "Motor"), "All",

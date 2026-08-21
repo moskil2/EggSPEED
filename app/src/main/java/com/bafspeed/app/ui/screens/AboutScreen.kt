@@ -27,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -41,12 +40,13 @@ import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
 import com.bafspeed.app.ui.theme.Tokens
 
-private val WhiteBorder = Color(0x59FFFFFF)
 private val APP_VERSION = BuildConfig.VERSION_NAME
 private val BUILD_STAMP = BuildConfig.BUILD_STAMP
 private const val CONTACT_EMAIL = "tomasz.pieczara@gazeta.pl"
 private const val WEBSITE = "spotrobotics.app"
 private const val SUPPORT_FORM_URL = "https://spotrobotics.app/support/"
+private const val GITHUB_DISPLAY = "github.com/moskil2/EggSPEED"
+private const val GITHUB_URL = "https://$GITHUB_DISPLAY"
 
 /**
  * Zakladka "Menu" - poza informacjami o aplikacji (dawne "About") zawiera tez akcje zwiazane
@@ -64,13 +64,13 @@ fun AboutScreen() {
             .padding(PaddingValues(start = 14.dp, end = 14.dp, top = 0.dp, bottom = 16.dp)),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        TokenCard(borderColor = WhiteBorder) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             EggSpeedWordmark(fontSize = 20.sp, letterSpacing = 0.sp)
             Spacer(Modifier.height(4.dp))
             Text(tr("Stworzone przez Tomasza Pieczarę", "Created by Tomasz Pieczara"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary)
         }
 
-        TokenCard(borderColor = WhiteBorder) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             ActionRow(
                 icon = "⭐",
                 label = tr("Oceń aplikację w Google Play", "Rate the app on Google Play"),
@@ -84,13 +84,13 @@ fun AboutScreen() {
             )
         }
 
-        TokenCard(borderColor = WhiteBorder) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             InfoRow(tr("Wersja", "Version"), APP_VERSION)
             HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
             InfoRow("Build", BUILD_STAMP)
         }
 
-        TokenCard(borderColor = WhiteBorder) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             InfoRow(
                 tr("Kontakt", "Contact"),
                 CONTACT_EMAIL,
@@ -105,6 +105,15 @@ fun AboutScreen() {
                 WEBSITE,
                 onClick = {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://$WEBSITE"))
+                    runCatching { context.startActivity(intent) }
+                },
+            )
+            HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
+            InfoRow(
+                "GitHub",
+                GITHUB_DISPLAY,
+                onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(GITHUB_URL))
                     runCatching { context.startActivity(intent) }
                 },
             )
@@ -179,7 +188,7 @@ private fun ContactExpandableTile(label: String, body: String, linkLabel: String
     TokenCard(
         modifier = Modifier.clickable { expanded = !expanded },
         contentPadding = 6.dp,
-        borderColor = Color(0x59FFFFFF),
+        borderColor = Tokens.WhiteBorder,
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text(

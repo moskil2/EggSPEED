@@ -42,8 +42,6 @@ import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
 import com.bafspeed.app.ui.theme.Tokens
 
-private val WhiteBorder = Color(0x59FFFFFF)
-
 @Composable
 fun ProfilesScreen(
     state: UiState,
@@ -66,12 +64,12 @@ fun ProfilesScreen(
     ) {
         MicroLabel(tr("Zapisane w aplikacji", "Saved in the app"))
         if (state.profiles.isEmpty()) {
-            TokenCard(borderColor = WhiteBorder) {
+            TokenCard(borderColor = Tokens.WhiteBorder) {
                 Text(tr("Brak zapisanych profili. Użyj przycisku „Zapisz bieżący”.", "No saved profiles yet. Use the \"Save current\" button."), fontFamily = Manrope, fontSize = 13.sp, color = Tokens.TextSecondary)
             }
         } else {
             state.profiles.forEach { name ->
-                TokenCard(modifier = Modifier.clickable { onLoad(name) }, contentPadding = 14.dp, borderColor = WhiteBorder) {
+                TokenCard(modifier = Modifier.clickable { onLoad(name) }, contentPadding = 14.dp, borderColor = Tokens.WhiteBorder) {
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         Box(Modifier.size(44.dp).background(Tokens.BlueFaint16, RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) {
                             Text("≡", fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Tokens.Blue)
@@ -159,7 +157,7 @@ private fun OutlinedAction(label: String, modifier: Modifier, onClick: () -> Uni
     Box(
         modifier
             .background(Tokens.Card, RoundedCornerShape(15.dp))
-            .border(1.dp, WhiteBorder, RoundedCornerShape(15.dp))
+            .border(1.dp, Tokens.WhiteBorder, RoundedCornerShape(15.dp))
             .clickable { onClick() }
             .padding(vertical = 15.dp),
         contentAlignment = Alignment.Center,

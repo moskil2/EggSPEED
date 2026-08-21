@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bafspeed.app.ui.theme.LocalLightMode
 import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
 import com.bafspeed.app.ui.theme.Tokens
@@ -139,12 +140,12 @@ fun ExpandableParamTile(
     TokenCard(
         modifier = Modifier.clickable { expanded = !expanded },
         contentPadding = 6.dp,
-        borderColor = Color(0x59FFFFFF),
+        borderColor = Tokens.WhiteBorder,
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text(
                 label.uppercase(),
-                fontFamily = Manrope, fontWeight = FontWeight.SemiBold, fontSize = 11.sp,
+                fontFamily = Manrope, fontWeight = FontWeight.Bold, fontSize = 11.sp,
                 letterSpacing = 1.sp, color = Tokens.TextPrimary, modifier = Modifier.weight(1f),
             )
             Text(
@@ -266,7 +267,7 @@ fun ToggleRow(
 ) {
     Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
-            Text(label, fontFamily = Manrope, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = if (enabled) Tokens.TextPrimary else Tokens.TextSecondary)
+            Text(label, fontFamily = Manrope, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = if (enabled) Tokens.TextPrimary else Tokens.TextSecondary)
             if (description != null) {
                 Spacer(Modifier.height(2.dp))
                 Text(description, fontFamily = Manrope, fontSize = 12.sp, color = Tokens.TextSecondary)
@@ -352,11 +353,12 @@ fun LabeledStepperRow(label: String, value: String, onMinus: () -> Unit, onPlus:
 
 @Composable
 fun StepBtn(label: String, enabled: Boolean, onClick: () -> Unit) {
+    val borderColor = if (enabled) Tokens.WhiteBorder else (if (LocalLightMode.current) Color(0x24000000) else Color(0x24FFFFFF))
     Box(
         Modifier
             .size(38.dp)
             .background(Tokens.Elevated, RoundedCornerShape(12.dp))
-            .border(1.dp, if (enabled) Color(0x59FFFFFF) else Color(0x24FFFFFF), RoundedCornerShape(12.dp))
+            .border(1.dp, borderColor, RoundedCornerShape(12.dp))
             .clickable(enabled = enabled) { onClick() },
         contentAlignment = Alignment.Center,
     ) {

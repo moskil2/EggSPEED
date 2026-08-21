@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -41,8 +40,6 @@ import com.bafspeed.app.ui.components.TokenCard
 import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
 import com.bafspeed.app.ui.theme.Tokens
-
-private val WhiteBorder = Color(0x59FFFFFF)
 
 @Composable
 fun CalibrationScreen(
@@ -128,7 +125,7 @@ fun CalibrationScreen(
         }
 
         MicroLabel(tr("Podgląd prądu", "Current preview"))
-        TokenCard(borderColor = WhiteBorder) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             InfoRow(tr("Limit prądu (zadeklarowany)", "Current limit (declared)"), String.format("%.1f A", declaredLimitA))
             HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
             InfoRow(tr("Po kalibracji", "After calibration"), String.format("%.1f A", declaredLimitA * factor))
@@ -193,7 +190,7 @@ fun CalibrationScreen(
         }
 
         MicroLabel(tr("Podgląd napięcia", "Voltage preview"))
-        TokenCard(borderColor = WhiteBorder) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             // Offline: pokazujemy ostatnie znane napięcie sprzed rozłączenia (state.lastKnownVoltageV),
             // a jeśli go nigdy nie było (0,0 - apka jeszcze się nie łączyła) - estymatę z napięcia
             // nominalnego pakietu (np. 52V dla 14S), żeby podgląd korekty miał sens nawet offline.

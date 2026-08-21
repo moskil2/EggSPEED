@@ -22,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
@@ -44,8 +43,6 @@ import com.bafspeed.app.ui.components.TokenCard
 import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
 import com.bafspeed.app.ui.theme.Tokens
-
-private val WhiteBorder = Color(0x59FFFFFF)
 
 /**
  * Zakladka "All In" - zwiezly, wylacznie do odczytu spis wszystkich aktualnie
@@ -85,7 +82,7 @@ fun ParametersScreen(state: UiState, onRefresh: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Tokens.Card, RoundedCornerShape(15.dp))
-                .border(1.dp, WhiteBorder, RoundedCornerShape(15.dp))
+                .border(1.dp, Tokens.WhiteBorder, RoundedCornerShape(15.dp))
                 .clickable {
                     val text = if (isBbsFw) buildBbsFwDiagnosticsText(state, lang) else buildDiagnosticsText(state, lang)
                     clipboard.setText(AnnotatedString(text))
@@ -104,7 +101,7 @@ fun ParametersScreen(state: UiState, onRefresh: () -> Unit) {
                 Column {
                     MicroLabel("Bafang Motor Type")
                     Spacer(Modifier.height(6.dp))
-                    TokenCard(borderColor = WhiteBorder) {
+                    TokenCard(borderColor = Tokens.WhiteBorder) {
                         ParamRow(tr("Producent", "Manufacturer"), gen.manufacturer)
                         ParamRow("Model", gen.model)
                         ParamRow(tr("Wersja sprzętu", "Hardware version"), gen.hardwareVersion)
@@ -119,7 +116,7 @@ fun ParametersScreen(state: UiState, onRefresh: () -> Unit) {
             Column {
                 MicroLabel("Bafang Basic")
                 Spacer(Modifier.height(6.dp))
-                TokenCard(borderColor = WhiteBorder) {
+                TokenCard(borderColor = Tokens.WhiteBorder) {
                     ParamRow(tr("Ochrona baterii (LBP)", "Battery protection (LBP)"), "${bas.lowBatteryProtection} V")
                     ParamRow(tr("Limit prądu (LC)", "Current limit (LC)"), "${bas.currentLimit} A")
                     ParamRow(tr("Koło", "Wheel"), WHEEL_SIZE_LABELS.getOrElse(bas.wheelDiameterCode) { "${tr(lang, "kod", "code")} ${bas.wheelDiameterCode}" })
@@ -129,7 +126,7 @@ fun ParametersScreen(state: UiState, onRefresh: () -> Unit) {
                 Spacer(Modifier.height(6.dp))
                 MicroLabel(tr("Poziomy wspomagania", "Assist levels"))
                 Spacer(Modifier.height(6.dp))
-                TokenCard(borderColor = WhiteBorder) {
+                TokenCard(borderColor = Tokens.WhiteBorder) {
                     bas.assistCurrentPct.forEachIndexed { i, alc ->
                         ParamRow(
                             tr("Poziom $i", "Level $i"),
@@ -144,7 +141,7 @@ fun ParametersScreen(state: UiState, onRefresh: () -> Unit) {
             Column {
                 MicroLabel("Bafang Pedal (PAS)")
                 Spacer(Modifier.height(6.dp))
-                TokenCard(borderColor = WhiteBorder) {
+                TokenCard(borderColor = Tokens.WhiteBorder) {
                     ParamRow(tr("Typ czujnika (PT)", "Sensor type (PT)"), pas.pedalType.toString())
                     ParamRow("Designated Assist (DA)", designatedAssistLabel(pas.designatedAssist))
                     ParamRow(tr("Limit prędkości (SL)", "Speed limit (SL)"), speedLimitLabel(pas.speedLimit))
@@ -163,7 +160,7 @@ fun ParametersScreen(state: UiState, onRefresh: () -> Unit) {
             Column {
                 MicroLabel("Bafang Throttle")
                 Spacer(Modifier.height(6.dp))
-                TokenCard(borderColor = WhiteBorder) {
+                TokenCard(borderColor = Tokens.WhiteBorder) {
                     ParamRow(tr("Napięcie start (SV)", "Start voltage (SV)"), "${thr.startVoltage / 10.0} V")
                     ParamRow(tr("Napięcie końcowe (EV)", "End voltage (EV)"), "${thr.endVoltage / 10.0} V")
                     ParamRow(tr("Tryb", "Mode"), tr(if (thr.mode == 0) "prędkość" else "prąd", if (thr.mode == 0) "speed" else "current"))
@@ -179,7 +176,7 @@ fun ParametersScreen(state: UiState, onRefresh: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Tokens.Card, RoundedCornerShape(15.dp))
-                    .border(1.dp, WhiteBorder, RoundedCornerShape(15.dp))
+                    .border(1.dp, Tokens.WhiteBorder, RoundedCornerShape(15.dp))
                     .clickable { onRefresh() }
                     .padding(vertical = 15.dp),
                 contentAlignment = Alignment.Center,
@@ -203,7 +200,7 @@ private fun BbsFwParametersContent(state: UiState) {
         Column {
             MicroLabel("bbs-fw")
             Spacer(Modifier.height(6.dp))
-            TokenCard(borderColor = WhiteBorder) {
+            TokenCard(borderColor = Tokens.WhiteBorder) {
                 ParamRow(tr("Wersja firmware", "Firmware version"), v.versionLabel)
                 ParamRow(tr("Wersja formatu konfiguracji", "Config format version"), v.configVersion.toString())
                 ParamRow(tr("Typ sterownika", "Controller type"), "${BbsFwController.name(v.ctrlType)} (${v.ctrlType})", last = true)
@@ -214,7 +211,7 @@ private fun BbsFwParametersContent(state: UiState) {
     Column {
         MicroLabel("Global")
         Spacer(Modifier.height(6.dp))
-        TokenCard(borderColor = WhiteBorder) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             ParamRow("Max Current", "${cfg.maxCurrentAmps} A")
             ParamRow("Current Ramp", "${cfg.currentRampAmpsS} A/s")
             ParamRow("Max Battery Voltage", "${cfg.maxBatteryX100v / 100.0} V")
@@ -226,7 +223,7 @@ private fun BbsFwParametersContent(state: UiState) {
     Column {
         MicroLabel("Throttle")
         Spacer(Modifier.height(6.dp))
-        TokenCard(borderColor = WhiteBorder) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             ParamRow("Start Voltage", "${cfg.throttleStartVoltageMv} mV")
             ParamRow("End Voltage", "${cfg.throttleEndVoltageMv} mV")
             ParamRow("Start Current", "${cfg.throttleStartPercent}%")
@@ -238,7 +235,7 @@ private fun BbsFwParametersContent(state: UiState) {
     Column {
         MicroLabel("Pedal Assist")
         Spacer(Modifier.height(6.dp))
-        TokenCard(borderColor = WhiteBorder) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             ParamRow("Start Delay", "${cfg.pasStartDelayPulses * 15}°")
             ParamRow("Stop Delay", "${cfg.pasStopDelayX100s * 10} ms")
             ParamRow("Keep Current", "${cfg.pasKeepCurrentPercent}%")
@@ -249,7 +246,7 @@ private fun BbsFwParametersContent(state: UiState) {
     Column {
         MicroLabel("Features")
         Spacer(Modifier.height(6.dp))
-        TokenCard(borderColor = WhiteBorder) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             ParamRow("Speed Sensor", tr(if (cfg.useSpeedSensor) "Włączony" else "Wyłączony", if (cfg.useSpeedSensor) "On" else "Off"))
             ParamRow("Shift Sensor", tr(if (cfg.useShiftSensor) "Włączony" else "Wyłączony", if (cfg.useShiftSensor) "On" else "Off"))
             ParamRow("Walk Mode", tr(if (cfg.usePushWalk) "Włączony" else "Wyłączony", if (cfg.usePushWalk) "On" else "Off"))
@@ -261,7 +258,7 @@ private fun BbsFwParametersContent(state: UiState) {
     Column {
         MicroLabel("Speed Sensor")
         Spacer(Modifier.height(6.dp))
-        TokenCard(borderColor = WhiteBorder) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             ParamRow("Wheel Size", "${cfg.wheelSizeInchX10 / 10.0}\"")
             ParamRow("Signals (per rotation)", cfg.speedSensorSignals.toString(), last = true)
         }
@@ -270,7 +267,7 @@ private fun BbsFwParametersContent(state: UiState) {
     Column {
         MicroLabel("Shift Sensor")
         Spacer(Modifier.height(6.dp))
-        TokenCard(borderColor = WhiteBorder) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             ParamRow("Shift Interrupt Duration", "${cfg.shiftInterruptDurationMs} ms")
             ParamRow("Shift Current Threshold", "${cfg.shiftInterruptCurrentThresholdPercent}%", last = true)
         }
@@ -279,7 +276,7 @@ private fun BbsFwParametersContent(state: UiState) {
     Column {
         MicroLabel("Miscellaneous")
         Spacer(Modifier.height(6.dp))
-        TokenCard(borderColor = WhiteBorder) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             ParamRow("Walk Mode Data Display", WALK_MODE_DATA_LABELS.getOrElse(cfg.walkModeDataDisplay) { "?" })
             ParamRow("Assist Mode Select", cfg.assistModeSelect.toString())
             ParamRow("Assist Startup Level", cfg.assistStartupLevel.toString())
@@ -291,7 +288,7 @@ private fun BbsFwParametersContent(state: UiState) {
         Column {
             MicroLabel(if (profile == 0) tr("Poziomy wspomagania - Profil 1 (Standard)", "Assist Levels - Profile 1 (Standard)") else tr("Poziomy wspomagania - Profil 2 (Sport)", "Assist Levels - Profile 2 (Sport)"))
             Spacer(Modifier.height(6.dp))
-            TokenCard(borderColor = WhiteBorder) {
+            TokenCard(borderColor = Tokens.WhiteBorder) {
                 for (level in 0..9) {
                     val al = cfg.assistLevel(profile, level)
                     ParamRow(

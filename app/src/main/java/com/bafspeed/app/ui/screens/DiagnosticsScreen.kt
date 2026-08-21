@@ -48,8 +48,6 @@ import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
 import com.bafspeed.app.ui.theme.Tokens
 
-private val WhiteBorder = Color(0x59FFFFFF)
-
 /**
  * Zakladka "Diagnostyka" - pelny skan rejestrow odczytu 0x00-0xFF, z historia kolejnych skanow
  * (kazde uruchomienie dopisuje nowy wpis, nie nadpisuje poprzedniego - patrz
@@ -81,7 +79,7 @@ fun DiagnosticsScreen(
             .padding(PaddingValues(start = 14.dp, end = 14.dp, top = 0.dp, bottom = 16.dp)),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        TokenCard(borderColor = WhiteBorder) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(tr("Tryb testowy", "Test mode"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary)
@@ -160,7 +158,7 @@ fun DiagnosticsScreen(
 
         if (scanResults.isNotEmpty()) {
             MicroLabel(tr("Wyniki ostatniego skanu - rejestry, które odpowiedziały (${scanResults.size})", "Latest scan results - registers that responded (${scanResults.size})"))
-            TokenCard(borderColor = WhiteBorder) {
+            TokenCard(borderColor = Tokens.WhiteBorder) {
                 scanResults.forEachIndexed { i, r ->
                     DiagRow(
                         "0x${r.opcode.toString(16).padStart(2, '0').uppercase()}" +
@@ -180,7 +178,7 @@ fun DiagnosticsScreen(
             ))
             fullScanHistory.dropLast(1).reversed().forEach { snap ->
                 MicroLabel(tr("Skan ${snap.index} (${snap.results.size} odpowiedzi)", "Scan ${snap.index} (${snap.results.size} responses)"))
-                TokenCard(borderColor = WhiteBorder) {
+                TokenCard(borderColor = Tokens.WhiteBorder) {
                     if (snap.results.isEmpty()) {
                         DiagRow(tr("brak odpowiedzi", "no response"), "-", last = true)
                     } else {
@@ -250,7 +248,7 @@ private fun RegisterLegend() {
     TokenCard(
         modifier = Modifier.clickable { expanded = !expanded },
         contentPadding = 14.dp,
-        borderColor = WhiteBorder,
+        borderColor = Tokens.WhiteBorder,
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text(

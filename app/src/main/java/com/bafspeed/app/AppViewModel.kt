@@ -111,6 +111,9 @@ private const val MONITORING_SAMPLE_MS = 500L
 /** Okno historii wykresów Monitoring - 10 minut przy próbkowaniu co 0,5s. */
 private const val MONITORING_MAX_SAMPLES = (10 * 60 * 1000L / MONITORING_SAMPLE_MS).toInt()
 
+/** Krok odświeżania AodMediaService (ekran blokady/AOD) - rzadziej niż Monitoring, żeby nie zamęczać notyfikacji/AOD częstymi aktualizacjami. */
+private const val AOD_UPDATE_MS = 1500L
+
 /** Odstęp między ponowieniami identyfikacji bbs-fw - jak oficjalny BBSFWTool.exe (Thread.Sleep(200)). */
 private const val BBS_FW_IDENTIFY_RETRY_INTERVAL_MS = 200L
 /** Maks. czas ponawiania identyfikacji bbs-fw zanim zgłosimy brak odpowiedzi (oficjalne narzędzie czeka 120s). */
@@ -213,6 +216,12 @@ data class UiState(
     val tempAlarmSoundEnabled: Boolean = true,
     /** Wysoki kontrast (Ustawienia, po ODOMETER) - podbija wyblakłe szarości (TextSecondary/TextTertiary) do niemal pełnej bieli w całej apce, do czytania w pełnym słońcu. Trwały. */
     val highContrast: Boolean = false,
+    /** Tryb jasny (Ustawienia, obok Wysokiego kontrastu) - odwraca paletę Tokens na jasną. Domyślnie ciemny (false). Trwały. */
+    val lightMode: Boolean = false,
+    /** Zakładka "Screen" - pokaż prędkość/moc/wspomaganie na ekranie blokady/AOD przez AodMediaService, gdy Kokpit jest aktywny. Trwały. */
+    val aodEnabled: Boolean = false,
+    /** Zakładka "Screen" - +/- do wspomagania jako przyciski poprzedni/następny na ekranie blokady/AOD (patrz AodMediaService). Trwały. */
+    val aodAssistControlsEnabled: Boolean = false,
 ) {
     val basicOrDefault: BasicSettings get() = basic ?: BasicSettings.DEFAULT
     val pasOrDefault: PedalAssistSettings get() = pedalAssist ?: PedalAssistSettings.DEFAULT
@@ -432,6 +441,9 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             tempAlarmC = prefs.getInt("temp_alarm_c", 80),
             tempAlarmSoundEnabled = prefs.getBoolean("temp_alarm_sound_enabled", true),
             highContrast = prefs.getBoolean("high_contrast", false),
+            lightMode = prefs.getBoolean("light_mode", false),
+            aodEnabled = prefs.getBoolean("aod_enabled", false),
+            aodAssistControlsEnabled = prefs.getBoolean("aod_assist_controls_enabled", false),
             tripKm = prefs.getFloat("trip_km", 0f).toDouble(),
             avgSpeedDistanceKm = prefs.getFloat("avg_speed_distance_km", 0f).toDouble(),
             avgSpeedMovingTimeH = prefs.getFloat("avg_speed_moving_time_h", 0f).toDouble(),
@@ -467,6 +479,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     private var monitoringJob: Job? = null
 
     private var tripJob: Job? = null
+    /** Pętla odświeżająca AodMediaService (ekran blokady/AOD) co [AOD_UPDATE_MS] - patrz [syncAodService]. */
+    private var aodJob: Job? = null
     private var configTimeoutJob: Job? = null
     /** Pętla ponawiająca identyfikację bbs-fw (READ_FW_VERSION) - patrz [startBbsFwIdentifyRetry]. */
     private var identifyRetryJob: Job? = null
@@ -751,6 +765,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         tempAlarmArmed = true
         display.start()
         startTripIntegration()
+        syncAodService()
     }
 
     fun stopDisplayMode() {
@@ -763,6 +778,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             .putFloat("avg_speed_moving_time_h", _state.value.avgSpeedMovingTimeH.toFloat())
             .apply()
         energyAnalyzer.saveState()
+        syncAodService()
     }
 
     fun setAssistLevel(level: Int) {
@@ -818,6 +834,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     fun toggleTestMode() {
         _state.value = _state.value.copy(testMode = !_state.value.testMode)
+        syncAodService()
     }
 
     fun setShowTempOnCockpit(show: Boolean) {
@@ -828,6 +845,73 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     fun setHighContrast(enabled: Boolean) {
         _state.value = _state.value.copy(highContrast = enabled)
         prefs.edit().putBoolean("high_contrast", enabled).apply()
+    }
+
+    fun setLightMode(enabled: Boolean) {
+        _state.value = _state.value.copy(lightMode = enabled)
+        prefs.edit().putBoolean("light_mode", enabled).apply()
+    }
+
+    /** Wywoływane z MainActivity.onResume - przywraca wskazanie na ekranie blokady/AOD po ponownym
+     * otwarciu apki, jeśli warunki (Kokpit/Tryb testowy + włączone w Screen) dalej są spełnione -
+     * serwis mógł zniknąć przy poprzednim zamknięciu apki (patrz [AodMediaService.onTaskRemoved]). */
+    fun onAppResumed() {
+        syncAodService()
+    }
+
+    fun setAodEnabled(enabled: Boolean) {
+        _state.value = _state.value.copy(aodEnabled = enabled)
+        prefs.edit().putBoolean("aod_enabled", enabled).apply()
+        syncAodService()
+    }
+
+    fun setAodAssistControlsEnabled(enabled: Boolean) {
+        _state.value = _state.value.copy(aodAssistControlsEnabled = enabled)
+        prefs.edit().putBoolean("aod_assist_controls_enabled", enabled).apply()
+        AodMediaService.assistControlsEnabled = enabled
+    }
+
+    /**
+     * Uruchamia/zatrzymuje [AodMediaService] tak, żeby był aktywny dokładnie wtedy, gdy Kokpit
+     * jest aktywny (displayMode LUB testMode - ten drugi pozwala zweryfikować cały mechanizm
+     * powiadomienia/AOD bez podłączonego sterownika, tak jak reszta Kokpitu w Trybie testowym)
+     * ORAZ użytkownik włączył "Pokaż na ekranie blokady/AOD" w zakładce Screen - wywoływane przy
+     * starcie/zatrzymaniu Kokpitu, przełączeniu Trybu testowego, przełączeniu samego ustawienia
+     * w trakcie jazdy i przy powrocie do apki (patrz [setAodEnabled], [toggleTestMode], [onAppResumed]).
+     * Serwis sam znika przy zamknięciu apki (patrz [AodMediaService.onTaskRemoved]) - ten sync
+     * przywraca go, gdy warunki dalej są spełnione, bez dotykania trwałego ustawienia aodEnabled.
+     */
+    private fun syncAodService() {
+        val shouldRun = (_state.value.displayMode || _state.value.testMode) && _state.value.aodEnabled
+        if (shouldRun) {
+            AodMediaService.assistControlsEnabled = _state.value.aodAssistControlsEnabled
+            AodMediaService.onAssistDelta = { delta -> setAssistLevel(_state.value.assistLevel + delta) }
+            AodMediaService.start(getApplication<Application>())
+            if (aodJob?.isActive != true) {
+                aodJob = viewModelScope.launch {
+                    while (isActive) {
+                        val s = _state.value
+                        val t = telemetry.value
+                        val speedKmh = if (s.testMode) 99.9 else t.speedKmh
+                        val powerW = if (s.testMode) 3000.0 else t.powerW
+                        val displaySpeed = s.units.fromKmh(speedKmh)
+                        AodMediaService.update(
+                            getApplication<Application>(),
+                            "${String.format("%.1f", displaySpeed)} ${s.units.label}",
+                            displaySpeed.toInt().toString(),
+                            "${powerW.roundToInt()} W · ${tr(s.language, "Wsp.", "Assist")} ${s.assistLevel}",
+                            s.assistLevel,
+                        )
+                        delay(AOD_UPDATE_MS)
+                    }
+                }
+            }
+        } else {
+            aodJob?.cancel()
+            aodJob = null
+            AodMediaService.onAssistDelta = null
+            AodMediaService.stop(getApplication<Application>())
+        }
     }
 
     fun setTempWarningC(c: Int) {

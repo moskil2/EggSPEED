@@ -11,29 +11,68 @@ import androidx.compose.ui.text.font.FontWeight
 import com.bafspeed.app.R
 
 /**
- * Ustawienie "Wysoki kontrast" (Ustawienia, po ODOMETER) - dostarczane z poziomu MainActivity
- * na podstawie UiState.highContrast. Podbija [Tokens.TextSecondary]/[Tokens.TextTertiary] (dziś
- * wyblakłe szarości) do niemal pełnej bieli w całej apce, żeby poprawić czytelność w pełnym słońcu.
+ * Ustawienie "Wysoki kontrast" (Ustawienia, obok Trybu jasnego) - dostarczane z poziomu MainActivity
+ * na podstawie UiState.highContrast. Podbija teksty drugorzędne (dziś wyblakłe szarości/czernie) do
+ * niemal pełnego bieli/czerni w całej apce, żeby poprawić czytelność w pełnym słońcu. Działa niezależnie
+ * od [LocalLightMode] - dostępny zarówno w trybie ciemnym, jak i jasnym.
  */
 val LocalHighContrast = compositionLocalOf { false }
 
-/** Design tokens dla ciemnego motywu EggSPEED. */
+/**
+ * Ustawienie "Tryb jasny" (Ustawienia, obok Wysokiego kontrastu) - dostarczane z poziomu MainActivity
+ * na podstawie UiState.lightMode. Przełącza [Tokens] na odwróconą, jasną paletę. Domyślnie false
+ * (tryb ciemny, historyczny wygląd apki, bez zmian).
+ */
+val LocalLightMode = compositionLocalOf { false }
+
+/**
+ * Design tokens dla EggSPEED. Domyślnie (LocalLightMode = false) dokładnie ten sam ciemny motyw co
+ * dotychczas. Kolory zależne od motywu/kontrastu są `@Composable get()` i czytają [LocalLightMode]/
+ * [LocalHighContrast]; kolory akcentów (Blue/Emerald/Amber/...) są wspólne dla obu trybów.
+ */
 object Tokens {
-    val Bg = Color(0xFF020203)            // tło strony
-    val Card = Color(0xFF0D1013)          // powierzchnia karty
-    val Elevated = Color(0xFF181D22)      // powierzchnia podniesiona / input / track
-    val Border = Color(0x0FFFFFFF)        // rgba(255,255,255,0.06)
-    val TextPrimary = Color(0xFFF2F3F5)
+    val Bg: Color
+        @Composable get() = if (LocalLightMode.current) Color(0xFFF7F7F8) else Color(0xFF020203)
 
-    /** ~0.6 alfa normalnie, niemal pełna biel (1.0) przy włączonym Wysokim kontraście. */
+    val Card: Color
+        @Composable get() = if (LocalLightMode.current) Color(0xFFFFFFFF) else Color(0xFF0D1013)
+
+    val Elevated: Color
+        @Composable get() = if (LocalLightMode.current) Color(0xFFE9EAEC) else Color(0xFF181D22)
+
+    val Border: Color
+        @Composable get() = if (LocalLightMode.current) Color(0x0F000000) else Color(0x0FFFFFFF)
+
+    /** Odpowiednik dawnego stałego, 35%-owego "WhiteBorder" powtarzanego dawniej osobno w każdym pliku ekranu. */
+    val WhiteBorder: Color
+        @Composable get() = if (LocalLightMode.current) Color(0x59000000) else Color(0x59FFFFFF)
+
+    val TextPrimary: Color
+        @Composable get() = if (LocalLightMode.current) Color(0xFF0A0B0C) else Color(0xFFF2F3F5)
+
+    /**
+     * ~0.6 alfa normalnie, niemal pełny kontrast (1.0) przy włączonym Wysokim kontraście - w motywie
+     * ciemnym. W motywie jasnym ZAWSZE maksymalny kontrast, niezależnie od Wysokiego kontrastu - słabo
+     * czytelne szarości na białym tle w pełnym słońcu są dużo gorsze niż te same szarości na czarnym.
+     */
     val TextSecondary: Color
-        @Composable get() = if (LocalHighContrast.current) Color(0xFFF2F3F5) else Color(0x99F2F3F5)
+        @Composable get() = when {
+            LocalLightMode.current -> Color(0xFF0A0B0C)
+            LocalHighContrast.current -> Color(0xFFF2F3F5)
+            else -> Color(0x99F2F3F5)
+        }
 
-    /** ~0.4 alfa normalnie, ~0.9 przy Wysokim kontraście (odrobinę niżej niż TextSecondary, żeby zostawić ślad hierarchii/stanu disabled). */
+    /** Jak [TextSecondary], ale odrobinę niżej niż TextSecondary, żeby zostawić ślad hierarchii/stanu disabled. */
     val TextTertiary: Color
-        @Composable get() = if (LocalHighContrast.current) Color(0xE6F2F3F5) else Color(0x66F2F3F5)
+        @Composable get() = when {
+            LocalLightMode.current -> Color(0xE60A0B0C)
+            LocalHighContrast.current -> Color(0xE6F2F3F5)
+            else -> Color(0x66F2F3F5)
+        }
 
-    val TextBright80 = Color(0xCCF2F3F5)  // ~0.8 - etykiety wymagające wyższego kontrastu niż TextSecondary (np. w słońcu)
+    val TextBright80: Color
+        @Composable get() = if (LocalLightMode.current) Color(0xCC0A0B0C) else Color(0xCCF2F3F5)  // ~0.8 - etykiety wymagające wyższego kontrastu niż TextSecondary (np. w słońcu)
+
     val Blue = Color(0xFF4C8DFF)          // electric blue
     val Emerald = Color(0xFF34D399)
     val Amber = Color(0xFFF5A524)

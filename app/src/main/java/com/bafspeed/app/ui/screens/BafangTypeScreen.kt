@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,8 +27,6 @@ import com.bafspeed.app.ui.components.TokenCard
 import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
 import com.bafspeed.app.ui.theme.Tokens
-
-private val WhiteBorder = Color(0x59FFFFFF)
 
 /**
  * Zakladka "Bafang Type" - tozsamosc podlaczonego sterownika (blok GEN, tylko odczyt):
@@ -48,7 +45,7 @@ fun BafangTypeScreen(state: UiState) {
         state.general?.let { gen ->
             MicroLabel("Bafang")
             Spacer(Modifier.height(6.dp))
-            TokenCard(borderColor = WhiteBorder) {
+            TokenCard(borderColor = Tokens.WhiteBorder) {
                 ParamRow(tr("Producent", "Manufacturer"), gen.manufacturer)
                 ParamRow("Model", gen.model)
                 ParamRow(tr("Wersja sprzętu", "Hardware version"), gen.hardwareVersion)

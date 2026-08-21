@@ -15,7 +15,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.bafspeed.app.UiState
 import com.bafspeed.app.i18n.tr
@@ -235,7 +234,7 @@ fun BbsFwSystemScreen(
 
         // --- Features ---
         MicroLabel("Features")
-        TokenCard(borderColor = WhiteBorderSystem) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             ToggleRow(
                 "Speed Sensor", cfg.useSpeedSensor, onUseSpeedSensor, accent = Tokens.Blue,
                 description = tr("Jeśli czujnik prędkości ulegnie awarii, silnik nadal będzie działał.", "If your speed sensor malfunctions your motor will still work."),
@@ -341,7 +340,7 @@ fun BbsFwSystemScreen(
                 StepBtn("+", true) { onWalkModeDataDisplay(cfg.walkModeDataDisplay + 1) }
             }
         }
-        TokenCard(borderColor = WhiteBorderSystem) {
+        TokenCard(borderColor = Tokens.WhiteBorder) {
             ToggleRow(
                 tr("Jednostki imperialne (mph)", "Freedom units (mph)"),
                 cfg.useFreedomUnits, onUseFreedomUnits, accent = Tokens.Blue,
@@ -357,4 +356,3 @@ fun BbsFwSystemScreen(
     }
 }
 
-private val WhiteBorderSystem = Color(0x59FFFFFF)

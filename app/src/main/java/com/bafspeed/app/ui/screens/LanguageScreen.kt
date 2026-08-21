@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,8 +26,6 @@ import com.bafspeed.app.ui.components.TokenCard
 import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
 import com.bafspeed.app.ui.theme.Tokens
-
-private val WhiteBorder = Color(0x59FFFFFF)
 
 /** Zakładka "Language" - wybór języka UI (flaga + nazwa własna), dostępna też jako skrót-flaga na ekranie Połączenie. */
 @Composable
@@ -46,7 +43,7 @@ fun LanguageScreen(current: AppLanguage, onSelect: (AppLanguage) -> Unit) {
             TokenCard(
                 modifier = Modifier.clickable { onSelect(lang) },
                 contentPadding = 16.dp,
-                borderColor = if (selected) Tokens.Blue else WhiteBorder,
+                borderColor = if (selected) Tokens.Blue else Tokens.WhiteBorder,
             ) {
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Text(lang.flag, fontSize = 26.sp)

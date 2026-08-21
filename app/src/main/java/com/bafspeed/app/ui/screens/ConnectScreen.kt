@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bafspeed.app.ConnectionStatus
@@ -106,6 +107,12 @@ fun ConnectScreen(
                     // przezroczystosci) i narysowana NA ZEWNATRZ ikony (Box wiekszy o 2x15dp,
                     // Image wciety padding'iem o 15dp) - zeby nie nachodzila na sama ikone.
                     .size(216.dp + 30.dp)
+                    // Tlo na calym Boxie (pod ramka i obrazkiem) w tym samym ksztalcie co ramka -
+                    // promien logoShape jest absolutny (56dp), wiec przy wcieciu obrazka o padding(15dp)
+                    // jego wlasny clip (ten sam promien, mniejszy Box) nie pokrywa sie idealnie z
+                    // wewnetrzna krawedzia ramki - w rogach zostaja waskie szczeliny ("polksiezyce"),
+                    // ktore bez tego tla pokazuja to, co jest pod spodem (biale tlo strony w trybie jasnym).
+                    .background(Color(0xFF020203), logoShape)
                     .border(BorderStroke(15.dp, glowColor), logoShape)
                     .padding(15.dp),
             ) {
@@ -172,14 +179,16 @@ fun ConnectScreen(
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Text(
                 "OEM Bafang",
-                fontFamily = Manrope, fontSize = 11.sp, fontWeight = FontWeight.SemiBold,
+                fontFamily = Manrope, fontSize = 11.sp, fontWeight = FontWeight.Bold,
                 color = if (state.firmwareType == FirmwareType.OEM_BAFANG) Tokens.Emerald else Tokens.TextTertiary,
+                textDecoration = if (state.firmwareType == FirmwareType.OEM_BAFANG) null else TextDecoration.LineThrough,
             )
             Text("   •   ", fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextTertiary)
             Text(
                 "BBS-FW",
-                fontFamily = Manrope, fontSize = 11.sp, fontWeight = FontWeight.SemiBold,
+                fontFamily = Manrope, fontSize = 11.sp, fontWeight = FontWeight.Bold,
                 color = if (state.firmwareType == FirmwareType.BBS_FW) Tokens.Emerald else Tokens.TextTertiary,
+                textDecoration = if (state.firmwareType == FirmwareType.BBS_FW) null else TextDecoration.LineThrough,
             )
         }
         Spacer(Modifier.height(10.dp))
