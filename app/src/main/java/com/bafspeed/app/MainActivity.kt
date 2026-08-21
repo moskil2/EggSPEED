@@ -76,6 +76,7 @@ import com.bafspeed.app.ui.screens.MonitoringScreen
 import com.bafspeed.app.ui.screens.ParametersScreen
 import com.bafspeed.app.ui.screens.PedalScreen
 import com.bafspeed.app.ui.screens.ProfilesScreen
+import com.bafspeed.app.ui.screens.SagScreen
 import com.bafspeed.app.ui.screens.ThrottleScreen
 import com.bafspeed.app.ui.screens.SettingsScreen
 import com.bafspeed.app.ui.screens.ServiceScreen
@@ -101,6 +102,7 @@ private enum class Screen {
     BBSFW_SYSTEM,
     BBSFW_ASSIST,
     BATTERY,
+    SAG,
     MONITORING,
     TEMPERATURE_CONTROL,
     SETTINGS,
@@ -139,6 +141,7 @@ private fun Screen.title(firmwareType: FirmwareType): String = when (this) {
     Screen.BBSFW_SYSTEM -> "BBS-FW System"
     Screen.BBSFW_ASSIST -> "BBS-FW Assist Levels"
     Screen.BATTERY -> tr("Bateria", "Battery")
+    Screen.SAG -> "SAG"
     Screen.MONITORING -> tr("Monitoring", "Monitoring")
     Screen.TEMPERATURE_CONTROL -> tr("Kontrola temperatury", "Temperature control")
     Screen.SETTINGS -> tr("Ustawienia", "Settings")
@@ -412,6 +415,11 @@ private fun App(vm: AppViewModel) {
                         onCellCountChange = vm::setCellCount,
                         onCapacityAhChange = vm::setCapacityAh,
                         onCapacityWhChange = vm::setCapacityWh,
+                    )
+                    Screen.SAG -> SagScreen(
+                        state = state,
+                        onStart = vm::startSagCalibration,
+                        onCancel = vm::cancelSagCalibration,
                     )
                     Screen.MONITORING -> MonitoringScreen(
                         monitoring = monitoring,

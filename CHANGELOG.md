@@ -1,6 +1,9 @@
 # Changelog
 
 
+## v0.3.49 - 2026-08-21 (versionCode 51)
+- New "SAG" tab (menu, next to Battery) - two battery voltage-sag figures: an "everyday" value calculated continuously in the background from your normal riding (paired open-circuit/loaded voltage samples, smoothed), and a guided calibration procedure (2 min rest → 30s full load → 2 min rest) giving a controlled, comparable measurement with the charge level, test current, and timestamp recorded. Both are simple derived voltage-drop figures, not an engineering-grade resistance measurement.
+
 ## v0.3.48 - 2026-08-20 (versionCode 50)
 - New "Screen" tab (menu, under Settings) - moved Theme/High contrast here from Settings, plus a new optional "Show Cockpit on lock screen/AOD" feature: speed/power/assist level shown via a "now playing"-style media notification (the only public Android mechanism that lets the screen actually sleep while still showing content) - real battery saving vs. keeping the screen lit. Optional +/- assist controls repurpose the previous/next media buttons (off by default - can conflict with real music/Bluetooth controls). Requires notification permission.
 

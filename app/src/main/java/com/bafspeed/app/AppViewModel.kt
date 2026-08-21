@@ -114,6 +114,26 @@ private const val MONITORING_MAX_SAMPLES = (10 * 60 * 1000L / MONITORING_SAMPLE_
 /** Krok odświeżania AodMediaService (ekran blokady/AOD) - rzadziej niż Monitoring, żeby nie zamęczać notyfikacji/AOD częstymi aktualizacjami. */
 private const val AOD_UPDATE_MS = 1500L
 
+/** Krok próbkowania pasywnego SAG (zakładka "SAG") podczas zwykłej jazdy. */
+private const val SAG_PASSIVE_SAMPLE_MS = 1000L
+/** Prąd poniżej którego próbkę traktujemy jako napięcie spoczynkowe (OCV). */
+private const val SAG_OCV_CURRENT_A = 1.5
+/** Ułamek prądu maksymalnego sterownika, powyżej którego próbkę traktujemy jako "pod obciążeniem". */
+private const val SAG_LOAD_CURRENT_FRACTION = 0.6
+/** Próbka OCV starsza niż to (SOC mógł się w tym czasie zauważalnie zmienić) nie jest już parowana z próbką obciążoną. */
+private const val SAG_OCV_STALE_MS = 30_000L
+/** Minimalny nieprzerwany czas trzymania obciążenia ≥60% dla SAG orientacyjnego - pojedyncza, chwilowa próbka nie jest wiarygodna. */
+private const val SAG_LOAD_STREAK_MIN_MS = 5_000L
+/** Waga EMA dla wygładzania efektywnej rezystancji SAG dziennego - im mniejsza, tym wolniej reaguje na pojedyncze próbki. */
+private const val SAG_EMA_ALPHA = 0.1
+
+/** Odczekanie przed startem obciążenia w procedurze kalibracji SAG - na ustabilizowanie napięcia spoczynkowego. */
+private const val SAG_CAL_PRE_WAIT_S = 120
+/** Czas trzymania pełnego obciążenia w procedurze kalibracji SAG. */
+private const val SAG_CAL_LOAD_S = 30
+/** Odczekanie po obciążeniu w procedurze kalibracji SAG - na powrót napięcia do spoczynku. */
+private const val SAG_CAL_POST_WAIT_S = 120
+
 /** Odstęp między ponowieniami identyfikacji bbs-fw - jak oficjalny BBSFWTool.exe (Thread.Sleep(200)). */
 private const val BBS_FW_IDENTIFY_RETRY_INTERVAL_MS = 200L
 /** Maks. czas ponawiania identyfikacji bbs-fw zanim zgłosimy brak odpowiedzi (oficjalne narzędzie czeka 120s). */
@@ -222,6 +242,18 @@ data class UiState(
     val aodEnabled: Boolean = false,
     /** Zakładka "Screen" - +/- do wspomagania jako przyciski poprzedni/następny na ekranie blokady/AOD (patrz AodMediaService). Trwały. */
     val aodAssistControlsEnabled: Boolean = false,
+
+    /** Zakładka "SAG" - efektywna rezystancja (Ω) wygładzana EMA z par (OCV, napięcie pod obciążeniem) złapanych podczas zwykłej jazdy - patrz [sampleSagPassive]. Trwały. */
+    val everydaySagResistanceOhm: Double? = null,
+    val sagCalibrationPhase: SagCalibrationPhase = SagCalibrationPhase.IDLE,
+    /** Odliczanie [s] bieżącej fazy procedury (PRE_WAIT/LOADING/POST_WAIT). */
+    val sagCalibrationRemainingS: Int = 0,
+    /** Wynik ostatniej procedury kalibracyjnej - SAG [V] pod obciążeniem, wyliczona efektywna rezystancja [Ω], średni prąd obciążenia [A], SOC [%] na starcie testu, znacznik czasu. Trwałe. */
+    val sagCalibrationResultV: Double? = null,
+    val sagCalibrationResultResistanceOhm: Double? = null,
+    val sagCalibrationResultCurrentA: Double? = null,
+    val sagCalibrationResultSocPct: Int? = null,
+    val sagCalibrationResultTimestampMs: Long? = null,
 ) {
     val basicOrDefault: BasicSettings get() = basic ?: BasicSettings.DEFAULT
     val pasOrDefault: PedalAssistSettings get() = pedalAssist ?: PedalAssistSettings.DEFAULT
@@ -237,7 +269,28 @@ data class UiState(
 
     /** Średnia prędkość [km/h] od resetu, liczona TYLKO z czasu i dystansu w ruchu (postoje nie zaniżają średniej). */
     val avgSpeedKmh: Double get() = if (avgSpeedMovingTimeH > 0.0) avgSpeedDistanceKm / avgSpeedMovingTimeH else 0.0
+
+    /** Deklarowany przez sterownik prąd maksymalny (rejestr, tak jak w GeneralScreen) - albo bezpieczny fallback 40A,
+     * jeśli apka jeszcze NIGDY nie połączyła się z żadnym sterownikiem (general to jedyny warunek - sam jest trwały,
+     * więc wartość z ostatniego realnego odczytu przeżywa restart apki i rozłączenie, patrz saveGeneral/loadGeneral). */
+    val maxCurrentAOrDefault: Int get() = general?.maxCurrentA?.takeIf { it > 0 } ?: 40
+
+    /** Czy [maxCurrentAOrDefault] to realny (choćby ostatnio znany) odczyt, czy tylko fallback 40A bo apka nigdy się jeszcze nie łączyła. */
+    val maxCurrentAIsKnown: Boolean get() = (general?.maxCurrentA ?: 0) > 0
+
+    /** [maxCurrentAOrDefault] skorygowany kalibracją prądu (np. shunt mod) - deklarowany rejestr sterownika i
+     * realny fizyczny prąd to nie to samo, jeśli calibrationFactor != 1.0. Do użytku SAG - świadomie NIE używane
+     * przez suwak Current Limit w GeneralScreen, bo tam trzeba wysłać do sterownika wartość surową, nieskalibrowaną. */
+    val maxCurrentACalibratedOrDefault: Double get() = maxCurrentAOrDefault * currentCalibrationFactor
+
+    /** Projekcja SAG dziennego (patrz [everydaySagResistanceOhm]) na prąd maksymalny sterownika (skalibrowany do
+     * realnych amperów) - żeby był porównywalny z wynikiem procedury kalibracyjnej, niezależnie od tego, jak mocno
+     * kto normalnie jeździ. */
+    val everydaySagAtMaxCurrentV: Double? get() = everydaySagResistanceOhm?.times(maxCurrentACalibratedOrDefault)
 }
+
+/** Faza procedury pomiaru SAG (zakładka "SAG") - patrz [AppViewModel.startSagCalibration]. */
+enum class SagCalibrationPhase { IDLE, PRE_WAIT, LOADING, POST_WAIT }
 
 class AppViewModel(app: Application) : AndroidViewModel(app) {
 
@@ -444,6 +497,12 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             lightMode = prefs.getBoolean("light_mode", false),
             aodEnabled = prefs.getBoolean("aod_enabled", false),
             aodAssistControlsEnabled = prefs.getBoolean("aod_assist_controls_enabled", false),
+            everydaySagResistanceOhm = prefs.getFloat("everyday_sag_resistance_ohm", -1f).toDouble().takeIf { it >= 0 },
+            sagCalibrationResultV = prefs.getFloat("sag_cal_result_v", -1f).toDouble().takeIf { it >= 0 },
+            sagCalibrationResultResistanceOhm = prefs.getFloat("sag_cal_result_resistance_ohm", -1f).toDouble().takeIf { it >= 0 },
+            sagCalibrationResultCurrentA = prefs.getFloat("sag_cal_result_current_a", -1f).toDouble().takeIf { it >= 0 },
+            sagCalibrationResultSocPct = prefs.getInt("sag_cal_result_soc_pct", -1).takeIf { it >= 0 },
+            sagCalibrationResultTimestampMs = prefs.getLong("sag_cal_result_timestamp_ms", -1L).takeIf { it >= 0 },
             tripKm = prefs.getFloat("trip_km", 0f).toDouble(),
             avgSpeedDistanceKm = prefs.getFloat("avg_speed_distance_km", 0f).toDouble(),
             avgSpeedMovingTimeH = prefs.getFloat("avg_speed_moving_time_h", 0f).toDouble(),
@@ -481,6 +540,18 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     private var tripJob: Job? = null
     /** Pętla odświeżająca AodMediaService (ekran blokady/AOD) co [AOD_UPDATE_MS] - patrz [syncAodService]. */
     private var aodJob: Job? = null
+    /** Pętla pasywnego pomiaru SAG podczas zwykłej jazdy - patrz [sampleSagPassive]. */
+    private var sagPassiveJob: Job? = null
+    /** Procedura kalibracji SAG (odczekaj/obciążaj/odczekaj) - patrz [startSagCalibration]. */
+    private var sagCalibrationJob: Job? = null
+    /** Ostatnia próbka OCV (napięcie przy prądzie ~0) i jej wiek - do parowania z próbką obciążoną w [sampleSagPassive]. */
+    private var lastOcvV: Double? = null
+    private var lastOcvAtMs: Long = 0L
+    /** Bieżący nieprzerwany streak obciążenia ≥60% dla SAG orientacyjnego - patrz [sampleSagPassive]. */
+    private var loadStreakStartMs: Long? = null
+    private var loadStreakCounted: Boolean = false
+    private val loadStreakVoltages = mutableListOf<Double>()
+    private val loadStreakCurrents = mutableListOf<Double>()
     private var configTimeoutJob: Job? = null
     /** Pętla ponawiająca identyfikację bbs-fw (READ_FW_VERSION) - patrz [startBbsFwIdentifyRetry]. */
     private var identifyRetryJob: Job? = null
@@ -766,6 +837,12 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         display.start()
         startTripIntegration()
         syncAodService()
+        sagPassiveJob = viewModelScope.launch {
+            while (isActive) {
+                sampleSagPassive()
+                delay(SAG_PASSIVE_SAMPLE_MS)
+            }
+        }
     }
 
     fun stopDisplayMode() {
@@ -779,6 +856,9 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             .apply()
         energyAnalyzer.saveState()
         syncAodService()
+        sagPassiveJob?.cancel()
+        sagPassiveJob = null
+        if (_state.value.sagCalibrationPhase != SagCalibrationPhase.IDLE) cancelSagCalibration()
     }
 
     fun setAssistLevel(level: Int) {
@@ -912,6 +992,124 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             AodMediaService.onAssistDelta = null
             AodMediaService.stop(getApplication<Application>())
         }
+    }
+
+    /**
+     * Jedna próbka pasywnego SAG (SAG orientacyjny) - wołane co [SAG_PASSIVE_SAMPLE_MS] podczas
+     * Kokpitu. Łapie napięcie spoczynkowe (OCV) przy prądzie bliskim zeru niezależnie od reszty logiki.
+     * Obciążenie liczy się dopiero, gdy prąd trzyma się ≥60% skalibrowanego maksimum sterownika
+     * NIEPRZERWANIE przez co najmniej [SAG_LOAD_STREAK_MIN_MS] - pojedyncza, chwilowa próbka (np.
+     * szarpnięcie przy starcie z miejsca) nie jest wiarygodna. Gdy streak osiągnie ten próg, liczę SAG
+     * ze ŚREDNIEJ napięcia/prądu z całego streaku (nie z jednej próbki na końcu) i aktualizuję raz -
+     * dalsze trzymanie tego samego obciążenia nie dokłada kolejnych aktualizacji, żeby jedno długie
+     * szarpnięcie nie ważyło więcej niż powinno w wygładzanej (EMA) wartości. To NIE jest pomiar
+     * rezystancji w sensie inżynierskim (np. impedancji AC) - to tylko pochodna prostego spadku
+     * napięcia (SAG/prąd).
+     */
+    private fun sampleSagPassive() {
+        val t = telemetry.value
+        val now = System.currentTimeMillis()
+        val loadThresholdA = _state.value.maxCurrentACalibratedOrDefault * SAG_LOAD_CURRENT_FRACTION
+
+        if (t.currentA < SAG_OCV_CURRENT_A) {
+            lastOcvV = t.voltageV
+            lastOcvAtMs = now
+        }
+
+        if (t.currentA < loadThresholdA) {
+            loadStreakStartMs = null
+            return
+        }
+
+        val streakStart = loadStreakStartMs ?: now.also {
+            loadStreakStartMs = it
+            loadStreakCounted = false
+            loadStreakVoltages.clear()
+            loadStreakCurrents.clear()
+        }
+        loadStreakVoltages += t.voltageV
+        loadStreakCurrents += t.currentA
+        if (loadStreakCounted || now - streakStart < SAG_LOAD_STREAK_MIN_MS) return
+        loadStreakCounted = true
+
+        val ocv = lastOcvV ?: return
+        if (now - lastOcvAtMs > SAG_OCV_STALE_MS) return
+        val sag = ocv - loadStreakVoltages.average()
+        if (sag <= 0.0) return
+        val rInstant = sag / loadStreakCurrents.average()
+        val prevR = _state.value.everydaySagResistanceOhm
+        val rEma = if (prevR == null) rInstant else prevR + SAG_EMA_ALPHA * (rInstant - prevR)
+        _state.value = _state.value.copy(everydaySagResistanceOhm = rEma)
+        prefs.edit().putFloat("everyday_sag_resistance_ohm", rEma.toFloat()).apply()
+    }
+
+    /**
+     * Procedura kalibracji SAG (zakładka "SAG") - trzy fazy: [SAG_CAL_PRE_WAIT_S] odczekania na
+     * ustabilizowanie napięcia, [SAG_CAL_LOAD_S] pełnego obciążenia (BBS nie ma miękkiego rozbiegu,
+     * więc liczymy średnią z (niemal) całego okna obciążenia - odrzucamy tylko pierwszą sekundę na
+     * wszelki wypadek), [SAG_CAL_POST_WAIT_S] odczekania na powrót do spoczynku. SAG liczony jako
+     * średnia(OCV przed, OCV po) minus średnie napięcie z fazy obciążenia.
+     */
+    fun startSagCalibration() {
+        if (_state.value.connection != ConnectionStatus.CONNECTED) return
+        if (_state.value.sagCalibrationPhase != SagCalibrationPhase.IDLE) return
+        sagCalibrationJob = viewModelScope.launch {
+            val socAtStart = telemetry.value.batteryPct
+
+            _state.value = _state.value.copy(sagCalibrationPhase = SagCalibrationPhase.PRE_WAIT, sagCalibrationRemainingS = SAG_CAL_PRE_WAIT_S)
+            repeat(SAG_CAL_PRE_WAIT_S) {
+                delay(1000)
+                _state.value = _state.value.copy(sagCalibrationRemainingS = _state.value.sagCalibrationRemainingS - 1)
+            }
+            val ocvBefore = telemetry.value.voltageV
+
+            _state.value = _state.value.copy(sagCalibrationPhase = SagCalibrationPhase.LOADING, sagCalibrationRemainingS = SAG_CAL_LOAD_S)
+            val loadedVoltages = mutableListOf<Double>()
+            val loadedCurrents = mutableListOf<Double>()
+            repeat(SAG_CAL_LOAD_S) { i ->
+                delay(1000)
+                if (i >= 1) {
+                    loadedVoltages += telemetry.value.voltageV
+                    loadedCurrents += telemetry.value.currentA
+                }
+                _state.value = _state.value.copy(sagCalibrationRemainingS = _state.value.sagCalibrationRemainingS - 1)
+            }
+
+            _state.value = _state.value.copy(sagCalibrationPhase = SagCalibrationPhase.POST_WAIT, sagCalibrationRemainingS = SAG_CAL_POST_WAIT_S)
+            repeat(SAG_CAL_POST_WAIT_S) {
+                delay(1000)
+                _state.value = _state.value.copy(sagCalibrationRemainingS = _state.value.sagCalibrationRemainingS - 1)
+            }
+            val ocvAfter = telemetry.value.voltageV
+
+            val avgLoadedV = loadedVoltages.average()
+            val avgLoadedA = loadedCurrents.average()
+            val sag = (ocvBefore + ocvAfter) / 2.0 - avgLoadedV
+            val resistance = if (avgLoadedA > 0) sag / avgLoadedA else null
+
+            _state.value = _state.value.copy(
+                sagCalibrationPhase = SagCalibrationPhase.IDLE,
+                sagCalibrationRemainingS = 0,
+                sagCalibrationResultV = sag,
+                sagCalibrationResultResistanceOhm = resistance,
+                sagCalibrationResultCurrentA = avgLoadedA,
+                sagCalibrationResultSocPct = socAtStart,
+                sagCalibrationResultTimestampMs = System.currentTimeMillis(),
+            )
+            prefs.edit()
+                .putFloat("sag_cal_result_v", sag.toFloat())
+                .putFloat("sag_cal_result_resistance_ohm", (resistance ?: -1.0).toFloat())
+                .putFloat("sag_cal_result_current_a", avgLoadedA.toFloat())
+                .putInt("sag_cal_result_soc_pct", socAtStart)
+                .putLong("sag_cal_result_timestamp_ms", System.currentTimeMillis())
+                .apply()
+        }
+    }
+
+    fun cancelSagCalibration() {
+        sagCalibrationJob?.cancel()
+        sagCalibrationJob = null
+        _state.value = _state.value.copy(sagCalibrationPhase = SagCalibrationPhase.IDLE, sagCalibrationRemainingS = 0)
     }
 
     fun setTempWarningC(c: Int) {
