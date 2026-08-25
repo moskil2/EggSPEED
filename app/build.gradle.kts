@@ -17,8 +17,8 @@ android {
         applicationId = "app.spotrobotics.eggspeed"
         minSdk = 26
         targetSdk = 36
-        versionCode = 51
-        versionName = "0.3.49"
+        versionCode = 57
+        versionName = "0.3.55"
 
         val buildStamp = SimpleDateFormat("yyyyMMdd.HHmm").format(Date())
         buildConfigField("String", "BUILD_STAMP", "\"$buildStamp\"")
