@@ -1,6 +1,16 @@
 # Changelog
 
 
+## v0.3.55 - 2026-08-24 (versionCode 57)
+- Monitoring and AOD (lock screen) telemetry now run independently of the Cockpit - previously the polling loop against the controller only ran while Cockpit or Calibration was open, so Monitoring charts and the AOD lock-screen widget stayed frozen unless Cockpit had already been opened first in the same session. A new `syncDisplayPolling` in AppViewModel is now the single place starting/stopping the loop, driven by whichever of Cockpit/Monitoring/AOD currently needs it.
+- The protocol library gained a `writesEnabled` flag: when the polling loop is running only for Monitoring (no Cockpit/Calibration/AOD open), it reads speed/power/current/voltage etc. without ever sending assist-level/mode/light write commands - safe to leave running while riding under the factory display's own control.
+- The telemetry loop now pauses automatically whenever a config read/write screen (Settings, Assist Levels, etc.) is open, since that screen needs the serial bus to itself - a short notice appears under the Read/Write buttons while Monitoring/AOD are paused this way, and both resume on their own once you leave the screen.
+- Connection status text now keeps separate PL/EN copies instead of one already-translated string, fixing a stale-language message left over after switching languages mid-session in Settings.
+- Monitoring charts: a series that's nearly flat (e.g. voltage over a short window) now draws as a flat line centered in the chart instead of collapsing to the very bottom from an artificial fallback range.
+- Connect screen: content now scrolls, the connecting spinner runs slower and keeps spinning while CONNECTED, and vertical spacing was tightened.
+- AOD lock-screen widget refresh interval shortened from 1.5s to 1s; small visual polish on the SAG tab title and instructions text.
+- (versionCode 52-56 / v0.3.50-v0.3.54 were internal iterations of this same work, not released individually.)
+
 ## v0.3.49 - 2026-08-21 (versionCode 51)
 - New "SAG" tab (menu, next to Battery) - two battery voltage-sag figures: an "everyday" value calculated continuously in the background from your normal riding (paired open-circuit/loaded voltage samples, smoothed), and a guided calibration procedure (2 min rest → 30s full load → 2 min rest) giving a controlled, comparable measurement with the charge level, test current, and timestamp recorded. Both are simple derived voltage-drop figures, not an engineering-grade resistance measurement.
 
