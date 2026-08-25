@@ -179,7 +179,7 @@ fun SagScreen(state: UiState, onStart: () -> Unit, onCancel: () -> Unit) {
                     "Przebieg: 2 min odczekania bez jazdy (stabilizacja napięcia) → 30s pełnego obciążenia → 2 min odczekania bez jazdy (apka liczy SAG).",
                     "Sequence: 2 min waiting without riding (voltage stabilizes) → 30s full load → 2 min waiting without riding (app calculates SAG).",
                 ),
-                fontFamily = Manrope, fontSize = 12.sp, lineHeight = 17.sp, color = Tokens.TextSecondary,
+                fontFamily = Manrope, fontWeight = FontWeight.SemiBold, fontSize = 12.sp, lineHeight = 17.sp, color = Tokens.Amber,
             )
             Spacer(Modifier.height(10.dp))
 

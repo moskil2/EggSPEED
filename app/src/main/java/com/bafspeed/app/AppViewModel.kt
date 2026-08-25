@@ -112,7 +112,7 @@ private const val MONITORING_SAMPLE_MS = 500L
 private const val MONITORING_MAX_SAMPLES = (10 * 60 * 1000L / MONITORING_SAMPLE_MS).toInt()
 
 /** Krok odświeżania AodMediaService (ekran blokady/AOD) - rzadziej niż Monitoring, żeby nie zamęczać notyfikacji/AOD częstymi aktualizacjami. */
-private const val AOD_UPDATE_MS = 1500L
+private const val AOD_UPDATE_MS = 1000L
 
 /** Krok próbkowania pasywnego SAG (zakładka "SAG") podczas zwykłej jazdy. */
 private const val SAG_PASSIVE_SAMPLE_MS = 1000L
@@ -154,7 +154,12 @@ data class UiState(
     val connection: ConnectionStatus = ConnectionStatus.DISCONNECTED,
     /** Patrz [AutoReconnectState] - steruje ikoną "Łączę ponownie…"/"Połączenie nieudane" obok OFFLINE w Kokpicie. */
     val autoReconnectState: AutoReconnectState = AutoReconnectState.IDLE,
-    val statusMessage: String = "",
+    // Osobne PL/EN zamiast jednego juz-przetlumaczonego stringa - status ustawiany raz przy
+    // zdarzeniu (np. polaczono) mial jezyk "zapieczony" na moment zdarzenia, wiec zmiana jezyka
+    // w Ustawieniach w trakcie sesji zostawiala stary komunikat w poprzednim jezyku, mimo ze reszta
+    // UI (ktora czyta LocalAppLanguage.current na zywo) juz sie przelaczala - patrz tr() w ConnectScreen.
+    val statusMessagePl: String = "",
+    val statusMessageEn: String = "",
     val deviceLabel: String? = null,
     val general: GeneralInfo? = null,
     // Konfiguracja robocza (podgląd/edycja lokalna). Odczyt ze sterownika nadpisuje te pola.
@@ -540,6 +545,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     private var tripJob: Job? = null
     /** Pętla odświeżająca AodMediaService (ekran blokady/AOD) co [AOD_UPDATE_MS] - patrz [syncAodService]. */
     private var aodJob: Job? = null
+    /** Widoczny ekran odczytu/zapisu configu (Ustawienia itp.) - patrz [setConfigScreenOpen]/[syncDisplayPolling]. */
+    private var configScreenOpen: Boolean = false
     /** Pętla pasywnego pomiaru SAG podczas zwykłej jazdy - patrz [sampleSagPassive]. */
     private var sagPassiveJob: Job? = null
     /** Procedura kalibracji SAG (odczekaj/obciążaj/odczekaj) - patrz [startSagCalibration]. */
@@ -595,11 +602,14 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 reconnectAttempt = 0
                 _state.value = _state.value.copy(autoReconnectState = AutoReconnectState.IDLE)
             }
-            val lang = _state.value.language
-            _state.value = _state.value.copy(connection = ConnectionStatus.SEARCHING, statusMessage = tr(lang, "Szukam mostka USB…", "Searching for USB bridge…"))
+            _state.value = _state.value.copy(
+                connection = ConnectionStatus.SEARCHING,
+                statusMessagePl = "Szukam mostka USB…",
+                statusMessageEn = "Searching for USB bridge…",
+            )
             val granted = serial.requestPermission()
             if (!granted) {
-                handleConnectFailure(tr(lang, "Brak zgody na dostęp USB lub brak kabla", "No permission for USB access or no cable"))
+                handleConnectFailure("Brak zgody na dostęp USB lub brak kabla", "No permission for USB access or no cable")
                 return@launch
             }
             try {
@@ -613,13 +623,14 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                     )
                 }
             } catch (e: Exception) {
-                handleConnectFailure(e.message ?: tr(lang, "Błąd otwarcia portu", "Error opening port"))
+                handleConnectFailure(e.message ?: "Błąd otwarcia portu", e.message ?: "Error opening port")
                 return@launch
             }
             _state.value = _state.value.copy(
                 connection = ConnectionStatus.CONNECTING,
                 deviceLabel = serial.deviceLabel,
-                statusMessage = tr(lang, "Port otwarty (1200 baud) - identyfikuję sterownik…", "Port open (1200 baud) - identifying controller…"),
+                statusMessagePl = "Port otwarty (1200 baud) - identyfikuję sterownik…",
+                statusMessageEn = "Port open (1200 baud) - identifying controller…",
             )
             configParser.reset()
             bbsFwFrameParser.reset()
@@ -638,7 +649,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
      * potrzebuje chwili, żeby się w pełni zwolnić po poprzedniej nieudanej próbie, więc próba "na
      * styk" (bez odczekania) zwykle też się nie udaje. Inaczej ustawia stan błędu na stałe.
      */
-    private suspend fun handleConnectFailure(message: String) {
+    private suspend fun handleConnectFailure(messagePl: String, messageEn: String) {
         val wasRetrying = _state.value.autoReconnectState == AutoReconnectState.RETRYING
         if (wasRetrying && reconnectAttempt < MAX_RECONNECT_ATTEMPTS) {
             runCatching { serial.close() }
@@ -648,9 +659,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             _state.value = _state.value.copy(
                 connection = ConnectionStatus.ERROR,
                 autoReconnectState = if (wasRetrying) AutoReconnectState.FAILED else _state.value.autoReconnectState,
-                statusMessage = if (wasRetrying) {
-                    tr(_state.value.language, "Połączenie nieudane po $MAX_RECONNECT_ATTEMPTS próbach", "Connection failed after $MAX_RECONNECT_ATTEMPTS attempts")
-                } else message,
+                statusMessagePl = if (wasRetrying) "Połączenie nieudane po $MAX_RECONNECT_ATTEMPTS próbach" else messagePl,
+                statusMessageEn = if (wasRetrying) "Connection failed after $MAX_RECONNECT_ATTEMPTS attempts" else messageEn,
             )
         }
     }
@@ -666,11 +676,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         reconnectAttempt++
         _state.value = _state.value.copy(
             connection = ConnectionStatus.SEARCHING,
-            statusMessage = tr(
-                _state.value.language,
-                "Łączę ponownie ($reconnectAttempt/$MAX_RECONNECT_ATTEMPTS)…",
-                "Reconnecting ($reconnectAttempt/$MAX_RECONNECT_ATTEMPTS)…",
-            ),
+            statusMessagePl = "Łączę ponownie ($reconnectAttempt/$MAX_RECONNECT_ATTEMPTS)…",
+            statusMessageEn = "Reconnecting ($reconnectAttempt/$MAX_RECONNECT_ATTEMPTS)…",
             autoReconnectState = AutoReconnectState.RETRYING,
         )
         connect(isAutoRetry = true)
@@ -752,6 +759,11 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 bbsFwConfig = cur.bbsFwConfig,
                 lastReadBbsFwConfig = cur.lastReadBbsFwConfig,
             )
+            // Po resecie stanu (connection == DISCONNECTED) - wymusza zatrzymanie pętli telemetrii
+            // i serwisu AOD, nawet jeśli Monitoring/AOD nadal mają włączony przełącznik (patrz
+            // syncDisplayPolling/syncAodService).
+            syncDisplayPolling()
+            syncAodService()
         }
     }
 
@@ -824,18 +836,9 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     fun startDisplayMode() {
         if (_state.value.connection != ConnectionStatus.CONNECTED) return
         _state.value = _state.value.copy(displayMode = true)
-        display.assistLevel = if (_state.value.protectActive) 0 else _state.value.assistLevel
-        display.lightOn = _state.value.lightOn
-        display.sportMode = _state.value.sportMode
-        display.currentCalibrationFactor = _state.value.currentCalibrationFactor
-        display.voltageCalibrationOffsetV = _state.value.voltageCalibrationOffsetV
-        display.lowBatteryProtectionV = _state.value.basicOrDefault.lowBatteryProtection
-        display.cellCount = _state.value.cellCount
-        display.useRealVoltage = _state.value.firmwareType == FirmwareType.BBS_FW
-        display.extendedRegistersEnabled = _state.value.firmwareType == FirmwareType.BBS_FW
         tempAlarmArmed = true
-        display.start()
         startTripIntegration()
+        syncDisplayPolling()
         syncAodService()
         sagPassiveJob = viewModelScope.launch {
             while (isActive) {
@@ -846,7 +849,6 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun stopDisplayMode() {
-        display.stop()
         tripJob?.cancel()
         _state.value = _state.value.copy(displayMode = false)
         prefs.edit()
@@ -855,6 +857,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             .putFloat("avg_speed_moving_time_h", _state.value.avgSpeedMovingTimeH.toFloat())
             .apply()
         energyAnalyzer.saveState()
+        syncDisplayPolling()
         syncAodService()
         sagPassiveJob?.cancel()
         sagPassiveJob = null
@@ -914,6 +917,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     fun toggleTestMode() {
         _state.value = _state.value.copy(testMode = !_state.value.testMode)
+        syncDisplayPolling()
         syncAodService()
     }
 
@@ -936,13 +940,27 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
      * otwarciu apki, jeśli warunki (Kokpit/Tryb testowy + włączone w Screen) dalej są spełnione -
      * serwis mógł zniknąć przy poprzednim zamknięciu apki (patrz [AodMediaService.onTaskRemoved]). */
     fun onAppResumed() {
+        syncDisplayPolling()
         syncAodService()
     }
 
     fun setAodEnabled(enabled: Boolean) {
         _state.value = _state.value.copy(aodEnabled = enabled)
         prefs.edit().putBoolean("aod_enabled", enabled).apply()
+        syncDisplayPolling()
         syncAodService()
+    }
+
+    /**
+     * Wywoływane przy wejściu/wyjściu z ekranu odczytu/zapisu configu (Ustawienia, Poziomy
+     * wspomagania itd.) - taki ekran potrzebuje magistrali szeregowej na wyłączność (patrz
+     * readWriteEnabled w MainActivity), więc wstrzymuje pętlę telemetrii uruchomioną tylko dla
+     * Monitoringu/AOD (Kokpit i Kalibracja same blokują te ekrany przez displayMode, bez zmian).
+     * Po wyjściu pętla wraca sama, jeśli Monitoring/AOD nadal jej potrzebują.
+     */
+    fun setConfigScreenOpen(open: Boolean) {
+        configScreenOpen = open
+        syncDisplayPolling()
     }
 
     fun setAodAssistControlsEnabled(enabled: Boolean) {
@@ -952,17 +970,20 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     * Uruchamia/zatrzymuje [AodMediaService] tak, żeby był aktywny dokładnie wtedy, gdy Kokpit
-     * jest aktywny (displayMode LUB testMode - ten drugi pozwala zweryfikować cały mechanizm
-     * powiadomienia/AOD bez podłączonego sterownika, tak jak reszta Kokpitu w Trybie testowym)
-     * ORAZ użytkownik włączył "Pokaż na ekranie blokady/AOD" w zakładce Screen - wywoływane przy
-     * starcie/zatrzymaniu Kokpitu, przełączeniu Trybu testowego, przełączeniu samego ustawienia
-     * w trakcie jazdy i przy powrocie do apki (patrz [setAodEnabled], [toggleTestMode], [onAppResumed]).
-     * Serwis sam znika przy zamknięciu apki (patrz [AodMediaService.onTaskRemoved]) - ten sync
-     * przywraca go, gdy warunki dalej są spełnione, bez dotykania trwałego ustawienia aodEnabled.
+     * Uruchamia/zatrzymuje [AodMediaService] tak, żeby był aktywny dokładnie wtedy, gdy jesteśmy
+     * połączeni ze sterownikiem LUB w Trybie testowym (ten drugi pozwala zweryfikować cały
+     * mechanizm powiadomienia/AOD bez podłączonego sterownika) ORAZ użytkownik włączył "Pokaż na
+     * ekranie blokady/AOD" w zakładce Screen - NIE wymaga już aktywnego Kokpitu (patrz
+     * [syncDisplayPolling], która realnie zasila to wskazanie danymi z telemetrii, gdy Kokpit nie
+     * jest otwarty). Wywoływane przy połączeniu/rozłączeniu, starcie/zatrzymaniu Kokpitu,
+     * przełączeniu Trybu testowego, przełączeniu samego ustawienia w trakcie jazdy i przy powrocie
+     * do apki (patrz [setAodEnabled], [toggleTestMode], [onAppResumed]). Serwis sam znika przy
+     * zamknięciu apki (patrz [AodMediaService.onTaskRemoved]) - ten sync przywraca go, gdy warunki
+     * dalej są spełnione, bez dotykania trwałego ustawienia aodEnabled.
      */
     private fun syncAodService() {
-        val shouldRun = (_state.value.displayMode || _state.value.testMode) && _state.value.aodEnabled
+        val shouldRun = _state.value.aodEnabled &&
+            (_state.value.testMode || _state.value.connection == ConnectionStatus.CONNECTED)
         if (shouldRun) {
             AodMediaService.assistControlsEnabled = _state.value.aodAssistControlsEnabled
             AodMediaService.onAssistDelta = { delta -> setAssistLevel(_state.value.assistLevel + delta) }
@@ -992,6 +1013,52 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             AodMediaService.onAssistDelta = null
             AodMediaService.stop(getApplication<Application>())
         }
+    }
+
+    /**
+     * Jedyne miejsce uruchamiające/zatrzymujące [display] (pętlę odpytywania sterownika) - dawniej
+     * robiły to bezpośrednio [startDisplayMode]/[stopDisplayMode], więc telemetria żyła wyłącznie
+     * tak długo, jak otwarty był Kokpit/Kalibracja. Teraz pętla działa też dla samego Monitoringu
+     * (zakładka Monitoring, niezależnie od widocznego ekranu - patrz [setMonitoringEnabled]) i dla
+     * samego AOD (bez otwierania Kokpitu - patrz [setAodEnabled]), a wstrzymuje się na czas edycji
+     * configu na innym ekranie (patrz [setConfigScreenOpen]), żeby nie kolidować na magistrali
+     * z odczytem/zapisem. Tryb testowy w AOD używa syntetycznych wartości (patrz [syncAodService])
+     * więc sam z siebie nie wymaga tej pętli.
+     */
+    private fun syncDisplayPolling() {
+        val s = _state.value
+        val shouldPoll = s.connection == ConnectionStatus.CONNECTED && !configScreenOpen &&
+            (s.displayMode || _monitoring.value.masterEnabled || (s.aodEnabled && !s.testMode))
+        if (shouldPoll) {
+            configureDisplayFromState()
+            display.start()
+        } else {
+            display.stop()
+        }
+    }
+
+    /**
+     * Ustawia wszystkie pola [display] (wspomaganie/światło/tryb Sport/kalibracje/długość pętli
+     * OEM-vs-bbsfw/uprawnienia do zapisu) z aktualnego stanu - wołane przed KAŻDYM uruchomieniem
+     * pętli w [syncDisplayPolling], nie tylko z Kokpitu. Bez tego telemetria uruchomiona samym
+     * Monitoringiem/AOD (bez otwierania Kokpitu) leciałaby na domyślnych wartościach klasy -
+     * m.in. domyślne `extendedRegistersEnabled=true` odtwarzało na OEM Bafang naprawiony w v0.3.45
+     * bug (pełna pętla wiesza się przed odczytem prędkości na części sterowników).
+     */
+    private fun configureDisplayFromState() {
+        val s = _state.value
+        display.assistLevel = if (s.protectActive) 0 else s.assistLevel
+        display.lightOn = s.lightOn
+        display.sportMode = s.sportMode
+        display.currentCalibrationFactor = s.currentCalibrationFactor
+        display.voltageCalibrationOffsetV = s.voltageCalibrationOffsetV
+        display.lowBatteryProtectionV = s.basicOrDefault.lowBatteryProtection
+        display.cellCount = s.cellCount
+        display.useRealVoltage = s.firmwareType == FirmwareType.BBS_FW
+        display.extendedRegistersEnabled = s.firmwareType == FirmwareType.BBS_FW
+        // Zapis (wspomaganie/światło/tryb) tylko gdy Kokpit/Kalibracja aktywne LUB AOD (przyciski
+        // +/- na ekranie blokady) - sam Monitoring nigdy nie zapisuje, tylko czyta.
+        display.writesEnabled = s.displayMode || (s.aodEnabled && !s.testMode)
     }
 
     /**
@@ -1374,7 +1441,10 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         val s = _state.value
         if (s.connection != ConnectionStatus.CONNECTED) return
         if (s.displayMode) {
-            _state.value = s.copy(statusMessage = tr(s.language, "Zatrzymaj kokpit (żywe dane) przed zapisem ustawień", "Stop the cockpit (live data) before writing settings"))
+            _state.value = s.copy(
+                statusMessagePl = "Zatrzymaj kokpit (żywe dane) przed zapisem ustawień",
+                statusMessageEn = "Stop the cockpit (live data) before writing settings",
+            )
             return
         }
         if (s.firmwareType == FirmwareType.BBS_FW) {
@@ -1402,7 +1472,11 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         }
 
         if (changes.isEmpty()) {
-            _state.value = s.copy(statusMessage = tr(s.language, "Brak zmian do zapisania", "No changes to save"), configDirty = false)
+            _state.value = s.copy(
+            statusMessagePl = "Brak zmian do zapisania",
+            statusMessageEn = "No changes to save",
+            configDirty = false,
+        )
             return
         }
         _state.value = s.copy(writeFlow = WriteFlow.Confirming(changes, previews))
@@ -1546,7 +1620,11 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         val old = s.lastReadBbsFwConfig
         val new = s.bbsFwConfig
         if (old == null || new == null || old == new) {
-            _state.value = s.copy(statusMessage = tr(s.language, "Brak zmian do zapisania", "No changes to save"), configDirty = false)
+            _state.value = s.copy(
+            statusMessagePl = "Brak zmian do zapisania",
+            statusMessageEn = "No changes to save",
+            configDirty = false,
+        )
             return
         }
         val changes = diffBbsFw(s.language, old, new)
@@ -1755,7 +1833,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 _state.value = _state.value.copy(
                     bbsFwConfig = cfg,
                     configDirty = true,
-                    statusMessage = tr(lang, "Wczytano profil bbs-fw (podgląd) - nie wysłano do sterownika", "bbs-fw profile loaded (preview) - not sent to the controller"),
+                    statusMessagePl = "Wczytano profil bbs-fw (podgląd) - nie wysłano do sterownika",
+                    statusMessageEn = "bbs-fw profile loaded (preview) - not sent to the controller",
                 )
             }
             FirmwareType.OEM_BAFANG -> {
@@ -1769,7 +1848,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                     pedalAssist = data.pedalAssist,
                     throttle = data.throttle,
                     configDirty = true,
-                    statusMessage = tr(lang, "Wczytano profil (podgląd) - nie wysłano do sterownika", "Profile loaded (preview) - not sent to the controller"),
+                    statusMessagePl = "Wczytano profil (podgląd) - nie wysłano do sterownika",
+                    statusMessageEn = "Profile loaded (preview) - not sent to the controller",
                 )
             }
         }
@@ -1799,11 +1879,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             delay(3000)
             if (_state.value.connection == ConnectionStatus.CONNECTING) {
                 handleConnectFailure(
-                    tr(
-                        _state.value.language,
-                        "Sterownik nie odpowiada - sprawdź kabel i zasilanie (bateria włączona?)",
-                        "Controller not responding - check the cable and power (is the battery on?)",
-                    ),
+                    "Sterownik nie odpowiada - sprawdź kabel i zasilanie (bateria włączona?)",
+                    "Controller not responding - check the cable and power (is the battery on?)",
                 )
             }
         }
@@ -1831,11 +1908,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             }
             if (_state.value.connection == ConnectionStatus.CONNECTING) {
                 handleConnectFailure(
-                    tr(
-                        _state.value.language,
-                        "Sterownik nie odpowiada - sprawdź kabel i zasilanie (bateria włączona?)",
-                        "Controller not responding - check the cable and power (is the battery on?)",
-                    ),
+                    "Sterownik nie odpowiada - sprawdź kabel i zasilanie (bateria włączona?)",
+                    "Controller not responding - check the cable and power (is the battery on?)",
                 )
             }
         }
@@ -1869,10 +1943,13 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             }
             return
         }
-        // Bez displayMode ANI display.scanning tu, bajty trafialyby do configParser (GEN/BAS/PAS/THR)
-        // i byly ciche gubione - dokladnie to psulo skan rejestrow w zakladce Diagnostyka po tym,
-        // jak przestalismy uruchamiac tryb wyswietlacza na tym ekranie.
-        if (_state.value.displayMode || display.scanning.value) {
+        // display.isRunning (nie samo displayMode!) ANI display.scanning tu, bajty trafialyby do
+        // configParser (GEN/BAS/PAS/THR) i byly ciche gubione - dokladnie to psulo skan rejestrow
+        // w zakladce Diagnostyka po tym, jak przestalismy uruchamiac tryb wyswietlacza na tym
+        // ekranie, oraz - po wprowadzeniu Monitoringu/AOD dzialajacych bez Kokpitu - blokowalo
+        // realny odbior odpowiedzi za kazdym razem, gdy pętla telemetrii żyła z innego powodu niż
+        // sam Kokpit (patrz syncDisplayPolling/configureDisplayFromState).
+        if (display.isRunning || display.scanning.value) {
             display.onDataReceived(bytes)
             return
         }
@@ -1892,14 +1969,10 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     private suspend fun handleBbsFwVersionFrame(frame: BbsFwFrameParser.Result.VersionFrame) {
         configTimeoutJob?.cancel()
         identifyRetryJob?.cancel()
-        val lang = _state.value.language
         _state.value = _state.value.copy(
             bbsFwVersion = frame.info,
-            statusMessage = tr(
-                lang,
-                "bbs-fw ${frame.info.versionLabel} (config v${frame.info.configVersion}, typ sterownika ${frame.info.ctrlType}) - czytam konfigurację…",
-                "bbs-fw ${frame.info.versionLabel} (config v${frame.info.configVersion}, controller type ${frame.info.ctrlType}) - reading config…",
-            ),
+            statusMessagePl = "bbs-fw ${frame.info.versionLabel} (config v${frame.info.configVersion}, typ sterownika ${frame.info.ctrlType}) - czytam konfigurację…",
+            statusMessageEn = "bbs-fw ${frame.info.versionLabel} (config v${frame.info.configVersion}, controller type ${frame.info.ctrlType}) - reading config…",
         )
         saveBbsFwVersion(frame.info)
         sendConfigRead(BbsFwCommands.READ_CONFIG)
@@ -1907,15 +1980,11 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     private suspend fun handleBbsFwConfigFrame(frame: BbsFwFrameParser.Result.ConfigFrame) {
         configTimeoutJob?.cancel()
-        val lang = _state.value.language
         if (frame.version != BbsFwCommands.CONFIG_VERSION || frame.data.size != BbsFwConfig.BYTE_SIZE) {
             _state.value = _state.value.copy(
                 connection = ConnectionStatus.ERROR,
-                statusMessage = tr(
-                    lang,
-                    "Niewspierana wersja konfiguracji bbs-fw (sterownik zgłasza v${frame.version}, ${frame.data.size} B; ta wersja apki zna v${BbsFwCommands.CONFIG_VERSION}, ${BbsFwConfig.BYTE_SIZE} B) - sprawdź wersję firmware.",
-                    "Unsupported bbs-fw config version (controller reports v${frame.version}, ${frame.data.size} B; this app version knows v${BbsFwCommands.CONFIG_VERSION}, ${BbsFwConfig.BYTE_SIZE} B) - check the firmware version.",
-                ),
+                statusMessagePl = "Niewspierana wersja konfiguracji bbs-fw (sterownik zgłasza v${frame.version}, ${frame.data.size} B; ta wersja apki zna v${BbsFwCommands.CONFIG_VERSION}, ${BbsFwConfig.BYTE_SIZE} B) - sprawdź wersję firmware.",
+                statusMessageEn = "Unsupported bbs-fw config version (controller reports v${frame.version}, ${frame.data.size} B; this app version knows v${BbsFwCommands.CONFIG_VERSION}, ${BbsFwConfig.BYTE_SIZE} B) - check the firmware version.",
             )
             return
         }
@@ -1925,11 +1994,16 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             lastReadBbsFwConfig = cfg,
             connection = ConnectionStatus.CONNECTED,
             configDirty = false,
-            statusMessage = tr(lang, "Połączono (bbs-fw) - odczytano konfigurację", "Connected (bbs-fw) - config read"),
+            statusMessagePl = "Połączono (bbs-fw) - odczytano konfigurację",
+            statusMessageEn = "Connected (bbs-fw) - config read",
             autoReconnectState = AutoReconnectState.IDLE,
         )
         reconnectAttempt = 0
         saveBbsFwConfig(cfg)
+        // Odpala Monitoring/AOD od razu po połączeniu, jeśli użytkownik miał je już włączone
+        // wcześniej - bez tego czekałyby na otwarcie Kokpitu (patrz syncDisplayPolling).
+        syncDisplayPolling()
+        syncAodService()
     }
 
     private suspend fun handleFrame(frame: ConfigFrameParser.Result.Frame) {
@@ -1938,14 +2012,10 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             BafangCommands.ADDR_GEN -> {
                 val gen = BafangDecoder.decodeGen(frame.data)
                 val known = KNOWN_MODEL_PREFIXES.any { gen.model.startsWith(it) || gen.manufacturer.isNotBlank() }
-                val lang = _state.value.language
                 _state.value = _state.value.copy(
                     general = gen,
-                    statusMessage = if (known) {
-                        tr(lang, "Rozpoznano: ${gen.manufacturer} ${gen.model}", "Recognized: ${gen.manufacturer} ${gen.model}")
-                    } else {
-                        tr(lang, "Nieznany sterownik: ${gen.manufacturer} ${gen.model}", "Unknown controller: ${gen.manufacturer} ${gen.model}")
-                    },
+                    statusMessagePl = if (known) "Rozpoznano: ${gen.manufacturer} ${gen.model}" else "Nieznany sterownik: ${gen.manufacturer} ${gen.model}",
+                    statusMessageEn = if (known) "Recognized: ${gen.manufacturer} ${gen.model}" else "Unknown controller: ${gen.manufacturer} ${gen.model}",
                 )
                 saveGeneral(gen)
                 maybeAutoDetectCellCount(gen)
@@ -1974,11 +2044,16 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                     lastReadThrottle = thr,
                     connection = ConnectionStatus.CONNECTED,
                     configDirty = false,
-                    statusMessage = tr(_state.value.language, "Połączono - odczytano pełną konfigurację", "Connected - full configuration read"),
+                    statusMessagePl = "Połączono - odczytano pełną konfigurację",
+                    statusMessageEn = "Connected - full configuration read",
                     autoReconnectState = AutoReconnectState.IDLE,
                 )
                 reconnectAttempt = 0
                 saveThr(thr)
+                // Odpala Monitoring/AOD od razu po połączeniu, jeśli użytkownik miał je już włączone
+                // wcześniej - bez tego czekałyby na otwarcie Kokpitu (patrz syncDisplayPolling).
+                syncDisplayPolling()
+                syncAodService()
             }
         }
     }
@@ -1995,15 +2070,19 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             serial.close()
             configTimeoutJob?.cancel()
             identifyRetryJob?.cancel()
-            val lang = _state.value.language
             if (wasActive) {
                 reconnectAttempt = 0
-                _state.value = _state.value.copy(connection = ConnectionStatus.DISCONNECTED, statusMessage = tr(lang, "Połączenie przerwane", "Connection interrupted"))
+                _state.value = _state.value.copy(
+                    connection = ConnectionStatus.DISCONNECTED,
+                    statusMessagePl = "Połączenie przerwane",
+                    statusMessageEn = "Connection interrupted",
+                )
                 scheduleReconnectAttempt(RECONNECT_FIRST_DELAY_MS)
             } else {
                 _state.value = _state.value.copy(
                     connection = ConnectionStatus.ERROR,
-                    statusMessage = tr(lang, "Połączenie przerwane: ${e.message ?: "błąd USB"}", "Connection interrupted: ${e.message ?: "USB error"}"),
+                    statusMessagePl = "Połączenie przerwane: ${e.message ?: "błąd USB"}",
+                    statusMessageEn = "Connection interrupted: ${e.message ?: "USB error"}",
                 )
             }
         }
@@ -2013,6 +2092,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     fun setMonitoringEnabled(enabled: Boolean) {
         _monitoring.value = _monitoring.value.copy(masterEnabled = enabled)
         if (enabled) startMonitoringSampling() else stopMonitoringSampling()
+        syncDisplayPolling()
     }
 
     /** Przełącznik pojedynczego wykresu (Moc/Prąd/Napięcie/Prędkość) - próbkowanie idzie dalej, wykres tylko się nie rysuje. */

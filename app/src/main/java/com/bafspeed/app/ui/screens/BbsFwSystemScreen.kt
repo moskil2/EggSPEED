@@ -24,6 +24,7 @@ import com.bafspeed.app.ui.components.FlankedSlider
 import com.bafspeed.app.ui.components.MicroLabel
 import com.bafspeed.app.ui.components.ReadWriteButtons
 import com.bafspeed.app.ui.components.StepBtn
+import com.bafspeed.app.ui.components.TelemetryPausedNotice
 import com.bafspeed.app.ui.components.TokenCard
 import com.bafspeed.app.ui.components.ToggleRow
 import com.bafspeed.app.ui.theme.Tokens
@@ -67,6 +68,7 @@ fun BbsFwSystemScreen(
     onRead: () -> Unit,
     onWrite: () -> Unit,
     readWriteEnabled: Boolean,
+    monitoringActive: Boolean,
 ) {
     val cfg = state.bbsFwConfigOrDefault
     val maxCurrentLimit = BbsFwController.maxCurrentAmps(state.bbsFwVersion?.ctrlType ?: 0)
@@ -80,6 +82,7 @@ fun BbsFwSystemScreen(
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         ReadWriteButtons(onRead = onRead, onWrite = onWrite, enabled = readWriteEnabled)
+        TelemetryPausedNotice(monitoringActive = monitoringActive, aodActive = state.aodEnabled)
 
         // --- Global ---
         MicroLabel("Global")

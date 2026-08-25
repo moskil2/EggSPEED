@@ -25,6 +25,7 @@ import com.bafspeed.app.ui.components.FlankedSlider
 import com.bafspeed.app.ui.components.ReadWriteButtons
 import com.bafspeed.app.ui.components.SegmentedControl
 import com.bafspeed.app.ui.components.StepBtn
+import com.bafspeed.app.ui.components.TelemetryPausedNotice
 import com.bafspeed.app.ui.theme.Tokens
 
 /**
@@ -44,6 +45,7 @@ fun ThrottleScreen(
     onRead: () -> Unit,
     onWrite: () -> Unit,
     readWriteEnabled: Boolean,
+    monitoringActive: Boolean,
 ) {
     val thr = state.thrOrDefault
 
@@ -56,6 +58,7 @@ fun ThrottleScreen(
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         ReadWriteButtons(onRead = onRead, onWrite = onWrite, enabled = readWriteEnabled)
+        TelemetryPausedNotice(monitoringActive = monitoringActive, aodActive = state.aodEnabled)
 
         ExpandableParamTile(
             label = tr("Napięcie startowe", "Start Voltage"),

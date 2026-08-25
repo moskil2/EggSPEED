@@ -122,6 +122,9 @@ private val OEM_ONLY_SCREENS = setOf(Screen.BAFANG_TYPE, Screen.MOTOR, Screen.PE
 /** Ekrany specyficzne dla bbs-fw - protokół konfiguracji jest inny, więc mają osobny komplet zakładek. */
 private val BBS_FW_ONLY_SCREENS = setOf(Screen.BBSFW_INFO, Screen.BBSFW_SYSTEM, Screen.BBSFW_ASSIST, Screen.TEMPERATURE_CONTROL)
 
+/** Ekrany z odczytem/zapisem configu (przyciski Odczytaj/Zapisz) - patrz AppViewModel.setConfigScreenOpen. */
+private val CONFIG_SCREENS = setOf(Screen.ASSIST, Screen.MOTOR, Screen.PEDAL, Screen.THROTTLE, Screen.BBSFW_SYSTEM, Screen.BBSFW_ASSIST)
+
 /**
  * Tytuł zakładki - zależny od języka (patrz [LocalAppLanguage]). [Screen.DIAGNOSTICS] dodatkowo
  * zależy od aktywnego firmware - to jedyna pozycja menu wspólna dla obu firmware, więc dostaje
@@ -141,7 +144,7 @@ private fun Screen.title(firmwareType: FirmwareType): String = when (this) {
     Screen.BBSFW_SYSTEM -> "BBS-FW System"
     Screen.BBSFW_ASSIST -> "BBS-FW Assist Levels"
     Screen.BATTERY -> tr("Bateria", "Battery")
-    Screen.SAG -> "SAG"
+    Screen.SAG -> tr("Pomiar SAG baterii", "Battery SAG Measurement")
     Screen.MONITORING -> tr("Monitoring", "Monitoring")
     Screen.TEMPERATURE_CONTROL -> tr("Kontrola temperatury", "Temperature control")
     Screen.SETTINGS -> tr("Ustawienia", "Settings")
@@ -224,6 +227,12 @@ private fun App(vm: AppViewModel) {
     fun go(s: Screen) {
         screen = s
         scope.launch { drawerState.close() }
+    }
+
+    // Monitoring/AOD (gdy działają bez otwartego Kokpitu) wstrzymują się na czas edycji configu -
+    // patrz AppViewModel.setConfigScreenOpen/syncDisplayPolling.
+    LaunchedEffect(screen) {
+        vm.setConfigScreenOpen(screen in CONFIG_SCREENS)
     }
 
     // Gdy zmieni się firmware (zakładka Ustawienia), zakładka aktualnie otwarta może zniknąć z menu
@@ -320,6 +329,7 @@ private fun App(vm: AppViewModel) {
                         onRead = vm::readAllConfig,
                         onWrite = vm::requestSaveToController,
                         readWriteEnabled = readWriteEnabled,
+                        monitoringActive = monitoring.masterEnabled,
                     )
                     Screen.BAFANG_TYPE -> BafangTypeScreen(state = state)
                     Screen.MOTOR -> GeneralScreen(
@@ -332,6 +342,7 @@ private fun App(vm: AppViewModel) {
                         onRead = vm::readAllConfig,
                         onWrite = vm::requestSaveToController,
                         readWriteEnabled = readWriteEnabled,
+                        monitoringActive = monitoring.masterEnabled,
                     )
                     Screen.PEDAL -> PedalScreen(
                         state = state,
@@ -349,6 +360,7 @@ private fun App(vm: AppViewModel) {
                         onRead = vm::readAllConfig,
                         onWrite = vm::requestSaveToController,
                         readWriteEnabled = readWriteEnabled,
+                        monitoringActive = monitoring.masterEnabled,
                     )
                     Screen.THROTTLE -> ThrottleScreen(
                         state = state,
@@ -361,6 +373,7 @@ private fun App(vm: AppViewModel) {
                         onRead = vm::readAllConfig,
                         onWrite = vm::requestSaveToController,
                         readWriteEnabled = readWriteEnabled,
+                        monitoringActive = monitoring.masterEnabled,
                     )
                     Screen.BBSFW_INFO -> BbsFwInfoScreen(state = state)
                     Screen.BBSFW_SYSTEM -> BbsFwSystemScreen(
@@ -393,6 +406,7 @@ private fun App(vm: AppViewModel) {
                         onRead = vm::readAllConfig,
                         onWrite = vm::requestSaveToController,
                         readWriteEnabled = readWriteEnabled,
+                        monitoringActive = monitoring.masterEnabled,
                     )
                     Screen.BBSFW_ASSIST -> BbsFwAssistLevelsScreen(
                         state = state,
@@ -409,6 +423,7 @@ private fun App(vm: AppViewModel) {
                         onRead = vm::readAllConfig,
                         onWrite = vm::requestSaveToController,
                         readWriteEnabled = readWriteEnabled,
+                        monitoringActive = monitoring.masterEnabled,
                     )
                     Screen.BATTERY -> BatteryScreen(
                         state = state,

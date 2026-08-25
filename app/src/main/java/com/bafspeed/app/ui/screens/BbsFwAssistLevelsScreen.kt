@@ -38,6 +38,7 @@ import com.bafspeed.app.ui.components.PreviewBanner
 import com.bafspeed.app.ui.components.ReadWriteButtons
 import com.bafspeed.app.ui.components.SegmentedControl
 import com.bafspeed.app.ui.components.StepBtn
+import com.bafspeed.app.ui.components.TelemetryPausedNotice
 import com.bafspeed.app.ui.components.TokenCard
 import com.bafspeed.app.ui.components.ToggleRow
 import com.bafspeed.app.ui.theme.Manrope
@@ -74,6 +75,7 @@ fun BbsFwAssistLevelsScreen(
     onRead: () -> Unit,
     onWrite: () -> Unit,
     readWriteEnabled: Boolean,
+    monitoringActive: Boolean,
 ) {
     var profile by remember { mutableIntStateOf(0) }
     var selected by remember { mutableIntStateOf(0) }
@@ -91,6 +93,7 @@ fun BbsFwAssistLevelsScreen(
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         ReadWriteButtons(onRead = onRead, onWrite = onWrite, enabled = readWriteEnabled)
+        TelemetryPausedNotice(monitoringActive = monitoringActive, aodActive = state.aodEnabled)
 
         // --- Operation Mode Page ---
         Text("Operation Mode Page", fontFamily = Manrope, fontWeight = FontWeight.SemiBold, fontSize = 12.sp, color = Tokens.TextPrimary)

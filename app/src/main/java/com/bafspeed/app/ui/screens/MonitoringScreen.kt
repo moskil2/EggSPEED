@@ -264,11 +264,14 @@ private fun MultiLineChart(samples: List<MonitoringSample>, series: List<SeriesS
             val values = samples.map(s.valueSelector)
             val minV = values.min()
             val maxV = values.max()
-            val range = (maxV - minV).let { if (it < 1e-6) 1.0 else it }
+            val range = maxV - minV
             val path = Path()
             values.forEachIndexed { i, v ->
                 val x = i * stepX
-                val y = h - ((v - minV) / range * h).toFloat()
+                // Seria praktycznie stała (np. napięcie w krótkim oknie) - brak realnego zakresu do
+                // znormalizowania, rysujemy płasko na ŚRODKU wysokości, zamiast dzielić przez sztuczny
+                // fallback zakresu (co zawsze dawało linię przyklejoną do samego dołu wykresu).
+                val y = if (range < 1e-6) h / 2f else h - ((v - minV) / range * h).toFloat()
                 if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
             }
             drawPath(path, color = s.color, style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round))
@@ -342,13 +345,15 @@ private fun LineChart(
         val h = size.height
         val minV = values.min()
         val maxV = values.max()
-        val range = (maxV - minV).let { if (it < 1e-6) 1.0 else it }
+        val range = maxV - minV
         val stepX = if (values.size > 1) w / (values.size - 1) else 0f
 
         val path = Path()
         values.forEachIndexed { i, v ->
             val x = i * stepX
-            val y = h - ((v - minV) / range * h).toFloat()
+            // Jw. (patrz MultiLineChart) - seria praktycznie stała rysowana płasko na środku,
+            // zamiast przyklejona do dołu przez sztuczny fallback zakresu.
+            val y = if (range < 1e-6) h / 2f else h - ((v - minV) / range * h).toFloat()
             if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
         }
         drawPath(path, color = color, style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round))

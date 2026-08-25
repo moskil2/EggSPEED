@@ -33,6 +33,7 @@ import com.bafspeed.app.ui.components.ExpandableParamTile
 import com.bafspeed.app.ui.components.FlankedSlider
 import com.bafspeed.app.ui.components.MicroLabel
 import com.bafspeed.app.ui.components.ReadWriteButtons
+import com.bafspeed.app.ui.components.TelemetryPausedNotice
 import com.bafspeed.app.ui.components.TokenCard
 import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
@@ -51,6 +52,7 @@ fun AssistLevelsScreen(
     onRead: () -> Unit,
     onWrite: () -> Unit,
     readWriteEnabled: Boolean,
+    monitoringActive: Boolean,
 ) {
     var selected by remember { mutableIntStateOf(0) }
     val basic = state.basicOrDefault
@@ -64,6 +66,7 @@ fun AssistLevelsScreen(
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         ReadWriteButtons(onRead = onRead, onWrite = onWrite, enabled = readWriteEnabled)
+        TelemetryPausedNotice(monitoringActive = monitoringActive, aodActive = state.aodEnabled)
 
         // Selektor poziomow 0-9 - kazdy kafelek ma rowna szerokosc (weight), wiec wszystkie
         // 10 miesci sie na jednym ekranie bez przewijania w bok, niezaleznie od szerokosci telefonu.

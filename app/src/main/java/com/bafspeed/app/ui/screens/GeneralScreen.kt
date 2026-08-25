@@ -23,6 +23,7 @@ import com.bafspeed.app.ui.components.ExpandableParamTile
 import com.bafspeed.app.ui.components.FlankedSlider
 import com.bafspeed.app.ui.components.ReadWriteButtons
 import com.bafspeed.app.ui.components.StepBtn
+import com.bafspeed.app.ui.components.TelemetryPausedNotice
 import com.bafspeed.app.ui.theme.Tokens
 
 /**
@@ -44,6 +45,7 @@ fun GeneralScreen(
     onRead: () -> Unit,
     onWrite: () -> Unit,
     readWriteEnabled: Boolean,
+    monitoringActive: Boolean,
 ) {
     val basic = state.basicOrDefault
     // Prąd maksymalny zgłoszony przez podłączony sterownik (blok GEN) - różne silniki
@@ -59,6 +61,7 @@ fun GeneralScreen(
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         ReadWriteButtons(onRead = onRead, onWrite = onWrite, enabled = readWriteEnabled)
+        TelemetryPausedNotice(monitoringActive = monitoringActive, aodActive = state.aodEnabled)
 
         ExpandableParamTile(
             label = tr("Ochrona niskiego napięcia", "Low Battery Protection"),

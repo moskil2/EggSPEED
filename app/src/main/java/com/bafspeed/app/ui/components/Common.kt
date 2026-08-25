@@ -94,6 +94,31 @@ fun ReadWriteButtons(onRead: () -> Unit, onWrite: () -> Unit, enabled: Boolean, 
     }
 }
 
+/**
+ * Krótka informacja pod przyciskami Odczytaj/Zapisz - Monitoring i/lub AOD (ekran blokady), gdy
+ * były włączone, wstrzymują się na czas edycji configu (współdzielona magistrala), żeby nie
+ * kolidować z odczytem/zapisem - patrz AppViewModel.setConfigScreenOpen/syncDisplayPolling. Osobna
+ * linijka na każdą aktywną funkcję, bo obie mogą być włączone naraz niezależnie od siebie.
+ */
+@Composable
+fun TelemetryPausedNotice(monitoringActive: Boolean, aodActive: Boolean, modifier: Modifier = Modifier) {
+    if (!monitoringActive && !aodActive) return
+    Column(modifier.fillMaxWidth().padding(top = 6.dp)) {
+        if (monitoringActive) {
+            Text(
+                tr("Monitoring wstrzymany na czas edycji", "Monitoring paused while editing"),
+                fontFamily = Manrope, fontWeight = FontWeight.SemiBold, fontSize = 12.sp, color = Tokens.Red,
+            )
+        }
+        if (aodActive) {
+            Text(
+                tr("Ekran blokady (AOD) wstrzymany na czas edycji", "Lock screen display (AOD) paused while editing"),
+                fontFamily = Manrope, fontWeight = FontWeight.SemiBold, fontSize = 12.sp, color = Tokens.Red,
+            )
+        }
+    }
+}
+
 /** Mikro-etykieta sekcji: uppercase 11sp, letter-spacing. */
 @Composable
 fun MicroLabel(text: String, modifier: Modifier = Modifier) {

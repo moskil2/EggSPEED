@@ -22,7 +22,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -62,6 +64,7 @@ fun ConnectScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Tokens.Bg)
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 22.dp, vertical = 16.dp),
     ) {
         // Wordmark - podniesione wyżej (bez dużego odstępu przed okręgiem)
@@ -73,7 +76,7 @@ fun ConnectScreen(
             color = Tokens.TextTertiary,
         )
 
-        Spacer(Modifier.height(36.dp))
+        Spacer(Modifier.height(18.dp))
 
         // Logo w zaokrąglonym kwadracie, z pomarańczową ramką i szeroką "mgłą" w tle -
         // czerwoną gdy brak połączenia, zieloną gdy połączono. Mgła ma kilka stopni
@@ -124,12 +127,15 @@ fun ConnectScreen(
                         .clip(logoShape),
                 )
             }
-            if (state.connection == ConnectionStatus.SEARCHING || state.connection == ConnectionStatus.CONNECTING) {
+            if (state.connection == ConnectionStatus.SEARCHING ||
+                state.connection == ConnectionStatus.CONNECTING ||
+                state.connection == ConnectionStatus.CONNECTED
+            ) {
                 Spinner(glowColor)
             }
         }
 
-        Spacer(Modifier.height(26.dp))
+        Spacer(Modifier.height(16.dp))
 
         Text(
             text = when (state.connection) {
@@ -148,7 +154,14 @@ fun ConnectScreen(
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            text = state.statusMessage.ifBlank { tr("Podłącz kabel programujący Bafang między telefonem a kontrolerem", "Connect the Bafang programming cable between your phone and the controller") },
+            // tr() tutaj (nie w AppViewModel) - tlumaczy na zywo z aktualnego jezyka przy kazdym
+            // renderze, zamiast trzymac juz-przetlumaczony string "zapieczony" na moment zdarzenia
+            // (co zostawialo stary komunikat w poprzednim jezyku po zmianie jezyka w Ustawieniach).
+            text = if (state.statusMessagePl.isBlank() && state.statusMessageEn.isBlank()) {
+                tr("Podłącz kabel programujący Bafang między telefonem a kontrolerem", "Connect the Bafang programming cable between your phone and the controller")
+            } else {
+                tr(state.statusMessagePl, state.statusMessageEn)
+            },
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             fontFamily = Manrope,
@@ -156,7 +169,7 @@ fun ConnectScreen(
             color = Tokens.TextTertiary,
         )
 
-        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(14.dp))
 
         // Szybkie przejście do Kokpitu po połączeniu - bez szukania w menu
         if (connected) {
@@ -208,10 +221,10 @@ fun ConnectScreen(
                 fontFamily = Sora,
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
-                color = if (connected) Tokens.TextPrimary else Tokens.OnAccent,
+                color = if (connected) Tokens.Red else Tokens.OnAccent,
             )
         }
-        Spacer(Modifier.height(64.dp))
+        Spacer(Modifier.height(20.dp))
     }
 }
 
@@ -221,7 +234,7 @@ private fun Spinner(color: Color) {
     val angle by transition.animateFloat(
         initialValue = 0f,
         targetValue = 360f,
-        animationSpec = infiniteRepeatable(tween(900, easing = LinearEasing), RepeatMode.Restart),
+        animationSpec = infiniteRepeatable(tween(1800, easing = LinearEasing), RepeatMode.Restart),
         label = "angle",
     )
     Canvas(Modifier.size(204.dp).rotate(angle)) {
