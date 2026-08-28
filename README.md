@@ -14,6 +14,10 @@
   <a href="https://spotrobotics.app/support/">Support</a>
 </p>
 
+<p align="center">
+  <a href="media/Github_V3.mp4">▶️ Watch demo video</a>
+</p>
+
 <table align="center">
   <tr>
     <td><img src="screenshots/1.jpg" width="140" alt="EggSPEED screenshot 1" /></td>
