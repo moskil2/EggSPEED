@@ -15,7 +15,10 @@
 </p>
 
 <p align="center">
-  <a href="media/Github_V3.mp4">▶️ Watch demo video</a>
+  <a href="https://www.youtube.com/watch?v=6bmd5RDyq6Y">
+    <img src="https://img.youtube.com/vi/6bmd5RDyq6Y/maxresdefault.jpg" width="480" alt="EggSPEED demo video" />
+    <br />▶️ Watch demo video
+  </a>
 </p>
 
 <table align="center">
