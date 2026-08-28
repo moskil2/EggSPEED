@@ -159,6 +159,12 @@ app/src/main/java/com/bafspeed/app/
 
 ## Changelog
 
+## v0.3.56 - 2026-08-28 (versionCode 58)
+- New optional "Fast Cockpit refresh" toggle (Settings, under the firmware switch, off by default) - shortens the telemetry loop's polling interval so speed/current update smoothly instead of in visible steps (full OEM cycle drops from ~850ms to ~340ms). Off by default and clearly flagged as experimental since some OEM controllers may not keep up with the shorter interval.
+- Settings: the OEM Bafang / BBS-FW firmware description is now collapsed by default behind a "What does this mean?" toggle, instead of always taking up space on the screen.
+- Cockpit: the -/+ assist buttons are now 20% bigger, making them easier to hit while riding - the Light/Brake tiles shrink by exactly the same amount so the row doesn't get any wider.
+- Calibration: the current-calibration explainer banner is now collapsible instead of always fully expanded.
+
 ## v0.3.55 - 2026-08-24 (versionCode 57)
 - Monitoring and AOD (lock screen) telemetry now run independently of the Cockpit - previously the polling loop against the controller only ran while Cockpit or Calibration was open, so Monitoring charts and the AOD lock-screen widget stayed frozen unless Cockpit had already been opened first in the same session. A new `syncDisplayPolling` in AppViewModel is now the single place starting/stopping the loop, driven by whichever of Cockpit/Monitoring/AOD currently needs it.
 - The protocol library gained a `writesEnabled` flag: when the polling loop is running only for Monitoring (no Cockpit/Calibration/AOD open), it reads speed/power/current/voltage etc. without ever sending assist-level/mode/light write commands - safe to leave running while riding under the factory display's own control.
