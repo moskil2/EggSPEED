@@ -247,6 +247,12 @@ data class UiState(
     val aodEnabled: Boolean = false,
     /** Zakładka "Screen" - +/- do wspomagania jako przyciski poprzedni/następny na ekranie blokady/AOD (patrz AodMediaService). Trwały. */
     val aodAssistControlsEnabled: Boolean = false,
+    /**
+     * Ustawienia - skraca odstępy w pętli telemetrii (patrz DisplayStateMachine.tickMs/stepDelayMs)
+     * dla płynniejszych odczytów prędkości/prądu w Kokpicie, kosztem ryzyka niestabilności na
+     * niektórych kontrolerach OEM (patrz configureDisplayFromState). Domyślnie wyłączone. Trwały.
+     */
+    val fastCockpitRefresh: Boolean = false,
 
     /** Zakładka "SAG" - efektywna rezystancja (Ω) wygładzana EMA z par (OCV, napięcie pod obciążeniem) złapanych podczas zwykłej jazdy - patrz [sampleSagPassive]. Trwały. */
     val everydaySagResistanceOhm: Double? = null,
@@ -502,6 +508,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             lightMode = prefs.getBoolean("light_mode", false),
             aodEnabled = prefs.getBoolean("aod_enabled", false),
             aodAssistControlsEnabled = prefs.getBoolean("aod_assist_controls_enabled", false),
+            fastCockpitRefresh = prefs.getBoolean("fast_cockpit_refresh", false),
             everydaySagResistanceOhm = prefs.getFloat("everyday_sag_resistance_ohm", -1f).toDouble().takeIf { it >= 0 },
             sagCalibrationResultV = prefs.getFloat("sag_cal_result_v", -1f).toDouble().takeIf { it >= 0 },
             sagCalibrationResultResistanceOhm = prefs.getFloat("sag_cal_result_resistance_ohm", -1f).toDouble().takeIf { it >= 0 },
@@ -951,6 +958,15 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         syncAodService()
     }
 
+    /** Ustawienia - "Szybkie odświeżanie Kokpitu" (patrz pole [UiState.fastCockpitRefresh] i
+     * [configureDisplayFromState]). Działa też na już uruchomionej pętli - nie wymaga ponownego
+     * połączenia. */
+    fun setFastCockpitRefresh(enabled: Boolean) {
+        _state.value = _state.value.copy(fastCockpitRefresh = enabled)
+        prefs.edit().putBoolean("fast_cockpit_refresh", enabled).apply()
+        configureDisplayFromState()
+    }
+
     /**
      * Wywoływane przy wejściu/wyjściu z ekranu odczytu/zapisu configu (Ustawienia, Poziomy
      * wspomagania itd.) - taki ekran potrzebuje magistrali szeregowej na wyłączność (patrz
@@ -1056,6 +1072,10 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         display.cellCount = s.cellCount
         display.useRealVoltage = s.firmwareType == FirmwareType.BBS_FW
         display.extendedRegistersEnabled = s.firmwareType == FirmwareType.BBS_FW
+        // "Szybkie odświeżanie Kokpitu" (Ustawienia) - skraca pełny cykl telemetrii OEM z ok. 850ms
+        // do ok. 340ms. Opt-in, bo część kontrolerów OEM może nie nadążać przy niższych wartościach.
+        display.tickMs = if (s.fastCockpitRefresh) 40L else 100L
+        display.stepDelayMs = if (s.fastCockpitRefresh) 20L else 50L
         // Zapis (wspomaganie/światło/tryb) tylko gdy Kokpit/Kalibracja aktywne LUB AOD (przyciski
         // +/- na ekranie blokady) - sam Monitoring nigdy nie zapisuje, tylko czyta.
         display.writesEnabled = s.displayMode || (s.aodEnabled && !s.testMode)

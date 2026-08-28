@@ -483,6 +483,7 @@ private fun App(vm: AppViewModel) {
                         onUnitsChange = vm::setUnits,
                         onOdoOffsetChange = vm::setOdoOffsetKm,
                         onFirmwareTypeChange = vm::setFirmwareType,
+                        onFastCockpitRefreshChange = vm::setFastCockpitRefresh,
                     )
                     Screen.DISPLAY -> DisplayScreen(
                         state = state,

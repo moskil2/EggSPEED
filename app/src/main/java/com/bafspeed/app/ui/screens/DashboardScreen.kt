@@ -683,19 +683,20 @@ private fun StatCard(
     }
 }
 
-/** Kwadratowy przycisk z zaokrąglonymi rogami - wysoki kontrast. 70dp = 125% pierwotnych 56dp, zwęża
- * proporcjonalnie sąsiednie ToggleTile (Światło/Hamulec, weight(1f)) w tym samym Row. */
+/** Kwadratowy przycisk z zaokrąglonymi rogami - wysoki kontrast. 84dp = 120% poprzednich 70dp
+ * (łatwiejsze trafienie w czasie jazdy) - zwęża proporcjonalnie sąsiednie ToggleTile (Światło/Hamulec,
+ * weight(1f)) w tym samym Row, bez poszerzania całego wiersza (ich wysokość zostaje bez zmian). */
 @Composable
 private fun SquareButton(label: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
-            .size(70.dp)
+            .size(84.dp)
             .background(TileBg, RoundedCornerShape(14.dp))
             .border(1.5.dp, HighContrastBorder, RoundedCornerShape(14.dp))
             .clickable { onClick() },
         contentAlignment = Alignment.Center,
     ) {
-        Text(label, fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 26.sp, color = HighContrastText)
+        Text(label, fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 31.sp, color = HighContrastText)
     }
 }
 

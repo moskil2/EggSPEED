@@ -79,6 +79,7 @@ fun CalibrationScreen(
                     "factor multiplies ONLY the value shown in the app (current and power) - nothing is " +
                     "saved or changed in the controller. 1.00× = no calibration.",
             ),
+            collapsible = true,
         )
 
         ExpandableParamTile(

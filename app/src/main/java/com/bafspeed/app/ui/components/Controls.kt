@@ -37,6 +37,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -366,7 +367,11 @@ fun StepBtn(label: String, enabled: Boolean, onClick: () -> Unit) {
     }
 }
 
-/** Banner ostrzegawczy - używany na ekranach edycji (M1: podgląd, brak zapisu). */
+/**
+ * Banner ostrzegawczy - używany na ekranach edycji (M1: podgląd, brak zapisu). Gdy [collapsible] -
+ * domyślnie zwinięty do jednej linii (z wielokropkiem) i zielonym trójkątem na końcu; klik rozwija
+ * pełny tekst. Domyślnie [collapsible]=false, więc wszystkie dotychczasowe wywołania bez zmian.
+ */
 @Composable
 fun PreviewBanner(
     text: String,
@@ -375,12 +380,16 @@ fun PreviewBanner(
     dotColor: Color = Tokens.Amber,
     showDot: Boolean = true,
     contentPadding: Dp = 12.dp,
+    collapsible: Boolean = false,
 ) {
+    var expanded by remember { mutableStateOf(false) }
+    val showFull = !collapsible || expanded
     Row(
         Modifier
             .fillMaxWidth()
             .background(Color(0x1AF5A524), RoundedCornerShape(12.dp))
             .border(borderWidth, Color(0x33F5A524), RoundedCornerShape(12.dp))
+            .then(if (collapsible) Modifier.clickable { expanded = !expanded } else Modifier)
             .padding(contentPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -388,7 +397,17 @@ fun PreviewBanner(
             Box(Modifier.size(8.dp).background(dotColor, RoundedCornerShape(4.dp)))
             Spacer(Modifier.size(10.dp))
         }
-        Text(text, fontFamily = Manrope, fontSize = 12.sp, color = textColor)
+        Text(
+            text,
+            fontFamily = Manrope, fontSize = 12.sp, color = textColor,
+            maxLines = if (showFull) Int.MAX_VALUE else 1,
+            overflow = if (showFull) TextOverflow.Clip else TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f),
+        )
+        if (collapsible) {
+            Spacer(Modifier.size(8.dp))
+            Text(if (expanded) "▲" else "▼", fontFamily = Manrope, fontSize = 14.sp, color = Tokens.Emerald)
+        }
     }
 }
 

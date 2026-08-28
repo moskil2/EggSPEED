@@ -47,6 +47,7 @@ import com.bafspeed.app.i18n.tr
 import com.bafspeed.app.ui.components.ExpandableParamTile
 import com.bafspeed.app.ui.components.MicroLabel
 import com.bafspeed.app.ui.components.SegmentedControl
+import com.bafspeed.app.ui.components.ToggleRow
 import com.bafspeed.app.ui.components.TokenCard
 import com.bafspeed.app.ui.theme.Manrope
 import com.bafspeed.app.ui.theme.Sora
@@ -58,6 +59,7 @@ fun SettingsScreen(
     onUnitsChange: (SpeedUnit) -> Unit,
     onOdoOffsetChange: (Double) -> Unit,
     onFirmwareTypeChange: (FirmwareType) -> Unit,
+    onFastCockpitRefreshChange: (Boolean) -> Unit,
 ) {
     val unit = state.units
 
@@ -70,6 +72,7 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         MicroLabel(tr("Firmware sterownika", "Controller firmware"))
+        var firmwareInfoExpanded by remember { mutableStateOf(false) }
         TokenCard(borderColor = Tokens.WhiteBorder) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(tr("Firmware", "Firmware"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary, modifier = Modifier.weight(1f))
@@ -80,29 +83,61 @@ fun SettingsScreen(
                     modifier = Modifier.width(180.dp),
                 )
             }
-            Spacer(Modifier.height(8.dp))
-            FirmwareDescriptionParagraph(
-                label = "OEM Bafang",
-                text = tr(
-                    "fabryczny, zamknięty firmware sterowników Bafang BBS01/BBS02/BBSHD. Komunikuje się protokołem Bafang Configuration Tool, którego apka używa domyślnie.",
-                    "the factory, closed-source firmware that Bafang BBS01/BBS02/BBSHD controllers ship with by default. Speaks the Bafang Configuration Tool protocol, which the app uses by default.",
-                ),
-            )
-            Spacer(Modifier.height(8.dp))
-            FirmwareDescriptionParagraph(
-                label = "BBS-FW",
-                text = tr(
-                    "(github.com/danielnilsson9/bbs-fw) - otwarte, alternatywne firmware, które można samodzielnie wgrać na te same sterowniki w miejsce fabrycznego. Ma WŁASNY, INNY protokół konfiguracji, więc przełącznik zmienia, jakich ramek apka używa do rozmowy ze sterownikiem.",
-                    "(github.com/danielnilsson9/bbs-fw) - open-source, alternative firmware you can flash yourself onto the same controllers in place of the factory one. Has its OWN, DIFFERENT configuration protocol, so this switch changes which frames the app uses to talk to the controller.",
-                ),
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(
-                tr(
-                    "Wybierz opcję zgodną z tym, co faktycznie masz wgrane na sterowniku. Zmiana wymaga ponownego połączenia.",
-                    "Pick whichever matches what's actually flashed on your controller. Changing it requires reconnecting.",
-                ),
-                fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
+            Spacer(Modifier.height(6.dp))
+            Row(
+                Modifier.fillMaxWidth().clickable { firmwareInfoExpanded = !firmwareInfoExpanded },
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    tr("Co to znaczy?", "What does this mean?"),
+                    fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary, modifier = Modifier.weight(1f),
+                )
+                Text(if (firmwareInfoExpanded) "▲" else "▼", fontFamily = Manrope, fontSize = 14.sp, color = Tokens.Emerald)
+            }
+            if (firmwareInfoExpanded) {
+                Spacer(Modifier.height(8.dp))
+                FirmwareDescriptionParagraph(
+                    label = "OEM Bafang",
+                    text = tr(
+                        "fabryczny, zamknięty firmware sterowników Bafang BBS01/BBS02/BBSHD. Komunikuje się protokołem Bafang Configuration Tool, którego apka używa domyślnie.",
+                        "the factory, closed-source firmware that Bafang BBS01/BBS02/BBSHD controllers ship with by default. Speaks the Bafang Configuration Tool protocol, which the app uses by default.",
+                    ),
+                )
+                Spacer(Modifier.height(8.dp))
+                FirmwareDescriptionParagraph(
+                    label = "BBS-FW",
+                    text = tr(
+                        "(github.com/danielnilsson9/bbs-fw) - otwarte, alternatywne firmware, które można samodzielnie wgrać na te same sterowniki w miejsce fabrycznego. Ma WŁASNY, INNY protokół konfiguracji, więc przełącznik zmienia, jakich ramek apka używa do rozmowy ze sterownikiem.",
+                        "(github.com/danielnilsson9/bbs-fw) - open-source, alternative firmware you can flash yourself onto the same controllers in place of the factory one. Has its OWN, DIFFERENT configuration protocol, so this switch changes which frames the app uses to talk to the controller.",
+                    ),
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    tr(
+                        "Wybierz opcję zgodną z tym, co faktycznie masz wgrane na sterowniku. Zmiana wymaga ponownego połączenia.",
+                        "Pick whichever matches what's actually flashed on your controller. Changing it requires reconnecting.",
+                    ),
+                    fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
+                )
+            }
+        }
+
+        ExpandableParamTile(
+            label = tr("Szybkie odświeżanie Kokpitu", "Fast Cockpit refresh"),
+            valueLabel = if (state.fastCockpitRefresh) tr("Włączone", "On") else tr("Wyłączone", "Off"),
+            description = tr(
+                "Skraca odstępy między odczytami prędkości/prądu w pętli telemetrii, żeby wartości w Kokpicie " +
+                    "zmieniały się płynniej zamiast skokowo. Może nie działać poprawnie na niektórych kontrolerach " +
+                    "(np. brak/utrata odczytów) - jeśli po włączeniu Kokpit zacznie się zacinać lub pokazywać zera, wyłącz tę opcję.",
+                "Shortens the gaps between speed/current reads in the telemetry loop, so Cockpit values change " +
+                    "smoothly instead of in visible steps. May not work correctly on some controllers (e.g. missing/dropped " +
+                    "readings) - if the Cockpit starts stuttering or showing zeros after enabling this, turn it back off.",
+            ),
+        ) {
+            ToggleRow(
+                label = tr("Szybkie odświeżanie", "Fast refresh"),
+                checked = state.fastCockpitRefresh,
+                onCheckedChange = onFastCockpitRefreshChange,
             )
         }
 
