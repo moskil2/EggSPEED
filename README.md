@@ -148,12 +148,7 @@
 
 ## Download
 
-EggSPEED is currently in **closed testing** on Google Play, so the install link only works for testers. It takes two clicks to get in:
-
-1. **[Join the tester group](https://groups.google.com/g/eggspeed)** - sign in with the same Google account you use on the Play Store, then hit "Join group".
-2. **[Open the Play Store testing link](https://play.google.com/apps/testing/app.spotrobotics.eggspeed)** on your phone - once you're a member, Google Play unlocks the install button for you automatically.
-
-That's it - after the first install, EggSPEED updates itself through Google Play like any other app.
+EggSPEED is available now on Google Play - **[get it here](https://play.google.com/store/apps/details?id=app.spotrobotics.eggspeed)**. The latest version is always available there, and the app updates itself through Google Play like any other app.
 
 ## Safety model
 
