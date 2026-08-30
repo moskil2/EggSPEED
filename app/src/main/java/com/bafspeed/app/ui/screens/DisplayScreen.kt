@@ -97,19 +97,19 @@ fun DisplayScreen(
                     "While riding, shows speed/power/assist on the lock screen and AOD so the phone can actually sleep instead of keeping the screen lit the whole time - a real battery saving, unlike a plain bright screen. It works as \"now playing\" (pretending to be a music player) - the only public Android mechanism that achieves this, so it looks like music, not a dedicated cockpit. Requires notification permission - without it, nothing will show. Not every phone displays now-playing media on its AOD.",
                 ),
             )
-            if (state.aodEnabled) {
-                HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
-                ToggleRow(
-                    label = tr("Sterowanie +/- na ekranie blokady", "+/- controls on lock screen"),
-                    checked = state.aodAssistControlsEnabled,
-                    onCheckedChange = onAodAssistControlsChange,
-                    accent = Tokens.Blue,
-                    description = tr(
-                        "Dodaje przyciski poprzedni/następny (jako +/-) do zmiany wspomagania bezpośrednio z ekranu blokady. Uwaga: telefon zgłasza się wtedy jako aktywnie odtwarzający media, co może kolidować z prawdziwą muzyką (słuchawki Bluetooth, przyciski multimedialne).",
-                        "Adds previous/next buttons (as +/-) to change assist level directly from the lock screen. Note: the phone then reports itself as actively playing media, which can conflict with real music (Bluetooth headphones, media buttons).",
-                    ),
-                )
-            }
+            // Widoczne zawsze (niezależnie od stanu przełącznika wyżej), nie tylko gdy AOD włączone -
+            // na wyraźne życzenie użytkownika, żeby opcja była widoczna/konfigurowalna z wyprzedzeniem.
+            HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
+            ToggleRow(
+                label = tr("Sterowanie +/- na ekranie blokady", "+/- controls on lock screen"),
+                checked = state.aodAssistControlsEnabled,
+                onCheckedChange = onAodAssistControlsChange,
+                accent = Tokens.Blue,
+                description = tr(
+                    "Dodaje przyciski poprzedni/następny (jako +/-) do zmiany wspomagania bezpośrednio z ekranu blokady. Uwaga: telefon zgłasza się wtedy jako aktywnie odtwarzający media, co może kolidować z prawdziwą muzyką (słuchawki Bluetooth, przyciski multimedialne).",
+                    "Adds previous/next buttons (as +/-) to change assist level directly from the lock screen. Note: the phone then reports itself as actively playing media, which can conflict with real music (Bluetooth headphones, media buttons).",
+                ),
+            )
         }
     }
 }

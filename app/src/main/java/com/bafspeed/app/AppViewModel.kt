@@ -1,6 +1,9 @@
 package com.bafspeed.app
 
 import android.app.Application
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.bafspeed.app.protocol.BafangCommands
@@ -200,6 +203,8 @@ data class UiState(
     val capacityAh: Double = 17.5,
     /** Współczynnik kalibracji odczytu prądu (np. sterowniki z shunt modem). 1.0 = brak kalibracji. */
     val currentCalibrationFactor: Double = 1.0,
+    /** Współczynnik kalibracji odczytu prędkości (np. błędny obwód koła/czujnik). 1.0 = brak kalibracji. */
+    val speedCalibrationFactor: Double = 1.0,
     /** Ręczna korekta odczytu napięcia [V] (-5..+5, krok 0,1) - napięcie estymowane z % baterii bywa lekko przesunięte. */
     val voltageCalibrationOffsetV: Double = 0.0,
     /** Ostatni znany % baterii przed rozłączeniem - trwały (SharedPreferences), żeby nie znikał po rozłączeniu/restarcie apki. */
@@ -253,6 +258,11 @@ data class UiState(
      * niektórych kontrolerach OEM (patrz configureDisplayFromState). Domyślnie wyłączone. Trwały.
      */
     val fastCockpitRefresh: Boolean = false,
+    /** Ustawienia - dodatkowa adnotacja prędkości z GPS telefonu na Kokpicie. Wymaga ACCESS_FINE_LOCATION,
+     * o które apka prosi dopiero przy włączeniu tej opcji (patrz MainActivity.onGpsSpeedChange). Trwały. */
+    val gpsSpeedEnabled: Boolean = false,
+    /** Aktualna prędkość z GPS [km/h] - żywa, NIE trwała (patrz AppViewModel.startGpsUpdates). */
+    val gpsSpeedKmh: Double = 0.0,
 
     /** Zakładka "SAG" - efektywna rezystancja (Ω) wygładzana EMA z par (OCV, napięcie pod obciążeniem) złapanych podczas zwykłej jazdy - patrz [sampleSagPassive]. Trwały. */
     val everydaySagResistanceOhm: Double? = null,
@@ -494,6 +504,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             cellCount = prefs.getInt("cell_count", 13),
             capacityAh = prefs.getFloat("capacity_ah", 17.5f).toDouble(),
             currentCalibrationFactor = prefs.getFloat("current_calibration_factor", 1.0f).toDouble(),
+            speedCalibrationFactor = prefs.getFloat("speed_calibration_factor", 1.0f).toDouble(),
             voltageCalibrationOffsetV = prefs.getFloat("voltage_calibration_offset_v", 0f).toDouble(),
             lastKnownBatteryPct = prefs.getInt("last_known_battery_pct", 0),
             lastKnownVoltageV = prefs.getFloat("last_known_voltage_v", 0f).toDouble(),
@@ -509,6 +520,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             aodEnabled = prefs.getBoolean("aod_enabled", false),
             aodAssistControlsEnabled = prefs.getBoolean("aod_assist_controls_enabled", false),
             fastCockpitRefresh = prefs.getBoolean("fast_cockpit_refresh", false),
+            gpsSpeedEnabled = prefs.getBoolean("gps_speed_enabled", false),
             everydaySagResistanceOhm = prefs.getFloat("everyday_sag_resistance_ohm", -1f).toDouble().takeIf { it >= 0 },
             sagCalibrationResultV = prefs.getFloat("sag_cal_result_v", -1f).toDouble().takeIf { it >= 0 },
             sagCalibrationResultResistanceOhm = prefs.getFloat("sag_cal_result_resistance_ohm", -1f).toDouble().takeIf { it >= 0 },
@@ -532,6 +544,12 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         ),
     )
     val state: StateFlow<UiState> = _state.asStateFlow()
+
+    init {
+        // Jeśli GPS Speed było włączone w poprzedniej sesji (trwały pref) i uprawnienie nadal jest
+        // przyznane, wznawiamy nasłuch od razu, bez czekania aż użytkownik ponownie kliknie przełącznik.
+        if (_state.value.gpsSpeedEnabled) startGpsUpdates()
+    }
 
     private val display = DisplayStateMachine(viewModelScope) { bytes ->
         withContext(Dispatchers.IO) { runCatching { serial.write(bytes) } }
@@ -747,6 +765,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 cellCount = cur.cellCount,
                 capacityAh = cur.capacityAh,
                 currentCalibrationFactor = cur.currentCalibrationFactor,
+                speedCalibrationFactor = cur.speedCalibrationFactor,
+                gpsSpeedEnabled = cur.gpsSpeedEnabled,
                 voltageCalibrationOffsetV = cur.voltageCalibrationOffsetV,
                 tripKm = cur.tripKm,
                 avgSpeedDistanceKm = cur.avgSpeedDistanceKm,
@@ -967,6 +987,47 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         configureDisplayFromState()
     }
 
+    private var gpsListener: LocationListener? = null
+
+    /**
+     * Ustawienia - "GPS Speed" (patrz [UiState.gpsSpeedEnabled]/[UiState.gpsSpeedKmh]). Uprawnienie
+     * ACCESS_FINE_LOCATION jest sprawdzane/proszone w MainActivity PRZED wywołaniem tej funkcji z
+     * enabled=true (patrz onGpsSpeedChange) - tu zakładamy, że skoro enabled=true, to jest przyznane.
+     * Niezależne od połączenia z kontrolerem - działa też offline/przed połączeniem.
+     */
+    fun setGpsSpeedEnabled(enabled: Boolean) {
+        _state.value = _state.value.copy(gpsSpeedEnabled = enabled, gpsSpeedKmh = if (enabled) _state.value.gpsSpeedKmh else 0.0)
+        prefs.edit().putBoolean("gps_speed_enabled", enabled).apply()
+        if (enabled) startGpsUpdates() else stopGpsUpdates()
+    }
+
+    private fun startGpsUpdates() {
+        if (gpsListener != null) return
+        val app = getApplication<Application>()
+        if (androidx.core.content.ContextCompat.checkSelfPermission(app, android.Manifest.permission.ACCESS_FINE_LOCATION)
+            != android.content.pm.PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        val manager = app.getSystemService(Application.LOCATION_SERVICE) as? LocationManager ?: return
+        val listener = LocationListener { location: Location ->
+            // getSpeed() to m/s - konwersja na km/h. Brak korekty jednostek (mph) tutaj celowo -
+            // DashboardScreen konwertuje przez unit.fromKmh() tak jak resztę wartości prędkości.
+            _state.value = _state.value.copy(gpsSpeedKmh = location.speed * 3.6)
+        }
+        gpsListener = listener
+        runCatching {
+            manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000L, 0f, listener)
+        }
+    }
+
+    private fun stopGpsUpdates() {
+        val app = getApplication<Application>()
+        val manager = app.getSystemService(Application.LOCATION_SERVICE) as? LocationManager
+        gpsListener?.let { manager?.removeUpdates(it) }
+        gpsListener = null
+    }
+
     /**
      * Wywoływane przy wejściu/wyjściu z ekranu odczytu/zapisu configu (Ustawienia, Poziomy
      * wspomagania itd.) - taki ekran potrzebuje magistrali szeregowej na wyłączność (patrz
@@ -1067,6 +1128,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         display.lightOn = s.lightOn
         display.sportMode = s.sportMode
         display.currentCalibrationFactor = s.currentCalibrationFactor
+        display.speedCalibrationFactor = s.speedCalibrationFactor
         display.voltageCalibrationOffsetV = s.voltageCalibrationOffsetV
         display.lowBatteryProtectionV = s.basicOrDefault.lowBatteryProtection
         display.cellCount = s.cellCount
@@ -1427,6 +1489,14 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         display.currentCalibrationFactor = clamped
         _state.value = _state.value.copy(currentCalibrationFactor = clamped)
         prefs.edit().putFloat("current_calibration_factor", clamped.toFloat()).apply()
+    }
+
+    /** Współczynnik kalibracji odczytu prędkości (0,50–2,00×) - kalibruje WYŁĄCZNIE wyświetlaną wartość (Kokpit + wykresy Monitoringu). */
+    fun setSpeedCalibrationFactor(x: Double) {
+        val clamped = x.coerceIn(0.50, 2.0)
+        display.speedCalibrationFactor = clamped
+        _state.value = _state.value.copy(speedCalibrationFactor = clamped)
+        prefs.edit().putFloat("speed_calibration_factor", clamped.toFloat()).apply()
     }
 
     /** Ręczna korekta odczytu napięcia (-5,0..+5,0 V) - kalibruje WYŁĄCZNIE wyświetlaną wartość. */
@@ -2207,5 +2277,6 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         toneGenerator?.release()
         serial.close()
         energyAnalyzer.saveState()
+        stopGpsUpdates()
     }
 }

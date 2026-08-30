@@ -114,6 +114,27 @@ fun PlainSlider(
 }
 
 /**
+ * Nagłówek sekcji (MicroLabel) klikalny w całości, ze strzałką - zwija/rozwija [content] pod spodem.
+ * Domyślnie zwinięte. Do prostych bloków bez własnej wartości/opisu (np. kafelki PODGLĄD w Kalibracji) -
+ * dla parametrów z wartością/opisem i kontrolką patrz [ExpandableParamTile].
+ */
+@Composable
+fun CollapsibleMicroLabel(label: String, content: @Composable () -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    Row(
+        Modifier.fillMaxWidth().clickable { expanded = !expanded },
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        MicroLabel(label, modifier = Modifier.weight(1f))
+        Text(if (expanded) "▲" else "▼", fontFamily = Manrope, fontSize = 12.sp, color = Tokens.Emerald)
+    }
+    if (expanded) {
+        Spacer(Modifier.height(6.dp))
+        content()
+    }
+}
+
+/**
  * Karta pojedynczego parametru: nagłówek (etykieta + wartość + strzałka) klikalny w całości -
  * rozwija/zwija opis funkcji (mała pomarańczowa czcionka). Kontrolka w [content] pozostaje
  * w pełni interaktywna, bo sama przechwytuje swoje gesty (Compose hit-testuje najgłębszy

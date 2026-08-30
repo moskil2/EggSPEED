@@ -3,6 +3,9 @@
 
     <uses-feature android:name="android.hardware.usb.host" android:required="true" />
 
+    <!-- GPS Speed (Ustawienia, opcjonalne) - proszone o zgodę dopiero przy włączeniu opcji. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <!-- Android 11+ package visibility: bez tego wpisu resolve() dla mailto/https może zawieść
          na niektórych ROM-ach - dotyczy przycisków Kontakt/Strona/Formularz w About. -->
     <queries>

@@ -31,6 +31,7 @@ import com.bafspeed.app.FirmwareType
 import com.bafspeed.app.UiState
 import com.bafspeed.app.protocol.Telemetry
 import com.bafspeed.app.i18n.tr
+import com.bafspeed.app.ui.components.CollapsibleMicroLabel
 import com.bafspeed.app.ui.components.ExpandableParamTile
 import com.bafspeed.app.ui.components.MicroLabel
 import com.bafspeed.app.ui.components.PlainSlider
@@ -47,6 +48,7 @@ fun CalibrationScreen(
     telemetry: Telemetry,
     onFactorChange: (Double) -> Unit,
     onVoltageOffsetChange: (Double) -> Unit,
+    onSpeedFactorChange: (Double) -> Unit,
     onStartDisplay: () -> Unit,
     onStopDisplay: () -> Unit,
 ) {
@@ -61,6 +63,11 @@ fun CalibrationScreen(
     val declaredLimitA = state.basicOrDefault.currentLimit.toDouble()
     val voltageOffsetV = state.voltageCalibrationOffsetV
     val nominalVoltageV = state.nominalPackVoltage.toDouble()
+    val speedFactor = state.speedCalibrationFactor
+    val unitLabel = state.units.label
+    // Wartość referencyjna na sztywno 30 (nie 30km/h przeliczane na mph) - sama liczba jest stała,
+    // zmienia się tylko etykieta jednostki pod aktualne ustawienie (patrz SettingsScreen/SpeedUnit).
+    val referenceSpeed = 30.0
 
     Column(
         Modifier
@@ -125,13 +132,16 @@ fun CalibrationScreen(
             }
         }
 
-        MicroLabel(tr("Podgląd prądu", "Current preview"))
-        TokenCard(borderColor = Tokens.WhiteBorder) {
-            InfoRow(tr("Limit prądu (zadeklarowany)", "Current limit (declared)"), String.format("%.1f A", declaredLimitA))
-            HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
-            InfoRow(tr("Po kalibracji", "After calibration"), String.format("%.1f A", declaredLimitA * factor))
-            HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
-            InfoRow(tr("Moc po kalibracji", "Power after calibration"), String.format("%.0f W", nominalVoltageV * declaredLimitA * factor))
+        CollapsibleMicroLabel(tr("Podgląd prądu", "Current preview")) {
+            TokenCard(borderColor = Tokens.WhiteBorder, contentPaddingVertical = 8.dp) {
+                InfoRow(tr("Limit prądu (zadeklarowany)", "Current limit (declared)"), String.format("%.1f A", declaredLimitA))
+                HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
+                InfoRow(tr("Po kalibracji", "After calibration"), String.format("%.1f A", declaredLimitA * factor))
+                HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
+                // Maksymalne napiecie (cellCount x 4,2V - "Gorny limit naladowania" w zakladce
+                // Bateria), nie nominalne - moc szczytowa jest liczona przy pelnym naladowaniu.
+                InfoRow(tr("Moc po kalibracji", "Power after calibration"), String.format("%.0f W", state.cellCount * 4.2 * declaredLimitA * factor))
+            }
         }
 
         ExpandableParamTile(
@@ -190,19 +200,71 @@ fun CalibrationScreen(
             }
         }
 
-        MicroLabel(tr("Podgląd napięcia", "Voltage preview"))
-        TokenCard(borderColor = Tokens.WhiteBorder) {
-            // Offline: pokazujemy ostatnie znane napięcie sprzed rozłączenia (state.lastKnownVoltageV),
-            // a jeśli go nigdy nie było (0,0 - apka jeszcze się nie łączyła) - estymatę z napięcia
-            // nominalnego pakietu (np. 52V dla 14S), żeby podgląd korekty miał sens nawet offline.
-            val readV = when {
-                connected -> telemetry.estimatedVoltageV
-                state.lastKnownVoltageV > 0.0 -> state.lastKnownVoltageV
-                else -> nominalVoltageV
+        CollapsibleMicroLabel(tr("Podgląd napięcia", "Voltage preview")) {
+            TokenCard(borderColor = Tokens.WhiteBorder, contentPaddingVertical = 8.dp) {
+                // Offline: pokazujemy ostatnie znane napięcie sprzed rozłączenia (state.lastKnownVoltageV),
+                // a jeśli go nigdy nie było (0,0 - apka jeszcze się nie łączyła) - estymatę z napięcia
+                // nominalnego pakietu (np. 52V dla 14S), żeby podgląd korekty miał sens nawet offline.
+                val readV = when {
+                    connected -> telemetry.estimatedVoltageV
+                    state.lastKnownVoltageV > 0.0 -> state.lastKnownVoltageV
+                    else -> nominalVoltageV
+                }
+                InfoRow(tr("Napięcie odczytane", "Voltage read"), String.format("%.1f V", readV))
+                HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
+                InfoRow(tr("Napięcie po korekcie", "Voltage after correction"), String.format("%.1f V", readV + voltageOffsetV))
             }
-            InfoRow(tr("Napięcie odczytane", "Voltage read"), String.format("%.1f V", readV))
-            HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
-            InfoRow(tr("Napięcie po korekcie", "Voltage after correction"), String.format("%.1f V", readV + voltageOffsetV))
+        }
+
+        ExpandableParamTile(
+            label = tr("Kalibracja prędkości", "Speed calibration"),
+            valueLabel = String.format("%.2f×", speedFactor),
+            description = tr(
+                "Współczynnik mnoży surowy odczyt prędkości z kontrolera przed wyświetleniem jej w Kokpicie " +
+                    "i na wykresach w Monitoringu. Przydaje się, gdy prędkość jest zaniżona/zawyżona (np. błędny " +
+                    "obwód koła albo czujnik prędkości) - nic w tym sterowniku się nie zmienia.",
+                "The factor multiplies the raw speed reading from the controller before it's shown in the " +
+                    "Cockpit and on the Monitoring charts. Useful when the speed is under/overstated (e.g. wrong " +
+                    "wheel circumference or speed sensor) - nothing changes in the controller itself.",
+            ),
+        ) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                StepBtn("-", true) { onSpeedFactorChange((speedFactor - 0.01).coerceIn(0.50, 2.0)) }
+                Spacer(Modifier.width(10.dp))
+                Box(Modifier.weight(1f)) {
+                    PlainSlider(
+                        value = speedFactor.toFloat(),
+                        range = 0.50f..2.00f,
+                        accent = Tokens.Amber,
+                        onValueChange = { onSpeedFactorChange(it.toDouble()) },
+                    )
+                }
+                Spacer(Modifier.width(10.dp))
+                StepBtn("+", true) { onSpeedFactorChange((speedFactor + 0.01).coerceIn(0.50, 2.0)) }
+            }
+            Spacer(Modifier.height(10.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Tokens.Elevated, RoundedCornerShape(12.dp))
+                    .clickable { onSpeedFactorChange(1.0) }
+                    .padding(vertical = 10.dp),
+            ) {
+                Text(
+                    tr("Resetuj do 1,00× (brak kalibracji)", "Reset to 1.00× (no calibration)"),
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    fontFamily = Manrope, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Tokens.TextPrimary,
+                )
+            }
+        }
+
+        CollapsibleMicroLabel(tr("Podgląd prędkości", "Speed preview")) {
+            TokenCard(borderColor = Tokens.WhiteBorder, contentPaddingVertical = 8.dp) {
+                InfoRow(tr("Prędkość przed kalibracją", "Speed before calibration"), String.format("%.1f %s", referenceSpeed, unitLabel))
+                HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
+                InfoRow(tr("Prędkość po kalibracji", "Speed after calibration"), String.format("%.1f %s", referenceSpeed * speedFactor, unitLabel))
+            }
         }
         Spacer(Modifier.height(8.dp))
     }
@@ -210,8 +272,9 @@ fun CalibrationScreen(
 
 @Composable
 private fun InfoRow(label: String, value: String) {
-    // Padding zaciesniety (bylo 9dp) - kafelki PODGLAD maja byc kompaktowe.
-    Row(Modifier.fillMaxWidth().padding(vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
+    // Padding zaciesniety (bylo 9dp, potem 5dp) - kafelki PODGLAD maja byc kompaktowe, bez zmiany
+    // rozmiaru czcionki (patrz TokenCard.contentPaddingVertical przy wywolaniach tych kafelkow).
+    Row(Modifier.fillMaxWidth().padding(vertical = 3.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(label, fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary, modifier = Modifier.weight(1f))
         Text(value, fontFamily = Sora, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = Tokens.TextPrimary)
     }

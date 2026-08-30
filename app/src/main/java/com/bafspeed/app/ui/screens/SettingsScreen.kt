@@ -60,6 +60,7 @@ fun SettingsScreen(
     onOdoOffsetChange: (Double) -> Unit,
     onFirmwareTypeChange: (FirmwareType) -> Unit,
     onFastCockpitRefreshChange: (Boolean) -> Unit,
+    onGpsSpeedChange: (Boolean) -> Unit,
 ) {
     val unit = state.units
 
@@ -138,6 +139,25 @@ fun SettingsScreen(
                 label = tr("Szybkie odświeżanie", "Fast refresh"),
                 checked = state.fastCockpitRefresh,
                 onCheckedChange = onFastCockpitRefreshChange,
+            )
+        }
+
+        ExpandableParamTile(
+            label = "GPS Speed",
+            valueLabel = if (state.gpsSpeedEnabled) tr("Włączone", "On") else tr("Wyłączone", "Off"),
+            description = tr(
+                "Dodaje na Kokpicie małą adnotację z prędkością odczytaną bezpośrednio z GPS telefonu, obok " +
+                    "głównego odczytu prędkości ze sterownika - przydaje się do porównania obu wartości. Wymaga " +
+                    "zgody na dostęp do lokalizacji (poprosimy o nią dopiero po włączeniu tej opcji).",
+                "Adds a small annotation on the Cockpit with the speed read directly from the phone's GPS, " +
+                    "next to the main speed reading from the controller - useful for comparing the two. Requires " +
+                    "location permission (we'll ask for it only once you enable this option).",
+            ),
+        ) {
+            ToggleRow(
+                label = "GPS Speed",
+                checked = state.gpsSpeedEnabled,
+                onCheckedChange = onGpsSpeedChange,
             )
         }
 

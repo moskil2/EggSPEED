@@ -78,7 +78,7 @@ fun AboutScreen() {
             )
             HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
             ActionRow(
-                icon = "⬆",
+                icon = "⬆️",
                 label = tr("Sprawdź aktualizacje", "Check for updates"),
                 onClick = { openPlayStoreListing(context) },
             )

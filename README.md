@@ -162,6 +162,22 @@ app/src/main/java/com/bafspeed/app/
 
 ## Changelog
 
+## v0.3.58 - 2026-08-29 (versionCode 60)
+- GPS Speed annotation no longer shows a leading zero below 10 (e.g. "0.0" and "9.9", not "00.0"/"09.9") and no longer shifts left/right when crossing the 10 threshold (fixed-width field).
+- Settings: "GPS Speed" moved right under "Fast Cockpit refresh".
+- Screen/AOD: both toggles ("Show Cockpit on lock screen/AOD" and "+/- controls on lock screen") are now always visible, not just when the first one is on.
+- Calibration: all three preview tiles (Current, Voltage, Speed) are now collapsible.
+- Cockpit: the main speed readout now supports a 3rd leading digit (up to 199.9) instead of capping at 99.9 - same anchored-to-the-right layout as before.
+- Dark theme: removed the gray border around the EggSPEED wordmark on the Cockpit's top bar (light theme keeps it).
+- Hamburger menu: added a CLOSE button next to "Menu" at the top - disconnects and fully closes the app.
+- About: fixed the "Check for updates" icon rendering as a faint/invisible glyph on some phones (missing emoji variation selector) - now renders as a proper bold icon like the star next to "Rate the app".
+- Calibration: "Power after calibration" now uses the pack's maximum voltage (cell count x 4.2V) instead of nominal voltage, matching peak power at a full charge.
+
+## v0.3.57 - 2026-08-29 (versionCode 59)
+- New "Speed calibration" (Calibration tab, bottom) - same multiplier approach as the existing current calibration: scales the raw speed reading from the controller before it reaches the Cockpit AND the Monitoring charts (single source of truth, so both stay in sync). Includes a preview tile showing what a fixed 30 km/h (or mph, matching your unit setting) reading would become after calibration.
+- New optional "GPS Speed" (Settings, under Application) - shows a small "GPS ##.# KM/H" annotation on the Cockpit, read directly from the phone's own GPS, for comparing against the controller's speed reading. Off by default; location permission is only requested the first time you turn it on. Doesn't push the main speed display down - it overlays the same area.
+- Calibration: the "Current preview" and "Voltage preview" tiles are now more compact (less vertical padding), same text size as before.
+
 ## v0.3.56 - 2026-08-28 (versionCode 58)
 - New optional "Fast Cockpit refresh" toggle (Settings, under the firmware switch, off by default) - shortens the telemetry loop's polling interval so speed/current update smoothly instead of in visible steps (full OEM cycle drops from ~850ms to ~340ms). Off by default and clearly flagged as experimental since some OEM controllers may not keep up with the shorter interval.
 - Settings: the OEM Bafang / BBS-FW firmware description is now collapsed by default behind a "What does this mean?" toggle, instead of always taking up space on the screen.

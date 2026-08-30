@@ -1,8 +1,14 @@
 package com.bafspeed.app
 
+import android.Manifest
+import android.app.Activity
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
+import androidx.compose.ui.graphics.Color
+import androidx.core.content.ContextCompat
+import kotlin.system.exitProcess
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -205,6 +211,26 @@ private fun App(vm: AppViewModel) {
         }
     }
 
+    // GPS Speed (Ustawienia) - uprawnienie proszone dopiero przy wlaczeniu opcji, nie przy starcie
+    // apki. Odmowa zostawia przelacznik wylaczonym (patrz onGpsSpeedChange nizej).
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { granted: Boolean ->
+        vm.setGpsSpeedEnabled(granted)
+        if (!granted) {
+            Toast.makeText(context, tr(state.language, "Brak zgody na dostęp do lokalizacji", "Location permission denied"), Toast.LENGTH_LONG).show()
+        }
+    }
+    val onGpsSpeedChange: (Boolean) -> Unit = { enabled ->
+        if (!enabled) {
+            vm.setGpsSpeedEnabled(false)
+        } else if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            vm.setGpsSpeedEnabled(true)
+        } else {
+            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+    }
+
     // SAF: wczytanie profilu z pliku
     val importLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument(),
@@ -271,6 +297,11 @@ private fun App(vm: AppViewModel) {
                     current = screen,
                     firmwareType = state.firmwareType,
                     onNavigate = { go(it) },
+                    onClose = {
+                        vm.disconnect()
+                        (context as? Activity)?.finishAffinity()
+                        exitProcess(0)
+                    },
                 )
             }
         },
@@ -453,6 +484,7 @@ private fun App(vm: AppViewModel) {
                         telemetry = telemetry,
                         onFactorChange = vm::setCurrentCalibrationFactor,
                         onVoltageOffsetChange = vm::setVoltageCalibrationOffsetV,
+                        onSpeedFactorChange = vm::setSpeedCalibrationFactor,
                         onStartDisplay = vm::startDisplayMode,
                         onStopDisplay = vm::stopDisplayMode,
                     )
@@ -484,6 +516,7 @@ private fun App(vm: AppViewModel) {
                         onOdoOffsetChange = vm::setOdoOffsetKm,
                         onFirmwareTypeChange = vm::setFirmwareType,
                         onFastCockpitRefreshChange = vm::setFastCockpitRefresh,
+                        onGpsSpeedChange = onGpsSpeedChange,
                     )
                     Screen.DISPLAY -> DisplayScreen(
                         state = state,
@@ -548,7 +581,9 @@ private fun TopBar(
             Box(
                 Modifier
                     .align(Alignment.Center)
-                    .border(1.dp, Tokens.WhiteBorder, RoundedCornerShape(8.dp))
+                    // Ramka tylko w jasnym motywie - w ciemnym na żądanie użytkownika usunięta (zbędna
+                    // na ciemnym tle, tam wordmark sam się odcina bez obramowania).
+                    .border(1.dp, if (LocalLightMode.current) Tokens.WhiteBorder else Color.Transparent, RoundedCornerShape(8.dp))
                     .padding(horizontal = 10.dp, vertical = 4.dp),
             ) {
                 EggSpeedWordmark(fontSize = 18.sp, letterSpacing = 3.sp)
@@ -585,6 +620,7 @@ private fun DrawerContent(
     current: Screen,
     firmwareType: FirmwareType,
     onNavigate: (Screen) -> Unit,
+    onClose: () -> Unit,
 ) {
     Column(
         Modifier
@@ -600,8 +636,27 @@ private fun DrawerContent(
         Spacer(Modifier.height(18.dp))
 
         // "Menu" (About) na samej górze (ocena w Google Play, kontakt, itd. są w środku) - zwykły
-        // wygląd jak reszta pozycji, tylko kolejność wyróżnia je jako pierwsze.
-        DrawerItem(Screen.ABOUT.title(firmwareType), selected = current == Screen.ABOUT) { onNavigate(Screen.ABOUT) }
+        // wygląd jak reszta pozycji, tylko kolejność wyróżnia je jako pierwsze. CLOSE po prawej,
+        // na tej samej wysokości - rozłącza i twardo zamyka apkę (nie tylko cofa do tła).
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.weight(1f)) {
+                DrawerItem(Screen.ABOUT.title(firmwareType), selected = current == Screen.ABOUT) { onNavigate(Screen.ABOUT) }
+            }
+            Spacer(Modifier.width(8.dp))
+            Box(
+                Modifier
+                    .background(Tokens.Card, RoundedCornerShape(12.dp))
+                    .border(1.dp, Tokens.Red, RoundedCornerShape(12.dp))
+                    .clickable { onClose() }
+                    .padding(horizontal = 12.dp, vertical = 5.dp),
+            ) {
+                Text(
+                    "CLOSE",
+                    fontFamily = Manrope, fontWeight = FontWeight.Bold, fontSize = 13.sp,
+                    letterSpacing = 1.sp, color = Tokens.Red,
+                )
+            }
+        }
         Spacer(Modifier.height(10.dp))
 
         // Ekrany OEM i bbs-fw są wzajemnie wykluczające się (różne protokoły konfiguracji, patrz

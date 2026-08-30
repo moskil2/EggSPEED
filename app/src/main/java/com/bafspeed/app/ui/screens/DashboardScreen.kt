@@ -201,12 +201,30 @@ fun DashboardScreen(
 
         // Tryb testowy (przycisk TEST w Ustawieniach) - wymusza skrajne wartosci na duzym
         // wyswietlaczu predkosci/mocy i na kafelkach ponizej, zeby sprawdzic czy dluzsze/wieksze
-        // liczby nadal miesza sie w layoucie. Predkosc ograniczona do 99,9 - to twardy limit
-        // samego DigitalSpeed (skalowany pod maks. 2 cyfry), nie ma sensu podawac wiecej.
+        // liczby nadal miesza sie w layoucie. Predkosc ograniczona do 199,9 - to twardy limit
+        // samego DigitalSpeed (skalowany pod maks. 3 cyfry), nie ma sensu podawac wiecej.
         val t = state.testMode
 
-        // Prędkość - czysto cyfrowa, bez pierścienia, jednostka po prawej stronie odczytu
-        DigitalSpeed(speedKmh = if (t) unit.toKmh(99.9) else telemetry.speedKmh, unit = unit, modifier = Modifier.fillMaxWidth())
+        // Prędkość - czysto cyfrowa, bez pierścienia, jednostka po prawej stronie odczytu.
+        // Adnotacja GPS (Ustawienia) nakłada się w prawym górnym rogu tego samego bloku (Box, nie
+        // osobny wiersz) - tak jak TempTile nakłada się na blok mocy niżej - żeby NIE przesuwać
+        // głównego odczytu prędkości w dół.
+        Box(Modifier.fillMaxWidth()) {
+            DigitalSpeed(speedKmh = if (t) unit.toKmh(199.9) else telemetry.speedKmh, unit = unit, modifier = Modifier.fillMaxWidth())
+            if (state.gpsSpeedEnabled) {
+                Text(
+                    // Format zgodny z DigitalSpeed (kropka dziesietna, nie przecinek - ten sam wzorzec
+                    // co reszta odczytow liczbowych w apce, patrz String.format("%.1f", ...) wyzej).
+                    // Szerokosc pola stala na 4 znaki (spacja zamiast zera wiodacego, nie "%04.1f") -
+                    // "0.0"/"9.9" bez zera z przodu, a tekst nie "skacze" w prawo/lewo przy przejsciu
+                    // przez prog 10 (10.0 zajmuje dokladnie te same 4 znaki co " 9.9").
+                    String.format("GPS %4.1f%s", unit.fromKmh(state.gpsSpeedKmh), unit.label.uppercase()),
+                    fontFamily = Manrope, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = HighContrastText,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.align(Alignment.TopEnd),
+                )
+            }
+        }
 
         // Moc - pod prędkością, mniejsza czcionka. Kafelek Tc (zakładka "Temperature control", tylko
         // bbs-fw - Tm/rejestr 0x21 zawsze zwraca 0 na bbs-fw, patrz PROTOKOL_BBSFW.md sekcja 5)
@@ -432,7 +450,7 @@ fun DashboardScreen(
     }
 }
 
-/** Prędkość jako duża, cyfrowa wartość - skalowana pod maks. 99.9. Bez pierścienia/gauge'a. */
+/** Prędkość jako duża, cyfrowa wartość - skalowana pod maks. 199.9 (3 cyfry części całkowitej). Bez pierścienia/gauge'a. */
 @Composable
 private fun DigitalSpeed(speedKmh: Double, unit: SpeedUnit, modifier: Modifier = Modifier) {
     val animatedSpeed by animateFloatAsState(
@@ -444,7 +462,7 @@ private fun DigitalSpeed(speedKmh: Double, unit: SpeedUnit, modifier: Modifier =
     // krawędź (i jednostka) zostaje w miejscu, liczba rośnie tylko w lewo (nie "ucieka" po ekranie).
     // Cyfra po przecinku pomniejszona do 60% - dzięki Arrangement.End całość (część całkowita +
     // mniejsza część dziesiętna) i tak zostaje dosunięta do jednostki KM/H, bez dodatkowego kodu.
-    val formattedSpeed = String.format("%.1f", animatedSpeed.coerceIn(0f, 99.9f))
+    val formattedSpeed = String.format("%.1f", animatedSpeed.coerceIn(0f, 199.9f))
     val decimalSeparatorIndex = formattedSpeed.indexOfFirst { !it.isDigit() }
     val integerPart = formattedSpeed.substring(0, decimalSeparatorIndex)
     val decimalPart = formattedSpeed.substring(decimalSeparatorIndex)
