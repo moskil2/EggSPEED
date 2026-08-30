@@ -33,6 +33,7 @@
   <tr>
     <td><img src="screenshots/12.jpg" width="140" alt="Monitoring screen with Power/Current/Voltage/Speed charts" /></td>
     <td><img src="screenshots/13.jpg" width="140" alt="Cockpit in Light theme, Test mode showing extreme values" /></td>
+    <td><img src="screenshots/15.jpg" width="140" alt="Battery SAG Measurement screen with quality legend and guided procedure" /></td>
   </tr>
 </table>
 
