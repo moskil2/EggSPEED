@@ -23,18 +23,16 @@
 
 <table align="center">
   <tr>
-    <td><img src="screenshots/1.jpg" width="140" alt="EggSPEED screenshot 1" /></td>
-    <td><img src="screenshots/2.jpg" width="140" alt="EggSPEED screenshot 2" /></td>
+    <td><img src="screenshots/11.jpg" width="140" alt="Cockpit with GPS Speed annotation and PROTECT active" /></td>
+    <td><img src="screenshots/14.jpg" width="140" alt="Connect screen, not connected, OEM Bafang selected" /></td>
     <td><img src="screenshots/3.jpg" width="140" alt="EggSPEED screenshot 3" /></td>
     <td><img src="screenshots/4.jpg" width="140" alt="EggSPEED screenshot 4" /></td>
     <td><img src="screenshots/5.jpg" width="140" alt="EggSPEED screenshot 5" /></td>
     <td><img src="screenshots/6.jpg" width="140" alt="EggSPEED screenshot 6" /></td>
   </tr>
   <tr>
-    <td><img src="screenshots/11.jpg" width="140" alt="Cockpit with GPS Speed annotation and PROTECT active" /></td>
     <td><img src="screenshots/12.jpg" width="140" alt="Monitoring screen with Power/Current/Voltage/Speed charts" /></td>
     <td><img src="screenshots/13.jpg" width="140" alt="Cockpit in Light theme, Test mode showing extreme values" /></td>
-    <td><img src="screenshots/14.jpg" width="140" alt="Connect screen, not connected, OEM Bafang selected" /></td>
   </tr>
 </table>
 
