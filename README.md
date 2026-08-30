@@ -11,6 +11,8 @@
 <p align="center">
   <a href="https://spotrobotics.app/eggspeed/">Presentation page</a>
   &nbsp;|&nbsp;
+  <a href="https://play.google.com/store/apps/details?id=app.spotrobotics.eggspeed">Download</a>
+  &nbsp;|&nbsp;
   <a href="https://spotrobotics.app/support/">Support</a>
 </p>
 
