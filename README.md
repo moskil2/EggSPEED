@@ -34,21 +34,101 @@
 
 ## Features
 
-1. **Full Bafang display replacement** - a live cockpit showing everything the factory display shows, and more.
-2. **Live controller programming** - write Basic, Pedal Assist, and Throttle parameters directly to the controller, even while riding.
-   - **Motor assist level control** - switch between assist levels 0-9 on the fly, exactly like the stock display.
-3. **Dual firmware support** - switch between factory OEM Bafang firmware and [bbs-fw](https://github.com/danielnilsson9/bbs-fw) in Settings. EggSPEED speaks both configuration protocols natively, with dedicated screens for bbs-fw's own settings (System, Assist Levels, firmware/version info) built to match the field names and layout of bbs-fw's own official Windows configuration tool.
-4. **Current calibration** - correct the app's displayed current/power reading for controllers with a shunt mod. This only adjusts what's shown in the app - nothing is written to the controller.
-5. **Voltage calibration** - apply a manual offset to correct the estimated pack voltage shown in the cockpit.
-6. **Battery range estimate** - predicted remaining range in km, blending your riding history with your current riding style.
-7. **Instantaneous power draw** - live battery power usage in watts.
-8. **Average energy usage** - trip-average and short-term energy consumption in Wh/km.
-9. **Firmware-aware profiles** - save/export/import named configuration profiles; loading is blocked with a clear error if the profile's firmware doesn't match the one currently selected, instead of silently writing into the wrong fields.
-10. **PROTECT Police Control mode** - lock assist to 0 with one tap on the Cockpit while the screen keeps responding normally to +/- taps, so it looks unchanged at a glance. A PIN-gated PROTECT tab is the only way to turn it back off.
-11. **Live monitoring charts** - power, current, voltage, and speed plotted over time, each independently toggleable, with a 10-minute rolling history.
-12. **Light/Dark theme** - switchable in the Screen tab; High Contrast works in both.
-13. **Cockpit on lock screen/AOD** - optional, shows speed/power/assist via a "now playing"-style media notification so the screen can actually sleep while riding, saving real battery. Optional +/- assist controls repurpose the previous/next media buttons.
-14. **SAG (battery voltage sag under load)** - an Estimated SAG calculated continuously from your normal riding, plus a guided SAG Measurement procedure (rest → full load → rest) for a controlled, comparable reading with a battery-quality legend.
+### Connection
+- USB OTG connection to Bafang BBS01/BBS02/BBSHD controller via a Bafang programming cable
+- Connection status states: disconnected / searching / identifying / connected / error, with live status text
+- One-tap Connect/Disconnect, with a quick "Go to Cockpit" shortcut once connected
+- Automatic reconnect after a dropped connection during riding, with a "Connecting…" badge and a failure indicator after max retries
+- Firmware type indicator shown on the Connect screen
+- (Placeholder, not functional yet) Bluetooth connection type shown as "coming soon" in Settings
+
+### Cockpit (live dashboard)
+- Large digital speed readout (km/h or mph) with optional GPS-speed annotation for comparison
+- Digital power readout (W)
+- Stat tiles: total odometer, resettable Trip distance, current (A), voltage (V, with last-known fallback offline)
+- Average speed (moving-time based, resettable) with an explanatory info popup
+- Average trip energy usage and short-term "instantaneous" usage in Wh/km, each with an explanatory info popup
+- Estimated remaining range, with an explanatory info popup
+- 10-level direct assist selector (tap 0-9) plus dedicated -/+ buttons
+- Light toggle, brake status indicator, and (bbs-fw only) Normal/Sport mode toggle, with a warning about a conflicting bbs-fw setting
+- Battery percentage indicator, colored by charge level, with last-known-% fallback offline
+- Controller temperature tile (Tc, bbs-fw only) with warning/alarm color states
+- ONLINE/OFFLINE status chip that doubles as a shortcut back to Connect
+- PROTECT/SAFE status chip (shown only if PROTECT is enabled)
+- Built-in "Test mode" forcing extreme values across the Cockpit layout for visual verification
+
+### Controller programming - OEM Bafang firmware
+- Full read/write access to the Bafang Configuration Tool blocks: Basic, Pedal/PAS, Throttle, and per-level Assist settings (10 levels)
+- Read-only controller identity screen (manufacturer, model, HW/FW version, nominal voltage, max current)
+- Every parameter shown as an expandable tile with a plain-language explanation
+- Read/Write actions with a human-readable change preview and raw frame dry-run before anything is written, plus progress/result dialogs
+
+### Controller programming - bbs-fw firmware
+- Full read/write access to bbs-fw's own config protocol: System tab (Global, Throttle, Pedal Assist, Features, Speed Sensor, Shift Sensor, Miscellaneous) and Assist Levels (2 profiles x 10 levels)
+- Read-only firmware/config identity screen, with a warning if the config format version doesn't match
+- Same read/write/preview flow as OEM
+- Config-format version guard blocking full read/write on mismatch (Cockpit keeps working regardless)
+
+### Firmware switching
+- OEM Bafang vs bbs-fw switch in Settings, with an in-app explanation of the difference. EggSPEED speaks both configuration protocols natively, with dedicated bbs-fw screens built to match the field names and layout of bbs-fw's own official Windows configuration tool.
+- Menu automatically shows only the screen set relevant to the selected firmware
+
+### Calibration
+- Current calibration factor (display-only multiplier, e.g. for shunt-modded controllers) with live before/after preview and reset
+- Voltage correction offset with live before/after preview and reset
+- Speed calibration factor with live before/after preview and reset
+
+### Battery / energy / range tracking
+- User-entered battery profile: cell count, capacity in Ah/Wh (app-side only, never written to the controller)
+- Computed voltage thresholds: low-voltage cutoff, nominal voltage, upper charge limit
+- SAG measurement suite: passive background estimate calculated continuously from your normal riding, plus an active guided 3-phase test (rest → full load → rest) for a controlled, comparable reading, with a battery-quality badge and persisted last-result history
+- Odometer offset field for migrating from another display
+- Units toggle (km/h vs mph), app-wide
+
+### Monitoring (charts)
+- Time-series charts (0.5s sampling, up to 10 min history) for Power, Current, Voltage, Speed
+- Master switch plus per-chart enable toggle
+- Combined multi-series chart with per-series show/hide and normalization
+- Drag-to-scrub cursor for exact values at any point in history
+
+### Display / AOD / theming
+- Dark/Light theme toggle
+- High-contrast mode for sunlight readability
+- Lock-screen/AOD Cockpit via a "now playing" media-session trick so the screen can actually sleep while riding, requires notification permission
+- Optional +/- assist controls on the lock screen, repurposing the previous/next media buttons
+
+### Safety - PROTECT (Anti-COP)
+- PROTECT feature toggle (adds a lock button to the Cockpit)
+- One-tap activation that silently forces assist to 0 while the UI still looks normal/interactive, so it looks unchanged at a glance
+- SAFE indicator; unlocking only possible from the Service screen (no cockpit-side escape hatch, by design)
+- Optional PIN gate restricting access to the Service screen
+
+### Temperature control (bbs-fw only)
+- Toggle to show/hide the controller-temperature (Tc) tile on the Cockpit
+- Configurable Warning and Alarm thresholds (color/blink/sound)
+- Read-only display of the firmware's own temperature-sensor mode
+
+### Diagnostics
+- "All in View" - consolidated read-only listing of every current parameter, with clipboard copy
+- Full register scanner (0x00-0xFF) with run history and clipboard export
+- Test mode toggle (same as Cockpit)
+
+### Profiles
+- Save/load/delete named configuration presets, locally in the app - loading is blocked with a clear error if the profile's firmware doesn't match the one currently selected, instead of silently writing into the wrong fields
+- Export config to a `.ini` file (via file picker) and import with preview
+
+### Settings
+- Firmware type switch (see above)
+- Fast Cockpit refresh toggle (experimental, shorter telemetry polling)
+- GPS Speed toggle (phone-GPS speed annotation on Cockpit, location permission requested on enable)
+- Units toggle (km/h/mph)
+- Odometer offset
+- App language selector
+
+### About
+- App version, build stamp
+- Links: rate on Google Play, check for updates, website, GitHub, email contact, support form
+- Privacy Policy and Terms of Service
 
 ### BBS-FW screens
 
