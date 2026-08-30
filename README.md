@@ -15,8 +15,8 @@
 </p>
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=6bmd5RDyq6Y">
-    <img src="https://img.youtube.com/vi/6bmd5RDyq6Y/maxresdefault.jpg" width="480" alt="EggSPEED demo video" />
+  <a href="https://www.youtube.com/watch?v=zbL4AiccX18">
+    <img src="https://img.youtube.com/vi/zbL4AiccX18/maxresdefault.jpg" width="480" alt="EggSPEED demo video" />
     <br />▶️ Watch demo video
   </a>
 </p>
