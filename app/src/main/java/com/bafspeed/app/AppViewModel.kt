@@ -248,6 +248,11 @@ data class UiState(
     val highContrast: Boolean = false,
     /** Tryb jasny (Ustawienia, obok Wysokiego kontrastu) - odwraca paletę Tokens na jasną. Domyślnie ciemny (false). Trwały. */
     val lightMode: Boolean = false,
+    /** Zakładka "Screen" - powiększa czcionkę WYŁĄCZNIE wartości (nie etykiet/jednostek) na Kokpicie:
+     * cyfra po przecinku prędkości, moc, wartości kafelków Distance/Trip/Current/Voltage/itd.,
+     * kafelki wspomagania 0-9, przyciski -/+, Light/Brake/Sport - bez zmiany pozycji/rozmiaru
+     * żadnego kafelka. Trwały. */
+    val largeCockpitDigits: Boolean = false,
     /** Zakładka "Screen" - pokaż prędkość/moc/wspomaganie na ekranie blokady/AOD przez AodMediaService, gdy Kokpit jest aktywny. Trwały. */
     val aodEnabled: Boolean = false,
     /** Zakładka "Screen" - +/- do wspomagania jako przyciski poprzedni/następny na ekranie blokady/AOD (patrz AodMediaService). Trwały. */
@@ -521,6 +526,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             aodAssistControlsEnabled = prefs.getBoolean("aod_assist_controls_enabled", false),
             fastCockpitRefresh = prefs.getBoolean("fast_cockpit_refresh", false),
             gpsSpeedEnabled = prefs.getBoolean("gps_speed_enabled", false),
+            largeCockpitDigits = prefs.getBoolean("large_cockpit_digits", false),
             everydaySagResistanceOhm = prefs.getFloat("everyday_sag_resistance_ohm", -1f).toDouble().takeIf { it >= 0 },
             sagCalibrationResultV = prefs.getFloat("sag_cal_result_v", -1f).toDouble().takeIf { it >= 0 },
             sagCalibrationResultResistanceOhm = prefs.getFloat("sag_cal_result_resistance_ohm", -1f).toDouble().takeIf { it >= 0 },
@@ -978,6 +984,12 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         syncAodService()
     }
 
+    /** Zakładka "Screen" - powiększone cyfry na Kokpicie (patrz [UiState.largeCockpitDigits]). */
+    fun setLargeCockpitDigits(enabled: Boolean) {
+        _state.value = _state.value.copy(largeCockpitDigits = enabled)
+        prefs.edit().putBoolean("large_cockpit_digits", enabled).apply()
+    }
+
     /** Ustawienia - "Szybkie odświeżanie Kokpitu" (patrz pole [UiState.fastCockpitRefresh] i
      * [configureDisplayFromState]). Działa też na już uruchomionej pętli - nie wymaga ponownego
      * połączenia. */
@@ -1077,7 +1089,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                             getApplication<Application>(),
                             "${String.format("%.1f", displaySpeed)} ${s.units.label}",
                             displaySpeed.toInt().toString(),
-                            "${powerW.roundToInt()} W · ${tr(s.language, "Wsp.", "Assist")} ${s.assistLevel}",
+                            "${powerW.roundToInt()} W · ${tr(s.language, "Wsp.", "Assist", de = "Unt.", fr = "Assist.", es = "Asist.", pt = "Assist.", it = "Assist.", nl = "Ass.", sv = "Ass.", cs = "Asist.", sk = "Asist.")} ${s.assistLevel}",
                             s.assistLevel,
                         )
                         delay(AOD_UPDATE_MS)
@@ -1604,7 +1616,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             }
 
             val lang = _state.value.language
-            _state.value = _state.value.copy(writeFlow = WriteFlow.InProgress(tr(lang, "Weryfikuję zapis (odczyt zwrotny)…", "Verifying write (read-back)…")))
+            _state.value = _state.value.copy(writeFlow = WriteFlow.InProgress(tr(lang, "Weryfikuję zapis (odczyt zwrotny)…", "Verifying write (read-back)…", de = "Überprüfe Schreibvorgang (Rücklesen)…", fr = "Vérification de l'écriture (relecture)…", es = "Verificando escritura (relectura)…", pt = "A verificar a escrita (releitura)…", it = "Verifica della scrittura (rilettura)…", nl = "Schrijven verifiëren (terug lezen)…", sv = "Verifierar skrivning (återläsning)…", cs = "Ověřuji zápis (zpětné čtení)…", sk = "Overujem zápis (spätné čítanie)…")))
             val verifyOk = verifyAfterWrite(basChanged, pasChanged, thrChanged)
             val cur = _state.value
             val stillDirty = cur.basic != cur.lastReadBasic || cur.pedalAssist != cur.lastReadPedalAssist || cur.throttle != cur.lastReadThrottle
@@ -1616,12 +1628,30 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                             lang,
                             "Zapisano i zweryfikowano pomyślnie - sterownik odczytany ponownie zgadza się z wysłanymi wartościami.",
                             "Saved and verified successfully - the controller read back again matches the values sent.",
+                            de = "Erfolgreich gespeichert und verifiziert - das erneut ausgelesene Steuergerät stimmt mit den gesendeten Werten überein.",
+                            fr = "Enregistré et vérifié avec succès - le contrôleur relu correspond aux valeurs envoyées.",
+                            es = "Guardado y verificado correctamente - el controlador vuelto a leer coincide con los valores enviados.",
+                            pt = "Guardado e verificado com sucesso - o controlador relido corresponde aos valores enviados.",
+                            it = "Salvato e verificato con successo - il controller riletto corrisponde ai valori inviati.",
+                            nl = "Succesvol opgeslagen en geverifieerd - de opnieuw uitgelezen controller komt overeen met de verzonden waarden.",
+                            sv = "Sparat och verifierat - kontrollern som lästs tillbaka stämmer med de skickade värdena.",
+                            cs = "Úspěšně uloženo a ověřeno - znovu načtený řadič odpovídá odeslaným hodnotám.",
+                            sk = "Úspešne uložené a overené - znovu načítaný radič zodpovedá odoslaným hodnotám.",
                         )
                     } else {
                         tr(
                             lang,
                             "Zapis wysłany, ale odczyt zwrotny NIE zgadza się z oczekiwanymi wartościami. Sprawdź ustawienia ręcznie przed jazdą.",
                             "Write sent, but the read-back does NOT match the expected values. Check the settings manually before riding.",
+                            de = "Schreibvorgang gesendet, aber das Rücklesen stimmt NICHT mit den erwarteten Werten überein. Überprüfe die Einstellungen vor der Fahrt manuell.",
+                            fr = "Écriture envoyée, mais la relecture NE correspond PAS aux valeurs attendues. Vérifiez manuellement les réglages avant de rouler.",
+                            es = "Escritura enviada, pero la relectura NO coincide con los valores esperados. Comprueba los ajustes manualmente antes de conducir.",
+                            pt = "Escrita enviada, mas a releitura NÃO corresponde aos valores esperados. Verifique as definições manualmente antes de andar.",
+                            it = "Scrittura inviata, ma la rilettura NON corrisponde ai valori attesi. Controlla manualmente le impostazioni prima di guidare.",
+                            nl = "Schrijven verzonden, maar de terug gelezen waarden komen NIET overeen met de verwachte waarden. Controleer de instellingen handmatig voor het rijden.",
+                            sv = "Skrivning skickad, men återläsningen matchar INTE de förväntade värdena. Kontrollera inställningarna manuellt innan du kör.",
+                            cs = "Zápis odeslán, ale zpětné čtení NEODPOVÍDÁ očekávaným hodnotám. Před jízdou zkontrolujte nastavení ručně.",
+                            sk = "Zápis odoslaný, ale spätné čítanie NEZODPOVEDÁ očakávaným hodnotám. Pred jazdou skontrolujte nastavenia manuálne.",
                         )
                     },
                 ),
@@ -1632,7 +1662,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     private suspend fun writeBlockAndAwaitAck(blockName: String, frame: ByteArray): Boolean {
         val lang = _state.value.language
-        _state.value = _state.value.copy(writeFlow = WriteFlow.InProgress(tr(lang, "Wysyłam blok: $blockName", "Sending block: $blockName")))
+        _state.value = _state.value.copy(writeFlow = WriteFlow.InProgress(tr(lang, "Wysyłam blok: $blockName", "Sending block: $blockName", de = "Sende Block: $blockName", fr = "Envoi du bloc : $blockName", es = "Enviando bloque: $blockName", pt = "A enviar bloco: $blockName", it = "Invio blocco: $blockName", nl = "Blok verzenden: $blockName", sv = "Skickar block: $blockName", cs = "Odesílám blok: $blockName", sk = "Odosielam blok: $blockName")))
         writeResponseParser.reset()
         writeAckMode = true
         val deferred = CompletableDeferred<WriteResponseParser.Result.Ack>()
@@ -1646,14 +1676,43 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             _state.value = _state.value.copy(
                 writeFlow = WriteFlow.Done(
                     false,
-                    tr(lang, "Brak odpowiedzi sterownika dla bloku „$blockName” - sprawdź kabel i spróbuj ponownie.", "No response from the controller for block “$blockName” - check the cable and try again."),
+                    tr(
+                        lang,
+                        "Brak odpowiedzi sterownika dla bloku „$blockName” - sprawdź kabel i spróbuj ponownie.",
+                        "No response from the controller for block “$blockName” - check the cable and try again.",
+                        de = "Keine Antwort des Steuergeräts für Block „$blockName“ - überprüfe das Kabel und versuche es erneut.",
+                        fr = "Aucune réponse du contrôleur pour le bloc « $blockName » - vérifiez le câble et réessayez.",
+                        es = "Sin respuesta del controlador para el bloque «$blockName» - comprueba el cable e inténtalo de nuevo.",
+                        pt = "Sem resposta do controlador para o bloco «$blockName» - verifique o cabo e tente novamente.",
+                        it = "Nessuna risposta dal controller per il blocco «$blockName» - controlla il cavo e riprova.",
+                        nl = "Geen reactie van de controller voor blok '$blockName' - controleer de kabel en probeer opnieuw.",
+                        sv = "Inget svar från styrenheten för block \"$blockName\" - kontrollera kabeln och försök igen.",
+                        cs = "Žádná odpověď řadiče pro blok „$blockName“ - zkontrolujte kabel a zkuste to znovu.",
+                        sk = "Žiadna odpoveď radiča pre blok „$blockName“ - skontrolujte kábel a skúste to znova.",
+                    ),
                 ),
             )
             return false
         }
         if (!ack.ok) {
             _state.value = _state.value.copy(
-                writeFlow = WriteFlow.Done(false, tr(lang, "Sterownik odrzucił zapis bloku „$blockName”: ${ack.message}", "The controller rejected the write for block “$blockName”: ${ack.message}")),
+                writeFlow = WriteFlow.Done(
+                    false,
+                    tr(
+                        lang,
+                        "Sterownik odrzucił zapis bloku „$blockName”: ${ack.message}",
+                        "The controller rejected the write for block “$blockName”: ${ack.message}",
+                        de = "Das Steuergerät hat das Schreiben von Block „$blockName“ abgelehnt: ${ack.message}",
+                        fr = "Le contrôleur a rejeté l'écriture du bloc « $blockName » : ${ack.message}",
+                        es = "El controlador rechazó la escritura del bloque «$blockName»: ${ack.message}",
+                        pt = "O controlador rejeitou a escrita do bloco «$blockName»: ${ack.message}",
+                        it = "Il controller ha rifiutato la scrittura del blocco «$blockName»: ${ack.message}",
+                        nl = "De controller heeft het schrijven van blok '$blockName' geweigerd: ${ack.message}",
+                        sv = "Kontrollern avvisade skrivningen av block \"$blockName\": ${ack.message}",
+                        cs = "Řadič odmítl zápis bloku „$blockName“: ${ack.message}",
+                        sk = "Radič odmietol zápis bloku „$blockName“: ${ack.message}",
+                    ),
+                ),
             )
             return false
         }
@@ -1724,7 +1783,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     private suspend fun writeBbsFwConfigAndAwaitAck(frame: ByteArray): Boolean {
         val lang = _state.value.language
-        _state.value = _state.value.copy(writeFlow = WriteFlow.InProgress(tr(lang, "Wysyłam konfigurację do sterownika (bbs-fw)…", "Sending configuration to the controller (bbs-fw)…")))
+        _state.value = _state.value.copy(writeFlow = WriteFlow.InProgress(tr(lang, "Wysyłam konfigurację do sterownika (bbs-fw)…", "Sending configuration to the controller (bbs-fw)…", de = "Sende Konfiguration an das Steuergerät (bbs-fw)…", fr = "Envoi de la configuration au contrôleur (bbs-fw)…", es = "Enviando configuración al controlador (bbs-fw)…", pt = "A enviar configuração para o controlador (bbs-fw)…", it = "Invio configurazione al controller (bbs-fw)…", nl = "Configuratie verzenden naar controller (bbs-fw)…", sv = "Skickar konfiguration till kontrollern (bbs-fw)…", cs = "Odesílám konfiguraci do řadiče (bbs-fw)…", sk = "Odosielam konfiguráciu do radiča (bbs-fw)…")))
         bbsFwWriteResponseParser.reset()
         writeAckMode = true
         val deferred = CompletableDeferred<BbsFwWriteResponseParser.Result.Ack>()
@@ -1736,7 +1795,23 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
         if (ack == null) {
             _state.value = _state.value.copy(
-                writeFlow = WriteFlow.Done(false, tr(lang, "Brak odpowiedzi sterownika (bbs-fw) - sprawdź kabel i spróbuj ponownie.", "No response from the controller (bbs-fw) - check the cable and try again.")),
+                writeFlow = WriteFlow.Done(
+                    false,
+                    tr(
+                        lang,
+                        "Brak odpowiedzi sterownika (bbs-fw) - sprawdź kabel i spróbuj ponownie.",
+                        "No response from the controller (bbs-fw) - check the cable and try again.",
+                        de = "Keine Antwort vom Steuergerät (bbs-fw) - überprüfe das Kabel und versuche es erneut.",
+                        fr = "Aucune réponse du contrôleur (bbs-fw) - vérifiez le câble et réessayez.",
+                        es = "Sin respuesta del controlador (bbs-fw) - comprueba el cable e inténtalo de nuevo.",
+                        pt = "Sem resposta do controlador (bbs-fw) - verifique o cabo e tente novamente.",
+                        it = "Nessuna risposta dal controller (bbs-fw) - controlla il cavo e riprova.",
+                        nl = "Geen reactie van de controller (bbs-fw) - controleer de kabel en probeer opnieuw.",
+                        sv = "Inget svar från kontrollern (bbs-fw) - kontrollera kabeln och försök igen.",
+                        cs = "Žádná odpověď od řadiče (bbs-fw) - zkontrolujte kabel a zkuste to znovu.",
+                        sk = "Žiadna odpoveď od radiča (bbs-fw) - skontrolujte kábel a skúste to znova.",
+                    ),
+                ),
             )
             return false
         }
@@ -1748,6 +1823,24 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                         lang,
                         "Sterownik bbs-fw odrzucił zapis (niezgodna wersja/długość konfiguracji albo błąd zapisu do pamięci - firmware nie zwraca szczegółów).",
                         "The bbs-fw controller rejected the write (config version/length mismatch, or a flash write error - the firmware doesn't report details).",
+                        de = "Das bbs-fw-Steuergerät hat den Schreibvorgang abgelehnt (Version/Länge der Konfiguration " +
+                            "stimmt nicht überein, oder ein Flash-Schreibfehler - die Firmware liefert keine Details).",
+                        fr = "Le contrôleur bbs-fw a rejeté l'écriture (incompatibilité de version/longueur de la " +
+                            "configuration, ou erreur d'écriture flash - le firmware ne fournit pas de détails).",
+                        es = "El controlador bbs-fw rechazó la escritura (versión/longitud de configuración no " +
+                            "coincide, o error de escritura en flash - el firmware no proporciona detalles).",
+                        pt = "O controlador bbs-fw rejeitou a escrita (versão/comprimento da configuração não " +
+                            "corresponde, ou erro de escrita na flash - o firmware não fornece detalhes).",
+                        it = "Il controller bbs-fw ha rifiutato la scrittura (versione/lunghezza della configurazione " +
+                            "non corrispondente, o errore di scrittura flash - il firmware non fornisce dettagli).",
+                        nl = "De bbs-fw-controller heeft het schrijven geweigerd (configuratieversie/-lengte komt " +
+                            "niet overeen, of een flashschrijffout - de firmware geeft geen details).",
+                        sv = "bbs-fw-kontrollern avvisade skrivningen (konfigurationens version/längd stämmer " +
+                            "inte, eller ett flashskrivfel - firmware ger inga detaljer).",
+                        cs = "Řadič bbs-fw odmítl zápis (verze/délka konfigurace neodpovídá, nebo chyba zápisu " +
+                            "do flash paměti - firmware neposkytuje podrobnosti).",
+                        sk = "Radič bbs-fw odmietol zápis (verzia/dĺžka konfigurácie nezodpovedá, alebo chyba " +
+                            "zápisu do flash pamäte - firmware neposkytuje podrobnosti).",
                     ),
                 ),
             )
@@ -1776,7 +1869,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             if (!writeBbsFwConfigAndAwaitAck(frame)) return@launch
 
             val lang = _state.value.language
-            _state.value = _state.value.copy(writeFlow = WriteFlow.InProgress(tr(lang, "Weryfikuję zapis (odczyt zwrotny)…", "Verifying write (read-back)…")))
+            _state.value = _state.value.copy(writeFlow = WriteFlow.InProgress(tr(lang, "Weryfikuję zapis (odczyt zwrotny)…", "Verifying write (read-back)…", de = "Überprüfe Schreibvorgang (Rücklesen)…", fr = "Vérification de l'écriture (relecture)…", es = "Verificando escritura (relectura)…", pt = "A verificar a escrita (releitura)…", it = "Verifica della scrittura (rilettura)…", nl = "Schrijven verifiëren (terug lezen)…", sv = "Verifierar skrivning (återläsning)…", cs = "Ověřuji zápis (zpětné čtení)…", sk = "Overujem zápis (spätné čítanie)…")))
             val readBack = readBbsFwConfigForVerify()
             var verifyOk = false
             if (readBack != null && readBack.version == BbsFwCommands.CONFIG_VERSION && readBack.data.size == BbsFwConfig.BYTE_SIZE) {
@@ -1795,12 +1888,30 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                             lang,
                             "Zapisano i zweryfikowano pomyślnie - sterownik odczytany ponownie zgadza się z wysłanymi wartościami.",
                             "Saved and verified successfully - the controller read back again matches the values sent.",
+                            de = "Erfolgreich gespeichert und verifiziert - das erneut ausgelesene Steuergerät stimmt mit den gesendeten Werten überein.",
+                            fr = "Enregistré et vérifié avec succès - le contrôleur relu correspond aux valeurs envoyées.",
+                            es = "Guardado y verificado correctamente - el controlador vuelto a leer coincide con los valores enviados.",
+                            pt = "Guardado e verificado com sucesso - o controlador relido corresponde aos valores enviados.",
+                            it = "Salvato e verificato con successo - il controller riletto corrisponde ai valori inviati.",
+                            nl = "Succesvol opgeslagen en geverifieerd - de opnieuw uitgelezen controller komt overeen met de verzonden waarden.",
+                            sv = "Sparat och verifierat - kontrollern som lästs tillbaka stämmer med de skickade värdena.",
+                            cs = "Úspěšně uloženo a ověřeno - znovu načtený řadič odpovídá odeslaným hodnotám.",
+                            sk = "Úspešne uložené a overené - znovu načítaný radič zodpovedá odoslaným hodnotám.",
                         )
                     } else {
                         tr(
                             lang,
                             "Zapis wysłany, ale odczyt zwrotny NIE zgadza się z oczekiwanymi wartościami (albo się nie powiódł). Sprawdź ustawienia ręcznie przed jazdą.",
                             "Write sent, but the read-back does NOT match the expected values (or failed). Check the settings manually before riding.",
+                            de = "Schreibvorgang gesendet, aber das Rücklesen stimmt NICHT mit den erwarteten Werten überein (oder ist fehlgeschlagen). Überprüfe die Einstellungen vor der Fahrt manuell.",
+                            fr = "Écriture envoyée, mais la relecture NE correspond PAS aux valeurs attendues (ou a échoué). Vérifiez manuellement les réglages avant de rouler.",
+                            es = "Escritura enviada, pero la relectura NO coincide con los valores esperados (o falló). Comprueba los ajustes manualmente antes de conducir.",
+                            pt = "Escrita enviada, mas a releitura NÃO corresponde aos valores esperados (ou falhou). Verifique as definições manualmente antes de andar.",
+                            it = "Scrittura inviata, ma la rilettura NON corrisponde ai valori attesi (o non è riuscita). Controlla manualmente le impostazioni prima di guidare.",
+                            nl = "Schrijven verzonden, maar de terug gelezen waarden komen NIET overeen met de verwachte waarden (of mislukt). Controleer de instellingen handmatig voor het rijden.",
+                            sv = "Skrivning skickad, men återläsningen matchar INTE de förväntade värdena (eller misslyckades). Kontrollera inställningarna manuellt innan du kör.",
+                            cs = "Zápis odeslán, ale zpětné čtení NEODPOVÍDÁ očekávaným hodnotám (nebo selhalo). Před jízdou zkontrolujte nastavení ručně.",
+                            sk = "Zápis odoslaný, ale spätné čítanie NEZODPOVEDÁ očakávaným hodnotám (alebo zlyhalo). Pred jazdou skontrolujte nastavenia manuálne.",
                         )
                     },
                 ),
@@ -1811,65 +1922,95 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun diffBbsFw(lang: AppLanguage, old: BbsFwConfig, new: BbsFwConfig): List<String> {
         val out = mutableListOf<String>()
-        if (old.maxCurrentAmps != new.maxCurrentAmps) out += "${tr(lang, "Limit prądu", "Current limit")}: ${old.maxCurrentAmps}A → ${new.maxCurrentAmps}A"
-        if (old.currentRampAmpsS != new.currentRampAmpsS) out += "${tr(lang, "Narastanie prądu", "Current ramp")}: ${old.currentRampAmpsS}A/s → ${new.currentRampAmpsS}A/s"
-        if (old.maxBatteryX100v != new.maxBatteryX100v) out += "${tr(lang, "Napięcie maksymalne", "Max voltage")}: ${old.maxBatteryX100v / 100.0}V → ${new.maxBatteryX100v / 100.0}V"
-        if (old.lowCutOffV != new.lowCutOffV) out += "${tr(lang, "Odcięcie niskiego napięcia", "Low voltage cutoff")}: ${old.lowCutOffV}V → ${new.lowCutOffV}V"
-        if (old.maxSpeedKph != new.maxSpeedKph) out += "${tr(lang, "Limit prędkości", "Speed limit")}: ${old.maxSpeedKph}km/h → ${new.maxSpeedKph}km/h"
-        if (old.wheelSizeInchX10 != new.wheelSizeInchX10) out += "${tr(lang, "Rozmiar koła", "Wheel size")}: ${old.wheelSizeInchX10 / 10.0}\" → ${new.wheelSizeInchX10 / 10.0}\""
-        if (old.lightsMode != new.lightsMode) out += "${tr(lang, "Tryb świateł", "Lights mode")}: ${old.lightsMode} → ${new.lightsMode}"
-        if (old.throttleStartVoltageMv != new.throttleStartVoltageMv) out += "${tr(lang, "Napięcie startowe manetki", "Throttle start voltage")}: ${old.throttleStartVoltageMv}mV → ${new.throttleStartVoltageMv}mV"
-        if (old.throttleEndVoltageMv != new.throttleEndVoltageMv) out += "${tr(lang, "Napięcie końcowe manetki", "Throttle end voltage")}: ${old.throttleEndVoltageMv}mV → ${new.throttleEndVoltageMv}mV"
-        if (old.assistModeSelect != new.assistModeSelect) out += "${tr(lang, "Tryb wyboru wspomagania", "Assist mode select")}: ${old.assistModeSelect} → ${new.assistModeSelect}"
+        if (old.maxCurrentAmps != new.maxCurrentAmps) out += "${tr(lang, "Limit prądu", "Current limit", de = "Strombegrenzung", fr = "Limite de courant", es = "Límite de corriente", pt = "Limite de corrente", it = "Limite di corrente", nl = "Stroomlimiet", sv = "Strömgräns", cs = "Omezení proudu", sk = "Obmedzenie prúdu")}: ${old.maxCurrentAmps}A → ${new.maxCurrentAmps}A"
+        if (old.currentRampAmpsS != new.currentRampAmpsS) out += "${tr(lang, "Narastanie prądu", "Current ramp", de = "Stromanstieg", fr = "Rampe de courant", es = "Rampa de corriente", pt = "Rampa de corrente", it = "Rampa di corrente", nl = "Stroomoploop", sv = "Strömramp", cs = "Náběh proudu", sk = "Nábeh prúdu")}: ${old.currentRampAmpsS}A/s → ${new.currentRampAmpsS}A/s"
+        if (old.maxBatteryX100v != new.maxBatteryX100v) out += "${tr(lang, "Napięcie maksymalne", "Max voltage", de = "Maximalspannung", fr = "Tension maximale", es = "Voltaje máximo", pt = "Voltagem máxima", it = "Tensione massima", nl = "Maximale spanning", sv = "Maxspänning", cs = "Maximální napětí", sk = "Maximálne napätie")}: ${old.maxBatteryX100v / 100.0}V → ${new.maxBatteryX100v / 100.0}V"
+        if (old.lowCutOffV != new.lowCutOffV) out += "${tr(lang, "Odcięcie niskiego napięcia", "Low voltage cutoff", de = "Unterspannungsabschaltung", fr = "Coupure basse tension", es = "Corte de bajo voltaje", pt = "Corte de baixa tensão", it = "Taglio di bassa tensione", nl = "Onderspanningsafsluiting", sv = "Underspänningsavstängning", cs = "Vypnutí při nízkém napětí", sk = "Vypnutie pri nízkom napätí")}: ${old.lowCutOffV}V → ${new.lowCutOffV}V"
+        if (old.maxSpeedKph != new.maxSpeedKph) out += "${tr(lang, "Limit prędkości", "Speed limit", de = "Geschwindigkeitslimit", fr = "Limite de vitesse", es = "Límite de velocidad", pt = "Limite de velocidade", it = "Limite di velocità", nl = "Snelheidslimiet", sv = "Hastighetsgräns", cs = "Omezení rychlosti", sk = "Obmedzenie rýchlosti")}: ${old.maxSpeedKph}km/h → ${new.maxSpeedKph}km/h"
+        if (old.wheelSizeInchX10 != new.wheelSizeInchX10) out += "${tr(lang, "Rozmiar koła", "Wheel size", de = "Radgröße", fr = "Taille de roue", es = "Tamaño de rueda", pt = "Tamanho da roda", it = "Dimensione ruota", nl = "Wielmaat", sv = "Hjulstorlek", cs = "Velikost kola", sk = "Veľkosť kolesa")}: ${old.wheelSizeInchX10 / 10.0}\" → ${new.wheelSizeInchX10 / 10.0}\""
+        if (old.lightsMode != new.lightsMode) out += "${tr(lang, "Tryb świateł", "Lights mode", de = "Lichtmodus", fr = "Mode des feux", es = "Modo de luces", pt = "Modo de luzes", it = "Modalità luci", nl = "Lichtmodus", sv = "Ljusläge", cs = "Režim světel", sk = "Režim svetiel")}: ${old.lightsMode} → ${new.lightsMode}"
+        if (old.throttleStartVoltageMv != new.throttleStartVoltageMv) out += "${tr(lang, "Napięcie startowe manetki", "Throttle start voltage", de = "Startspannung des Gasgriffs", fr = "Tension de démarrage de l'accélérateur", es = "Voltaje de arranque del acelerador", pt = "Voltagem inicial do acelerador", it = "Tensione di partenza dell'acceleratore", nl = "Startspanning gasgreep", sv = "Startspänning för gasreglage", cs = "Počáteční napětí plynové páčky", sk = "Počiatočné napätie plynovej páčky")}: ${old.throttleStartVoltageMv}mV → ${new.throttleStartVoltageMv}mV"
+        if (old.throttleEndVoltageMv != new.throttleEndVoltageMv) out += "${tr(lang, "Napięcie końcowe manetki", "Throttle end voltage", de = "Endspannung des Gasgriffs", fr = "Tension finale de l'accélérateur", es = "Voltaje final del acelerador", pt = "Voltagem final do acelerador", it = "Tensione finale dell'acceleratore", nl = "Eindspanning gasgreep", sv = "Slutspänning för gasreglage", cs = "Konečné napětí plynové páčky", sk = "Konečné napätie plynovej páčky")}: ${old.throttleEndVoltageMv}mV → ${new.throttleEndVoltageMv}mV"
+        if (old.assistModeSelect != new.assistModeSelect) out += "${tr(lang, "Tryb wyboru wspomagania", "Assist mode select", de = "Auswahl Unterstützungsmodus", fr = "Sélection du mode d'assistance", es = "Selección del modo de asistencia", pt = "Seleção do modo de assistência", it = "Selezione modalità di assistenza", nl = "Ondersteuningsmodus selectie", sv = "Val av assistansläge", cs = "Výběr režimu asistence", sk = "Výber režimu asistencie")}: ${old.assistModeSelect} → ${new.assistModeSelect}"
         val changedLevels = (0..1).sumOf { p -> (0..9).count { l -> old.assistLevels[p][l] != new.assistLevels[p][l] } }
-        if (changedLevels > 0) out += "${tr(lang, "Poziomy wspomagania - zmienionych pól", "Assist levels - changed entries")}: $changedLevels"
-        if (out.isEmpty()) out += tr(lang, "Inne parametry bbs-fw (bez szczegółowego podglądu w tym oknie)", "Other bbs-fw parameters (no detailed preview in this dialog)")
+        if (changedLevels > 0) out += "${tr(lang, "Poziomy wspomagania - zmienionych pól", "Assist levels - changed entries", de = "Unterstützungsstufen - geänderte Einträge", fr = "Niveaux d'assistance - entrées modifiées", es = "Niveles de asistencia - entradas modificadas", pt = "Níveis de assistência - entradas alteradas", it = "Livelli di assistenza - voci modificate", nl = "Ondersteuningsniveaus - gewijzigde items", sv = "Assistansnivåer - ändrade poster", cs = "Úrovně asistence - změněné položky", sk = "Úrovne asistencie - zmenené položky")}: $changedLevels"
+        if (out.isEmpty()) {
+            out += tr(
+                lang,
+                "Inne parametry bbs-fw (bez szczegółowego podglądu w tym oknie)",
+                "Other bbs-fw parameters (no detailed preview in this dialog)",
+                de = "Weitere bbs-fw-Parameter (keine detaillierte Vorschau in diesem Dialog)",
+                fr = "Autres paramètres bbs-fw (pas d'aperçu détaillé dans cette fenêtre)",
+                es = "Otros parámetros bbs-fw (sin vista previa detallada en este cuadro)",
+                pt = "Outros parâmetros bbs-fw (sem pré-visualização detalhada nesta janela)",
+                it = "Altri parametri bbs-fw (nessuna anteprima dettagliata in questa finestra)",
+                nl = "Overige bbs-fw-parameters (geen gedetailleerde voorbeeldweergave in dit venster)",
+                sv = "Övriga bbs-fw-parametrar (ingen detaljerad förhandsgranskning i den här dialogrutan)",
+                cs = "Ostatní parametry bbs-fw (žádný podrobný náhled v tomto dialogu)",
+                sk = "Ostatné parametre bbs-fw (žiadny podrobný náhľad v tomto dialógu)",
+            )
+        }
         return out
     }
 
     private fun diffBasic(lang: AppLanguage, old: BasicSettings, new: BasicSettings): List<String> {
         val out = mutableListOf<String>()
-        if (old.lowBatteryProtection != new.lowBatteryProtection) out += "${tr(lang, "Ochrona niskiego napięcia", "Low battery protection")}: ${old.lowBatteryProtection}V → ${new.lowBatteryProtection}V"
-        if (old.currentLimit != new.currentLimit) out += "${tr(lang, "Limit prądu", "Current limit")}: ${old.currentLimit}A → ${new.currentLimit}A"
+        if (old.lowBatteryProtection != new.lowBatteryProtection) out += "${tr(lang, "Ochrona niskiego napięcia", "Low battery protection", de = "Unterspannungsschutz", fr = "Protection contre la décharge", es = "Protección de bajo voltaje", pt = "Proteção de baixa tensão", it = "Protezione bassa tensione", nl = "Onderspanningsbeveiliging", sv = "Underspänningsskydd", cs = "Ochrana proti podpětí", sk = "Ochrana proti podpätiu")}: ${old.lowBatteryProtection}V → ${new.lowBatteryProtection}V"
+        if (old.currentLimit != new.currentLimit) out += "${tr(lang, "Limit prądu", "Current limit", de = "Strombegrenzung", fr = "Limite de courant", es = "Límite de corriente", pt = "Limite de corrente", it = "Limite di corrente", nl = "Stroomlimiet", sv = "Strömgräns", cs = "Omezení proudu", sk = "Obmedzenie prúdu")}: ${old.currentLimit}A → ${new.currentLimit}A"
         for (i in 0..9) {
-            if (old.assistCurrentPct[i] != new.assistCurrentPct[i]) out += "${tr(lang, "Poziom", "Level")} $i · ${tr(lang, "limit prądu", "current limit")}: ${old.assistCurrentPct[i]}% → ${new.assistCurrentPct[i]}%"
-            if (old.assistSpeedPct[i] != new.assistSpeedPct[i]) out += "${tr(lang, "Poziom", "Level")} $i · ${tr(lang, "limit prędkości", "speed limit")}: ${old.assistSpeedPct[i]}% → ${new.assistSpeedPct[i]}%"
+            if (old.assistCurrentPct[i] != new.assistCurrentPct[i]) out += "${tr(lang, "Poziom", "Level", de = "Stufe", fr = "Niveau", es = "Nivel", pt = "Nível", it = "Livello", nl = "Niveau", sv = "Nivå", cs = "Úroveň", sk = "Úroveň")} $i · ${tr(lang, "limit prądu", "current limit", de = "Strombegrenzung", fr = "limite de courant", es = "límite de corriente", pt = "limite de corrente", it = "limite di corrente", nl = "stroomlimiet", sv = "strömgräns", cs = "omezení proudu", sk = "obmedzenie prúdu")}: ${old.assistCurrentPct[i]}% → ${new.assistCurrentPct[i]}%"
+            if (old.assistSpeedPct[i] != new.assistSpeedPct[i]) out += "${tr(lang, "Poziom", "Level", de = "Stufe", fr = "Niveau", es = "Nivel", pt = "Nível", it = "Livello", nl = "Niveau", sv = "Nivå", cs = "Úroveň", sk = "Úroveň")} $i · ${tr(lang, "limit prędkości", "speed limit", de = "Geschwindigkeitslimit", fr = "limite de vitesse", es = "límite de velocidad", pt = "limite de velocidade", it = "limite di velocità", nl = "snelheidslimiet", sv = "hastighetsgräns", cs = "omezení rychlosti", sk = "obmedzenie rýchlosti")}: ${old.assistSpeedPct[i]}% → ${new.assistSpeedPct[i]}%"
         }
         if (old.wheelDiameterCode != new.wheelDiameterCode) {
-            out += "${tr(lang, "Rozmiar koła", "Wheel size")}: ${WHEEL_SIZE_LABELS.getOrNull(old.wheelDiameterCode)} → ${WHEEL_SIZE_LABELS.getOrNull(new.wheelDiameterCode)}"
+            out += "${tr(lang, "Rozmiar koła", "Wheel size", de = "Radgröße", fr = "Taille de roue", es = "Tamaño de rueda", pt = "Tamanho da roda", it = "Dimensione ruota", nl = "Wielmaat", sv = "Hjulstorlek", cs = "Velikost kola", sk = "Veľkosť kolesa")}: ${WHEEL_SIZE_LABELS.getOrNull(old.wheelDiameterCode)} → ${WHEEL_SIZE_LABELS.getOrNull(new.wheelDiameterCode)}"
         }
-        if (old.speedMeterModel != new.speedMeterModel) out += "${tr(lang, "Tryb czujnika prędkości", "Speed meter type")}: ${old.speedMeterModel} → ${new.speedMeterModel}"
-        if (old.speedMeterSignals != new.speedMeterSignals) out += "${tr(lang, "Sygnały czujnika prędkości", "Speed meter signals")}: ${old.speedMeterSignals} → ${new.speedMeterSignals}"
+        if (old.speedMeterModel != new.speedMeterModel) out += "${tr(lang, "Tryb czujnika prędkości", "Speed meter type", de = "Geschwindigkeitssensor-Typ", fr = "Type de capteur de vitesse", es = "Tipo de sensor de velocidad", pt = "Tipo de sensor de velocidade", it = "Tipo di sensore di velocità", nl = "Type snelheidssensor", sv = "Typ av hastighetssensor", cs = "Typ snímače rychlosti", sk = "Typ snímača rýchlosti")}: ${old.speedMeterModel} → ${new.speedMeterModel}"
+        if (old.speedMeterSignals != new.speedMeterSignals) out += "${tr(lang, "Sygnały czujnika prędkości", "Speed meter signals", de = "Geschwindigkeitssensor-Signale", fr = "Signaux du capteur de vitesse", es = "Señales del sensor de velocidad", pt = "Sinais do sensor de velocidade", it = "Segnali del sensore di velocità", nl = "Signalen snelheidssensor", sv = "Signaler från hastighetssensor", cs = "Signály snímače rychlosti", sk = "Signály snímača rýchlosti")}: ${old.speedMeterSignals} → ${new.speedMeterSignals}"
         return out
     }
 
     private fun diffPas(lang: AppLanguage, old: PedalAssistSettings, new: PedalAssistSettings): List<String> {
         val out = mutableListOf<String>()
-        if (old.speedLimit != new.speedLimit) out += "${tr(lang, "Limit prędkości (PAS)", "Speed limit (PAS)")}: ${old.speedLimit} → ${new.speedLimit}"
-        if (old.designatedAssist != new.designatedAssist) out += "${tr(lang, "Wskazany poziom wspomagania", "Designated assist level")}: ${old.designatedAssist} → ${new.designatedAssist}"
-        if (old.pedalType != new.pedalType) out += "${tr(lang, "Typ czujnika pedałowania", "Pedal sensor type")}: ${old.pedalType} → ${new.pedalType}"
-        if (old.startCurrentPct != new.startCurrentPct) out += "${tr(lang, "Prąd startowy", "Start current")}: ${old.startCurrentPct}% → ${new.startCurrentPct}%"
-        if (old.slowStartMode != new.slowStartMode) out += "${tr(lang, "Tryb wolnego startu", "Slow-start mode")}: ${old.slowStartMode} → ${new.slowStartMode}"
-        if (old.startDegree != new.startDegree) out += "${tr(lang, "Stopień startu", "Start degree")}: ${old.startDegree} → ${new.startDegree}"
-        if (old.workMode != new.workMode) out += "${tr(lang, "Tryb pracy", "Work mode")}: ${old.workMode} → ${new.workMode}"
-        if (old.timeOfStop != new.timeOfStop) out += "${tr(lang, "Opóźnienie zatrzymania", "Stop delay")}: ${old.timeOfStop} → ${new.timeOfStop}"
-        if (old.currentDecay != new.currentDecay) out += "${tr(lang, "Zanik prądu", "Current decay")}: ${old.currentDecay} → ${new.currentDecay}"
-        if (old.stopDecay != new.stopDecay) out += "${tr(lang, "Zanik zatrzymania", "Stop decay")}: ${old.stopDecay} → ${new.stopDecay}"
-        if (old.keepCurrentPct != new.keepCurrentPct) out += "${tr(lang, "Podtrzymanie prądu", "Keep current")}: ${old.keepCurrentPct}% → ${new.keepCurrentPct}%"
+        if (old.speedLimit != new.speedLimit) out += "${tr(lang, "Limit prędkości (PAS)", "Speed limit (PAS)", de = "Geschwindigkeitslimit (PAS)", fr = "Limite de vitesse (PAS)", es = "Límite de velocidad (PAS)", pt = "Limite de velocidade (PAS)", it = "Limite di velocità (PAS)", nl = "Snelheidslimiet (PAS)", sv = "Hastighetsgräns (PAS)", cs = "Omezení rychlosti (PAS)", sk = "Obmedzenie rýchlosti (PAS)")}: ${old.speedLimit} → ${new.speedLimit}"
+        if (old.designatedAssist != new.designatedAssist) out += "${tr(lang, "Wskazany poziom wspomagania", "Designated assist level", de = "Festgelegte Unterstützungsstufe", fr = "Niveau d'assistance désigné", es = "Nivel de asistencia designado", pt = "Nível de assistência designado", it = "Livello di assistenza designato", nl = "Aangewezen ondersteuningsniveau", sv = "Angiven assistansnivå", cs = "Určená úroveň asistence", sk = "Určená úroveň asistencie")}: ${old.designatedAssist} → ${new.designatedAssist}"
+        if (old.pedalType != new.pedalType) out += "${tr(lang, "Typ czujnika pedałowania", "Pedal sensor type", de = "Pedalsensor-Typ", fr = "Type de capteur de pédalage", es = "Tipo de sensor de pedaleo", pt = "Tipo de sensor de pedalada", it = "Tipo di sensore di pedalata", nl = "Type trapsensor", sv = "Typ av trampsensor", cs = "Typ snímače šlapání", sk = "Typ snímača šliapania")}: ${old.pedalType} → ${new.pedalType}"
+        if (old.startCurrentPct != new.startCurrentPct) out += "${tr(lang, "Prąd startowy", "Start current", de = "Startstrom", fr = "Courant de démarrage", es = "Corriente de arranque", pt = "Corrente inicial", it = "Corrente iniziale", nl = "Startstroom", sv = "Startström", cs = "Počáteční proud", sk = "Počiatočný prúd")}: ${old.startCurrentPct}% → ${new.startCurrentPct}%"
+        if (old.slowStartMode != new.slowStartMode) out += "${tr(lang, "Tryb wolnego startu", "Slow-start mode", de = "Sanftanlauf-Modus", fr = "Mode démarrage progressif", es = "Modo de arranque suave", pt = "Modo de arranque suave", it = "Modalità di avvio lento", nl = "Langzame-startmodus", sv = "Läge för mjukstart", cs = "Režim pomalého startu", sk = "Režim pomalého štartu")}: ${old.slowStartMode} → ${new.slowStartMode}"
+        if (old.startDegree != new.startDegree) out += "${tr(lang, "Stopień startu", "Start degree", de = "Startgrad", fr = "Degré de démarrage", es = "Grado de arranque", pt = "Grau de arranque", it = "Grado di avvio", nl = "Startgraad", sv = "Startgrad", cs = "Stupeň startu", sk = "Stupeň štartu")}: ${old.startDegree} → ${new.startDegree}"
+        if (old.workMode != new.workMode) out += "${tr(lang, "Tryb pracy", "Work mode", de = "Arbeitsmodus", fr = "Mode de fonctionnement", es = "Modo de trabajo", pt = "Modo de funcionamento", it = "Modalità di lavoro", nl = "Werkmodus", sv = "Arbetsläge", cs = "Pracovní režim", sk = "Pracovný režim")}: ${old.workMode} → ${new.workMode}"
+        if (old.timeOfStop != new.timeOfStop) out += "${tr(lang, "Opóźnienie zatrzymania", "Stop delay", de = "Stoppverzögerung", fr = "Délai d'arrêt", es = "Retardo de parada", pt = "Atraso de paragem", it = "Ritardo di arresto", nl = "Stopvertraging", sv = "Stoppfördröjning", cs = "Zpoždění zastavení", sk = "Oneskorenie zastavenia")}: ${old.timeOfStop} → ${new.timeOfStop}"
+        if (old.currentDecay != new.currentDecay) out += "${tr(lang, "Zanik prądu", "Current decay", de = "Stromabfall", fr = "Décroissance du courant", es = "Caída de corriente", pt = "Decaimento de corrente", it = "Decadimento di corrente", nl = "Stroomafname", sv = "Strömavklingning", cs = "Pokles proudu", sk = "Pokles prúdu")}: ${old.currentDecay} → ${new.currentDecay}"
+        if (old.stopDecay != new.stopDecay) out += "${tr(lang, "Zanik zatrzymania", "Stop decay", de = "Stoppabfall", fr = "Décroissance à l'arrêt", es = "Caída al detenerse", pt = "Decaimento de paragem", it = "Decadimento di arresto", nl = "Stopafname", sv = "Stoppavklingning", cs = "Pokles při zastavení", sk = "Pokles pri zastavení")}: ${old.stopDecay} → ${new.stopDecay}"
+        if (old.keepCurrentPct != new.keepCurrentPct) out += "${tr(lang, "Podtrzymanie prądu", "Keep current", de = "Stromhaltung", fr = "Maintien du courant", es = "Mantenimiento de corriente", pt = "Manutenção de corrente", it = "Mantenimento della corrente", nl = "Stroomhandhaving", sv = "Bibehållen ström", cs = "Udržení proudu", sk = "Udržanie prúdu")}: ${old.keepCurrentPct}% → ${new.keepCurrentPct}%"
         return out
     }
 
     private fun diffThr(lang: AppLanguage, old: ThrottleSettings, new: ThrottleSettings): List<String> {
         val out = mutableListOf<String>()
         if (old.mode != new.mode) {
-            val modeLabel = { m: Int -> tr(lang, if (m == 0) "prędkość" else "prąd", if (m == 0) "speed" else "current") }
-            out += "${tr(lang, "Tryb manetki", "Throttle mode")}: ${modeLabel(old.mode)} → ${modeLabel(new.mode)}"
+            val modeLabel = { m: Int ->
+                tr(
+                    lang,
+                    if (m == 0) "prędkość" else "prąd",
+                    if (m == 0) "speed" else "current",
+                    de = if (m == 0) "Geschwindigkeit" else "Strom",
+                    fr = if (m == 0) "vitesse" else "courant",
+                    es = if (m == 0) "velocidad" else "corriente",
+                    pt = if (m == 0) "velocidade" else "corrente",
+                    it = if (m == 0) "velocità" else "corrente",
+                    nl = if (m == 0) "snelheid" else "stroom",
+                    sv = if (m == 0) "hastighet" else "ström",
+                    cs = if (m == 0) "rychlost" else "proud",
+                    sk = if (m == 0) "rýchlosť" else "prúd",
+                )
+            }
+            out += "${tr(lang, "Tryb manetki", "Throttle mode", de = "Gasgriff-Modus", fr = "Mode de l'accélérateur", es = "Modo del acelerador", pt = "Modo do acelerador", it = "Modalità acceleratore", nl = "Gasgreepmodus", sv = "Gasreglagets läge", cs = "Režim plynové páčky", sk = "Režim plynovej páčky")}: ${modeLabel(old.mode)} → ${modeLabel(new.mode)}"
         }
-        if (old.designatedAssist != new.designatedAssist) out += "${tr(lang, "Wskazany poziom (manetka)", "Designated level (throttle)")}: ${old.designatedAssist} → ${new.designatedAssist}"
-        if (old.speedLimit != new.speedLimit) out += "${tr(lang, "Limit prędkości (manetka)", "Speed limit (throttle)")}: ${old.speedLimit} → ${new.speedLimit}"
-        if (old.startVoltage != new.startVoltage) out += "${tr(lang, "Napięcie startowe", "Start voltage")}: ${old.startVoltage} → ${new.startVoltage}"
-        if (old.endVoltage != new.endVoltage) out += "${tr(lang, "Napięcie końcowe", "End voltage")}: ${old.endVoltage} → ${new.endVoltage}"
-        if (old.startCurrentPct != new.startCurrentPct) out += "${tr(lang, "Prąd startowy", "Start current")}: ${old.startCurrentPct}% → ${new.startCurrentPct}%"
+        if (old.designatedAssist != new.designatedAssist) out += "${tr(lang, "Wskazany poziom (manetka)", "Designated level (throttle)", de = "Festgelegte Stufe (Gasgriff)", fr = "Niveau désigné (accélérateur)", es = "Nivel designado (acelerador)", pt = "Nível designado (acelerador)", it = "Livello designato (acceleratore)", nl = "Aangewezen niveau (gasgreep)", sv = "Angiven nivå (gasreglage)", cs = "Určená úroveň (plynová páčka)", sk = "Určená úroveň (plynová páčka)")}: ${old.designatedAssist} → ${new.designatedAssist}"
+        if (old.speedLimit != new.speedLimit) out += "${tr(lang, "Limit prędkości (manetka)", "Speed limit (throttle)", de = "Geschwindigkeitslimit (Gasgriff)", fr = "Limite de vitesse (accélérateur)", es = "Límite de velocidad (acelerador)", pt = "Limite de velocidade (acelerador)", it = "Limite di velocità (acceleratore)", nl = "Snelheidslimiet (gasgreep)", sv = "Hastighetsgräns (gasreglage)", cs = "Omezení rychlosti (plynová páčka)", sk = "Obmedzenie rýchlosti (plynová páčka)")}: ${old.speedLimit} → ${new.speedLimit}"
+        if (old.startVoltage != new.startVoltage) out += "${tr(lang, "Napięcie startowe", "Start voltage", de = "Startspannung", fr = "Tension de démarrage", es = "Voltaje de arranque", pt = "Voltagem inicial", it = "Tensione iniziale", nl = "Startspanning", sv = "Startspänning", cs = "Počáteční napětí", sk = "Počiatočné napätie")}: ${old.startVoltage} → ${new.startVoltage}"
+        if (old.endVoltage != new.endVoltage) out += "${tr(lang, "Napięcie końcowe", "End voltage", de = "Endspannung", fr = "Tension finale", es = "Voltaje final", pt = "Voltagem final", it = "Tensione finale", nl = "Eindspanning", sv = "Slutspänning", cs = "Konečné napětí", sk = "Konečné napätie")}: ${old.endVoltage} → ${new.endVoltage}"
+        if (old.startCurrentPct != new.startCurrentPct) out += "${tr(lang, "Prąd startowy", "Start current", de = "Startstrom", fr = "Courant de démarrage", es = "Corriente de arranque", pt = "Corrente inicial", it = "Corrente iniziale", nl = "Startstroom", sv = "Startström", cs = "Počáteční proud", sk = "Počiatočný prúd")}: ${old.startCurrentPct}% → ${new.startCurrentPct}%"
         return out
     }
 
@@ -1912,10 +2053,40 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         val currentFw = _state.value.firmwareType
         val isBbsFwProfile = text.lineSequence().any { it.trim() == BbsFwProfileIo.FIRMWARE_MARKER }
         if (isBbsFwProfile && currentFw != FirmwareType.BBS_FW) {
-            error(tr(lang, "Ten profil zapisano dla firmware bbs-fw (Daniel Nilsson) - przełącz firmware w Ustawieniach, żeby go wczytać.", "This profile was saved for bbs-fw (Daniel Nilsson) firmware - switch firmware in Settings to load it."))
+            error(
+                tr(
+                    lang,
+                    "Ten profil zapisano dla firmware bbs-fw (Daniel Nilsson) - przełącz firmware w Ustawieniach, żeby go wczytać.",
+                    "This profile was saved for bbs-fw (Daniel Nilsson) firmware - switch firmware in Settings to load it.",
+                    de = "Dieses Profil wurde für die bbs-fw-Firmware (Daniel Nilsson) gespeichert - wechsle die Firmware in den Einstellungen, um es zu laden.",
+                    fr = "Ce profil a été enregistré pour le firmware bbs-fw (Daniel Nilsson) - changez de firmware dans les Réglages pour le charger.",
+                    es = "Este perfil se guardó para el firmware bbs-fw (Daniel Nilsson) - cambia el firmware en Ajustes para cargarlo.",
+                    pt = "Este perfil foi guardado para o firmware bbs-fw (Daniel Nilsson) - mude o firmware nas Definições para o carregar.",
+                    it = "Questo profilo è stato salvato per il firmware bbs-fw (Daniel Nilsson) - cambia firmware nelle Impostazioni per caricarlo.",
+                    nl = "Dit profiel is opgeslagen voor bbs-fw-firmware (Daniel Nilsson) - wissel van firmware in Instellingen om het te laden.",
+                    sv = "Den här profilen sparades för bbs-fw-firmware (Daniel Nilsson) - byt firmware i Inställningar för att ladda den.",
+                    cs = "Tento profil byl uložen pro firmware bbs-fw (Daniel Nilsson) - přepněte firmware v Nastavení, abyste ho mohli načíst.",
+                    sk = "Tento profil bol uložený pre firmware bbs-fw (Daniel Nilsson) - prepnite firmware v Nastaveniach, aby ste ho mohli načítať.",
+                ),
+            )
         }
         if (!isBbsFwProfile && currentFw == FirmwareType.BBS_FW) {
-            error(tr(lang, "Ten profil zapisano dla fabrycznego firmware Bafang (OEM) - przełącz firmware w Ustawieniach, żeby go wczytać.", "This profile was saved for factory Bafang (OEM) firmware - switch firmware in Settings to load it."))
+            error(
+                tr(
+                    lang,
+                    "Ten profil zapisano dla fabrycznego firmware Bafang (OEM) - przełącz firmware w Ustawieniach, żeby go wczytać.",
+                    "This profile was saved for factory Bafang (OEM) firmware - switch firmware in Settings to load it.",
+                    de = "Dieses Profil wurde für die werkseitige Bafang-Firmware (OEM) gespeichert - wechsle die Firmware in den Einstellungen, um es zu laden.",
+                    fr = "Ce profil a été enregistré pour le firmware Bafang d'usine (OEM) - changez de firmware dans les Réglages pour le charger.",
+                    es = "Este perfil se guardó para el firmware Bafang de fábrica (OEM) - cambia el firmware en Ajustes para cargarlo.",
+                    pt = "Este perfil foi guardado para o firmware Bafang de fábrica (OEM) - mude o firmware nas Definições para o carregar.",
+                    it = "Questo profilo è stato salvato per il firmware Bafang di fabbrica (OEM) - cambia firmware nelle Impostazioni per caricarlo.",
+                    nl = "Dit profiel is opgeslagen voor fabrieks-Bafang-firmware (OEM) - wissel van firmware in Instellingen om het te laden.",
+                    sv = "Den här profilen sparades för fabriks-Bafang-firmware (OEM) - byt firmware i Inställningar för att ladda den.",
+                    cs = "Tento profil byl uložen pro tovární firmware Bafang (OEM) - přepněte firmware v Nastavení, abyste ho mohli načíst.",
+                    sk = "Tento profil bol uložený pre továrenský firmware Bafang (OEM) - prepnite firmware v Nastaveniach, aby ste ho mohli načítať.",
+                ),
+            )
         }
         when (currentFw) {
             FirmwareType.BBS_FW -> {

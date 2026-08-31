@@ -1,6 +1,16 @@
 # Changelog
 
 
+## v0.3.62 - 2026-08-31 (versionCode 64)
+- Fixed a major translation gap: the BBS-FW parameter screens (System, Assist Levels, and the bbs-fw section of "All in View") are now fully translated in all languages - previously only descriptions were translated, but field names/section headers ("Max Current", "Current Ramp", "Start Voltage", "Global", "Pedal Assist", etc.) stayed in English regardless of the app's language setting. Firmware-specific variant names (PAS/Throttle/Cruise, Standard/Sport, On/Off, etc.) are left as-is by design, matching bbs-fw's own official tool.
+
+## v0.3.61 - 2026-08-31 (versionCode 63)
+- Language screen: the list now scrolls, fixing languages below Nederlands being unreachable now that there are 11 of them.
+- Language screen: tiles are more compact (less vertical padding) so more fit on screen at once, text size unchanged.
+
+## v0.3.60 - 2026-08-31 (versionCode 62)
+- Added 9 new languages: German, French, Spanish, Portuguese, Italian, Dutch, Swedish, Czech, and Slovak - EggSPEED now speaks 11 languages total (Polish, English, plus these 9), switchable anytime from the Language menu.
+
 ## v0.3.58 - 2026-08-29 (versionCode 60)
 - GPS Speed annotation no longer shows a leading zero below 10 (e.g. "0.0" and "9.9", not "00.0"/"09.9") and no longer shifts left/right when crossing the 10 threshold (fixed-width field).
 - Settings: "GPS Speed" moved right under "Fast Cockpit refresh".

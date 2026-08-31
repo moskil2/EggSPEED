@@ -70,7 +70,12 @@ fun ConnectScreen(
         // Wordmark - podniesione wyżej (bez dużego odstępu przed okręgiem)
         EggSpeedWordmark(fontSize = 18.sp, letterSpacing = 3.9.sp)
         Text(
-            tr("dla Bafang BBS01 / BBS02 / BBSHD", "for Bafang BBS01 / BBS02 / BBSHD"),
+            tr(
+                "dla Bafang BBS01 / BBS02 / BBSHD", "for Bafang BBS01 / BBS02 / BBSHD",
+                de = "für Bafang BBS01 / BBS02 / BBSHD", fr = "pour Bafang BBS01 / BBS02 / BBSHD", es = "para Bafang BBS01 / BBS02 / BBSHD",
+                pt = "para Bafang BBS01 / BBS02 / BBSHD", it = "per Bafang BBS01 / BBS02 / BBSHD", nl = "voor Bafang BBS01 / BBS02 / BBSHD",
+                sv = "för Bafang BBS01 / BBS02 / BBSHD", cs = "pro Bafang BBS01 / BBS02 / BBSHD", sk = "pre Bafang BBS01 / BBS02 / BBSHD",
+            ),
             fontFamily = Manrope,
             fontSize = 13.sp,
             color = Tokens.TextTertiary,
@@ -139,11 +144,11 @@ fun ConnectScreen(
 
         Text(
             text = when (state.connection) {
-                ConnectionStatus.DISCONNECTED -> tr("Niepołączono", "Not connected")
-                ConnectionStatus.SEARCHING -> tr("Szukam sterownika…", "Searching for controller…")
-                ConnectionStatus.CONNECTING -> tr("Identyfikuję sterownik…", "Identifying controller…")
-                ConnectionStatus.CONNECTED -> tr("Połączono", "Connected")
-                ConnectionStatus.ERROR -> tr("Błąd połączenia", "Connection error")
+                ConnectionStatus.DISCONNECTED -> tr("Niepołączono", "Not connected", de = "Nicht verbunden", fr = "Non connecté", es = "No conectado", pt = "Não conectado", it = "Non connesso", nl = "Niet verbonden", sv = "Ej ansluten", cs = "Nepřipojeno", sk = "Nepripojené")
+                ConnectionStatus.SEARCHING -> tr("Szukam sterownika…", "Searching for controller…", de = "Suche Steuergerät…", fr = "Recherche du contrôleur…", es = "Buscando controlador…", pt = "A procurar controlador…", it = "Ricerca controller…", nl = "Controller zoeken…", sv = "Söker styrenhet…", cs = "Hledám řadič…", sk = "Hľadám radič…")
+                ConnectionStatus.CONNECTING -> tr("Identyfikuję sterownik…", "Identifying controller…", de = "Identifiziere Steuergerät…", fr = "Identification du contrôleur…", es = "Identificando controlador…", pt = "A identificar controlador…", it = "Identificazione controller…", nl = "Controller identificeren…", sv = "Identifierar styrenhet…", cs = "Identifikuji řadič…", sk = "Identifikujem radič…")
+                ConnectionStatus.CONNECTED -> tr("Połączono", "Connected", de = "Verbunden", fr = "Connecté", es = "Conectado", pt = "Conectado", it = "Connesso", nl = "Verbonden", sv = "Ansluten", cs = "Připojeno", sk = "Pripojené")
+                ConnectionStatus.ERROR -> tr("Błąd połączenia", "Connection error", de = "Verbindungsfehler", fr = "Erreur de connexion", es = "Error de conexión", pt = "Erro de ligação", it = "Errore di connessione", nl = "Verbindingsfout", sv = "Anslutningsfel", cs = "Chyba připojení", sk = "Chyba pripojenia")
             },
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
@@ -158,7 +163,18 @@ fun ConnectScreen(
             // renderze, zamiast trzymac juz-przetlumaczony string "zapieczony" na moment zdarzenia
             // (co zostawialo stary komunikat w poprzednim jezyku po zmianie jezyka w Ustawieniach).
             text = if (state.statusMessagePl.isBlank() && state.statusMessageEn.isBlank()) {
-                tr("Podłącz kabel programujący Bafang między telefonem a kontrolerem", "Connect the Bafang programming cable between your phone and the controller")
+                tr(
+                    "Podłącz kabel programujący Bafang między telefonem a kontrolerem", "Connect the Bafang programming cable between your phone and the controller",
+                    de = "Verbinde das Bafang-Programmierkabel zwischen Telefon und Steuergerät",
+                    fr = "Connectez le câble de programmation Bafang entre votre téléphone et le contrôleur",
+                    es = "Conecta el cable de programación Bafang entre tu teléfono y el controlador",
+                    pt = "Liga o cabo de programação Bafang entre o telemóvel e o controlador",
+                    it = "Collega il cavo di programmazione Bafang tra il telefono e il controller",
+                    nl = "Sluit de Bafang-programmeerkabel aan tussen je telefoon en de controller",
+                    sv = "Anslut Bafang-programmeringskabeln mellan din telefon och styrenheten",
+                    cs = "Připoj programovací kabel Bafang mezi telefon a řadič",
+                    sk = "Pripoj programovací kábel Bafang medzi telefón a radič",
+                )
             } else {
                 tr(state.statusMessagePl, state.statusMessageEn)
             },
@@ -182,7 +198,10 @@ fun ConnectScreen(
                     .padding(vertical = 15.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(tr("Przejdź do Kokpitu →", "Go to Cockpit →"), fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Tokens.Blue)
+                Text(
+                    tr("Przejdź do Kokpitu →", "Go to Cockpit →", de = "Zum Cockpit →", fr = "Aller au Cockpit →", es = "Ir al Cockpit →", pt = "Ir para o Cockpit →", it = "Vai al Cockpit →", nl = "Ga naar Cockpit →", sv = "Gå till Cockpit →", cs = "Přejít do Cockpitu →", sk = "Prejsť do Cockpitu →"),
+                    fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Tokens.Blue,
+                )
             }
             Spacer(Modifier.height(10.dp))
         }
@@ -217,7 +236,11 @@ fun ConnectScreen(
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                if (connected) tr("Rozłącz", "Disconnect") else tr("Połącz", "Connect"),
+                if (connected) {
+                    tr("Rozłącz", "Disconnect", de = "Trennen", fr = "Déconnecter", es = "Desconectar", pt = "Desligar", it = "Disconnetti", nl = "Verbreken", sv = "Koppla från", cs = "Odpojit", sk = "Odpojiť")
+                } else {
+                    tr("Połącz", "Connect", de = "Verbinden", fr = "Connecter", es = "Conectar", pt = "Ligar", it = "Connetti", nl = "Verbinden", sv = "Anslut", cs = "Připojit", sk = "Pripojiť")
+                },
                 fontFamily = Sora,
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
