@@ -130,7 +130,7 @@
 - GPS Speed toggle (phone-GPS speed annotation on Cockpit, location permission requested on enable)
 - Units toggle (km/h/mph)
 - Odometer offset
-- App language selector (11 languages: Polish, English, German, French, Spanish, Portuguese, Italian, Dutch, Swedish, Czech, Slovak)
+- App language selector (13 languages: Polish, English, German, French, Spanish, Portuguese, Italian, Dutch, Swedish, Czech, Slovak, Danish, Russian)
 
 ### About
 - App version, build stamp
@@ -243,6 +243,10 @@ app/src/main/java/com/bafspeed/app/
 4. **`try_process_bafang_read_request` (bbs-fw's display-compat layer) only implements 9 opcodes** - it silently ignores everything else, including the OEM Configuration Tool's GEN/BAS/PAS/THR block reads (`0x51`-`0x54`) - by design, not a bug.
 
 ## Changelog
+
+## v0.3.63 - 2026-09-01 (versionCode 65)
+- Added Danish and Russian - EggSPEED now speaks 13 languages total (Polish, English, German, French, Spanish, Portuguese, Italian, Dutch, Swedish, Czech, Slovak, Danish, Russian), switchable anytime from the Language menu.
+- Improved range (RANGE) estimation on the Cockpit: capped how much a single early, low-power chunk of a ride can override the learned historical Wh/km average, fixing unrealistically high range readings (e.g. 500 km) right at the start of a ride.
 
 ## v0.3.62 - 2026-08-31 (versionCode 64)
 - Fixed a major translation gap: the BBS-FW parameter screens (System, Assist Levels, and the bbs-fw section of "All in View") are now fully translated in all languages - previously only descriptions were translated, but field names/section headers ("Max Current", "Current Ramp", "Start Voltage", "Global", "Pedal Assist", etc.) stayed in English regardless of the app's language setting. Firmware-specific variant names (PAS/Throttle/Cruise, Standard/Sport, On/Off, etc.) are left as-is by design, matching bbs-fw's own official tool.
