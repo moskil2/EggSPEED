@@ -53,10 +53,10 @@ fun TemperatureControlScreen(
             .padding(PaddingValues(start = 14.dp, end = 14.dp, top = 0.dp, bottom = 16.dp)),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        MicroLabel(tr("Wyświetlanie na Kokpicie", "Cockpit display", de = "Cockpit-Anzeige", fr = "Affichage Cockpit", es = "Visualización en Cockpit", pt = "Visualização no Cockpit", it = "Visualizzazione Cockpit", nl = "Cockpit-weergave", sv = "Cockpit-visning", cs = "Zobrazení Cockpitu", sk = "Zobrazenie Cockpitu"))
+        MicroLabel(tr("Wyświetlanie na Kokpicie", "Cockpit display", de = "Cockpit-Anzeige", fr = "Affichage Cockpit", es = "Visualización en Cockpit", pt = "Visualização no Cockpit", it = "Visualizzazione Cockpit", nl = "Cockpit-weergave", sv = "Cockpit-visning", cs = "Zobrazení Cockpitu", sk = "Zobrazenie Cockpitu", da = "Cockpit-visning", ru = "Отображение на Кокпите"))
         TokenCard(borderColor = Tokens.WhiteBorder) {
             ToggleRow(
-                tr("Temp. sterownika (Tc)", "Controller temp. (Tc)", de = "Steuergerätetemp. (Tc)", fr = "Temp. contrôleur (Tc)", es = "Temp. del controlador (Tc)", pt = "Temp. do controlador (Tc)", it = "Temp. controller (Tc)", nl = "Controllertemp. (Tc)", sv = "Styrenhetens temp. (Tc)", cs = "Teplota řadiče (Tc)", sk = "Teplota radiča (Tc)"),
+                tr("Temp. sterownika (Tc)", "Controller temp. (Tc)", de = "Steuergerätetemp. (Tc)", fr = "Temp. contrôleur (Tc)", es = "Temp. del controlador (Tc)", pt = "Temp. do controlador (Tc)", it = "Temp. controller (Tc)", nl = "Controllertemp. (Tc)", sv = "Styrenhetens temp. (Tc)", cs = "Teplota řadiče (Tc)", sk = "Teplota radiča (Tc)", da = "Controllertemp. (Tc)", ru = "Темп. контроллера (Tc)"),
                 state.showTempOnCockpit, onShowChange, accent = Tokens.Amber,
                 description = tr(
                     "Pokazuje kafelek Tc po lewej stronie Kokpitu, mniej więcej na wysokości odczytu mocy.",
@@ -69,12 +69,12 @@ fun TemperatureControlScreen(
                     nl = "Toont de Tc-tegel aan de linkerkant van de Cockpit, ongeveer op de hoogte van de vermogensaflezing.",
                     sv = "Visar Tc-rutan på vänster sida av Cockpit, ungefär i höjd med effektavläsningen.",
                     cs = "Zobrazuje dlaždici Tc na levé straně Cockpitu, přibližně ve výšce odečtu výkonu.",
-                    sk = "Zobrazuje dlaždicu Tc na ľavej strane Cockpitu, približne vo výške odčítania výkonu.",
+                    sk = "Zobrazuje dlaždicu Tc na ľavej strane Cockpitu, približne vo výške odčítania výkonu.", da = "Viser Tc-feltet i venstre side af Cockpit, cirka i samme højde som effektaflæsningen.", ru = "Показывает плитку Tc в левой части Кокпита, примерно на уровне показания мощности.",
                 ),
             )
         }
 
-        MicroLabel(tr("Reakcja na przekroczenie", "Reaction on threshold exceeded", de = "Reaktion bei Grenzwertüberschreitung", fr = "Réaction au dépassement de seuil", es = "Reacción al superar el umbral", pt = "Reação ao ultrapassar o limite", it = "Reazione al superamento della soglia", nl = "Reactie bij overschrijding drempel", sv = "Reaktion vid överskriden gräns", cs = "Reakce na překročení prahu", sk = "Reakcia na prekročenie prahu"))
+        MicroLabel(tr("Reakcja na przekroczenie", "Reaction on threshold exceeded", de = "Reaktion bei Grenzwertüberschreitung", fr = "Réaction au dépassement de seuil", es = "Reacción al superar el umbral", pt = "Reação ao ultrapassar o limite", it = "Reazione al superamento della soglia", nl = "Reactie bij overschrijding drempel", sv = "Reaktion vid överskriden gräns", cs = "Reakce na překročení prahu", sk = "Reakcia na prekročenie prahu", da = "Reaktion ved overskredet tærskel", ru = "Реакция при превышении порога"))
         ExpandableParamTile(
             label = "Warning",
             valueLabel = "${state.tempWarningC}°C",
@@ -89,7 +89,7 @@ fun TemperatureControlScreen(
                 nl = "Lagere drempel - bij overschrijding licht de Tc-tegel oranje op (zonder te knipperen).",
                 sv = "Lägre tröskel - vid överskridning lyser Tc-rutan orange (utan att blinka).",
                 cs = "Nižší práh - při překročení se dlaždice Tc rozsvítí oranžově (bez blikání).",
-                sk = "Nižší prah - pri prekročení sa dlaždica Tc rozsvieti oranžovo (bez blikania).",
+                sk = "Nižší prah - pri prekročení sa dlaždica Tc rozsvieti oranžovo (bez blikania).", da = "Nedre tærskel - ved overskridelse lyser Tc-feltet orange (uden at blinke).", ru = "Нижний порог - при превышении плитка Tc подсвечивается оранжевым (без мигания).",
             ),
         ) {
             FlankedSlider(value = state.tempWarningC, range = 30..150, accent = Tokens.Amber, onValueChange = onWarningChange)
@@ -129,13 +129,19 @@ fun TemperatureControlScreen(
                 sk = "Vyšší prah - pri prekročení dlaždica Tc bliká na červeno a (ak je zapnuté nižšie) prehrá " +
                     "jednorazový zvuk. Zvuk sa znova aktivuje až po poklese teploty späť " +
                     "pod tento prah.",
+                da = "Højere tærskel - ved overskridelse blinker Tc-feltet rødt og afspiller (hvis aktiveret " +
+                    "nedenfor) en engangslyd. Lyden genaktiveres først, når temperaturen falder tilbage " +
+                    "under denne tærskel.",
+                ru = "Верхний порог - при превышении плитка Tc мигает красным и (если включено ниже) " +
+                    "воспроизводит однократный звук. Звук снова активируется только после того, как " +
+                    "температура опустится обратно ниже этого порога.",
             ),
         ) {
             FlankedSlider(value = state.tempAlarmC, range = 30..150, accent = Tokens.Red, onValueChange = onAlarmChange)
         }
         TokenCard(borderColor = Tokens.WhiteBorder) {
             ToggleRow(
-                tr("Dźwięk przy Alarm", "Sound on Alarm", de = "Ton bei Alarm", fr = "Son à l'Alarm", es = "Sonido en Alarm", pt = "Som no Alarm", it = "Suono su Alarm", nl = "Geluid bij Alarm", sv = "Ljud vid Alarm", cs = "Zvuk při Alarm", sk = "Zvuk pri Alarm"),
+                tr("Dźwięk przy Alarm", "Sound on Alarm", de = "Ton bei Alarm", fr = "Son à l'Alarm", es = "Sonido en Alarm", pt = "Som no Alarm", it = "Suono su Alarm", nl = "Geluid bij Alarm", sv = "Ljud vid Alarm", cs = "Zvuk při Alarm", sk = "Zvuk pri Alarm", da = "Lyd ved Alarm", ru = "Звук при Alarm"),
                 state.tempAlarmSoundEnabled, onAlarmSoundChange, accent = Tokens.Red,
                 description = tr(
                     "Jednorazowy sygnał dźwiękowy przy przekroczeniu progu Alarm.",
@@ -148,23 +154,23 @@ fun TemperatureControlScreen(
                     nl = "Eén geluidssignaal wanneer de Alarm-drempel wordt overschreden.",
                     sv = "En engångssignal när Alarm-tröskeln överskrids.",
                     cs = "Jednorázový zvukový signál při překročení prahu Alarm.",
-                    sk = "Jednorazový zvukový signál pri prekročení prahu Alarm.",
+                    sk = "Jednorazový zvukový signál pri prekročení prahu Alarm.", da = "Et enkelt bip, når Alarm-tærsklen overskrides.", ru = "Однократный звуковой сигнал при превышении порога Alarm.",
                 ),
             )
         }
 
-        MicroLabel(tr("Czujniki w firmware", "Firmware sensors", de = "Sensoren in der Firmware", fr = "Capteurs du firmware", es = "Sensores del firmware", pt = "Sensores no firmware", it = "Sensori nel firmware", nl = "Sensoren in firmware", sv = "Sensorer i firmware", cs = "Senzory ve firmwaru", sk = "Senzory vo firmvéri"))
+        MicroLabel(tr("Czujniki w firmware", "Firmware sensors", de = "Sensoren in der Firmware", fr = "Capteurs du firmware", es = "Sensores del firmware", pt = "Sensores no firmware", it = "Sensori nel firmware", nl = "Sensoren in firmware", sv = "Sensorer i firmware", cs = "Senzory ve firmwaru", sk = "Senzory vo firmvéri", da = "Sensorer i firmware", ru = "Датчики в прошивке"))
         TokenCard(borderColor = Tokens.WhiteBorder) {
             val mode = state.bbsFwConfigOrDefault.temperatureSensorMode
             val modeLabel = listOf(
-                tr("Wyłączony", "Disabled", de = "Deaktiviert", fr = "Désactivé", es = "Desactivado", pt = "Desativado", it = "Disattivato", nl = "Uitgeschakeld", sv = "Avstängd", cs = "Vypnuto", sk = "Vypnuté"),
-                tr("Sterownika", "Controller", de = "Steuergerät", fr = "Contrôleur", es = "Controlador", pt = "Controlador", it = "Controller", nl = "Controller", sv = "Styrenhet", cs = "Řadič", sk = "Radič"),
-                tr("Silnika", "Motor", de = "Motor", fr = "Moteur", es = "Motor", pt = "Motor", it = "Motore", nl = "Motor", sv = "Motor", cs = "Motor", sk = "Motor"),
+                tr("Wyłączony", "Disabled", de = "Deaktiviert", fr = "Désactivé", es = "Desactivado", pt = "Desativado", it = "Disattivato", nl = "Uitgeschakeld", sv = "Avstängd", cs = "Vypnuto", sk = "Vypnuté", da = "Deaktiveret", ru = "Отключено"),
+                tr("Sterownika", "Controller", de = "Steuergerät", fr = "Contrôleur", es = "Controlador", pt = "Controlador", it = "Controller", nl = "Controller", sv = "Styrenhet", cs = "Řadič", sk = "Radič", da = "Controller", ru = "Контроллер"),
+                tr("Silnika", "Motor", de = "Motor", fr = "Moteur", es = "Motor", pt = "Motor", it = "Motore", nl = "Motor", sv = "Motor", cs = "Motor", sk = "Motor", da = "Motor", ru = "Мотор"),
                 "All",
             ).getOrElse(mode) { "?" }
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    tr("Temperature Sensor (zakładka System)", "Temperature Sensor (System tab)", de = "Temperature Sensor (Tab System)", fr = "Temperature Sensor (onglet Système)", es = "Temperature Sensor (pestaña Sistema)", pt = "Temperature Sensor (separador System)", it = "Temperature Sensor (scheda System)", nl = "Temperature Sensor (tabblad System)", sv = "Temperature Sensor (fliken System)", cs = "Temperature Sensor (karta System)", sk = "Temperature Sensor (karta System)"),
+                    tr("Temperature Sensor (zakładka System)", "Temperature Sensor (System tab)", de = "Temperature Sensor (Tab System)", fr = "Temperature Sensor (onglet Système)", es = "Temperature Sensor (pestaña Sistema)", pt = "Temperature Sensor (separador System)", it = "Temperature Sensor (scheda System)", nl = "Temperature Sensor (tabblad System)", sv = "Temperature Sensor (fliken System)", cs = "Temperature Sensor (karta System)", sk = "Temperature Sensor (karta System)", da = "Temperature Sensor (fanen System)", ru = "Temperature Sensor (вкладка System)"),
                     fontFamily = Manrope, fontSize = 13.sp, color = Tokens.TextPrimary, modifier = Modifier.weight(1f),
                 )
                 Text(modeLabel, fontFamily = Manrope, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Tokens.Emerald)
@@ -194,6 +200,10 @@ fun TemperatureControlScreen(
                         "omezuje výkon) - neurčuje, co se zobrazuje zde v Cockpitu.",
                     sk = "Toto nastavenie riadi VÝHRADNE to, ako firmvér sám reaguje na prehriatie (napr. " +
                         "obmedzuje výkon) - neurčuje, čo sa zobrazuje tu v Cockpite.",
+                    da = "Denne indstilling styrer UDELUKKENDE, hvordan firmwaren selv reagerer på overophedning " +
+                        "(f.eks. begrænser effekten) - den afgør ikke, hvad der vises her på Cockpit.",
+                    ru = "Эта настройка управляет ИСКЛЮЧИТЕЛЬНО тем, как сама прошивка реагирует на перегрев " +
+                        "(например, ограничивает мощность) - она не определяет, что отображается здесь в Кокпите.",
                 ),
                 fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
             )

@@ -53,7 +53,7 @@ private fun ConfirmDialog(flow: WriteFlow.Confirming, onConfirm: () -> Unit, onC
     AlertDialog(
         containerColor = Tokens.Card,
         onDismissRequest = onCancel,
-        title = { Text(tr("Zapisać do sterownika?", "Save to controller?", de = "An Steuergerät senden?", fr = "Enregistrer sur le contrôleur ?", es = "¿Guardar en el controlador?", pt = "Guardar no controlador?", it = "Salvare nel controller?", nl = "Opslaan naar controller?", sv = "Spara till styrenheten?", cs = "Uložit do řadiče?", sk = "Uložiť do radiča?"), fontFamily = Sora, fontWeight = FontWeight.Bold, color = Tokens.TextPrimary) },
+        title = { Text(tr("Zapisać do sterownika?", "Save to controller?", de = "An Steuergerät senden?", fr = "Enregistrer sur le contrôleur ?", es = "¿Guardar en el controlador?", pt = "Guardar no controlador?", it = "Salvare nel controller?", nl = "Opslaan naar controller?", sv = "Spara till styrenheten?", cs = "Uložit do řadiče?", sk = "Uložiť do radiča?", da = "Gem til controller?", ru = "Сохранить в контроллер?"), fontFamily = Sora, fontWeight = FontWeight.Bold, color = Tokens.TextPrimary) },
         text = {
             Column(Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState())) {
                 Text(
@@ -69,6 +69,8 @@ private fun ConfirmDialog(flow: WriteFlow.Confirming, onConfirm: () -> Unit, onC
                         sv = "Värdena nedan skickas och sparas i styrenhetens minne:",
                         cs = "Níže uvedené hodnoty budou odeslány a uloženy v paměti řadiče:",
                         sk = "Nižšie uvedené hodnoty budú odoslané a uložené v pamäti radiča:",
+                        da = "Værdierne nedenfor bliver sendt og gemt i controllerens hukommelse:",
+                        ru = "Указанные ниже значения будут отправлены и сохранены в памяти контроллера:",
                     ),
                     fontFamily = Manrope, fontSize = 13.sp, color = Tokens.TextSecondary,
                 )
@@ -78,7 +80,7 @@ private fun ConfirmDialog(flow: WriteFlow.Confirming, onConfirm: () -> Unit, onC
                 }
                 Spacer(Modifier.height(14.dp))
                 Text(
-                    tr("PODGLĄD RAMEK (dry-run)", "FRAME PREVIEW (dry-run)", de = "RAHMEN-VORSCHAU (dry-run)", fr = "APERÇU DES TRAMES (dry-run)", es = "VISTA PREVIA DE TRAMAS (dry-run)", pt = "PRÉ-VISUALIZAÇÃO DE TRAMAS (dry-run)", it = "ANTEPRIMA FRAME (dry-run)", nl = "FRAME-VOORBEELD (dry-run)", sv = "RAMFÖRHANDSVISNING (dry-run)", cs = "NÁHLED RÁMCŮ (dry-run)", sk = "NÁHĽAD RÁMCOV (dry-run)"),
+                    tr("PODGLĄD RAMEK (dry-run)", "FRAME PREVIEW (dry-run)", de = "RAHMEN-VORSCHAU (dry-run)", fr = "APERÇU DES TRAMES (dry-run)", es = "VISTA PREVIA DE TRAMAS (dry-run)", pt = "PRÉ-VISUALIZAÇÃO DE TRAMAS (dry-run)", it = "ANTEPRIMA FRAME (dry-run)", nl = "FRAME-VOORBEELD (dry-run)", sv = "RAMFÖRHANDSVISNING (dry-run)", cs = "NÁHLED RÁMCŮ (dry-run)", sk = "NÁHĽAD RÁMCOV (dry-run)", da = "RAMMEFORHÅNDSVISNING (dry-run)", ru = "ПРЕДПРОСМОТР КАДРОВ (dry-run)"),
                     fontFamily = Manrope, fontWeight = FontWeight.Medium, fontSize = 11.sp,
                     letterSpacing = 1.sp, color = Tokens.TextTertiary,
                 )
@@ -101,11 +103,11 @@ private fun ConfirmDialog(flow: WriteFlow.Confirming, onConfirm: () -> Unit, onC
         },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text(tr("Wyślij do sterownika", "Send to controller", de = "An Steuergerät senden", fr = "Envoyer au contrôleur", es = "Enviar al controlador", pt = "Enviar para o controlador", it = "Invia al controller", nl = "Verzenden naar controller", sv = "Skicka till styrenheten", cs = "Odeslat do řadiče", sk = "Odoslať do radiča"), color = Tokens.Blue, fontFamily = Manrope, fontWeight = FontWeight.Bold)
+                Text(tr("Wyślij do sterownika", "Send to controller", de = "An Steuergerät senden", fr = "Envoyer au contrôleur", es = "Enviar al controlador", pt = "Enviar para o controlador", it = "Invia al controller", nl = "Verzenden naar controller", sv = "Skicka till styrenheten", cs = "Odeslat do řadiče", sk = "Odoslať do radiča", da = "Send til controller", ru = "Отправить в контроллер"), color = Tokens.Blue, fontFamily = Manrope, fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
-            TextButton(onClick = onCancel) { Text(tr("Anuluj", "Cancel", de = "Abbrechen", fr = "Annuler", es = "Cancelar", pt = "Cancelar", it = "Annulla", nl = "Annuleren", sv = "Avbryt", cs = "Zrušit", sk = "Zrušiť"), color = Tokens.TextTertiary, fontFamily = Manrope) }
+            TextButton(onClick = onCancel) { Text(tr("Anuluj", "Cancel", de = "Abbrechen", fr = "Annuler", es = "Cancelar", pt = "Cancelar", it = "Annulla", nl = "Annuleren", sv = "Avbryt", cs = "Zrušit", sk = "Zrušiť", da = "Annuller", ru = "Отмена"), color = Tokens.TextTertiary, fontFamily = Manrope) }
         },
     )
 }
@@ -116,7 +118,7 @@ private fun ProgressDialog(step: String) {
         containerColor = Tokens.Card,
         onDismissRequest = {},
         confirmButton = {},
-        title = { Text(tr("Zapisywanie…", "Saving…", de = "Speichern…", fr = "Enregistrement…", es = "Guardando…", pt = "A guardar…", it = "Salvataggio…", nl = "Opslaan…", sv = "Sparar…", cs = "Ukládám…", sk = "Ukladám…"), fontFamily = Sora, fontWeight = FontWeight.Bold, color = Tokens.TextPrimary) },
+        title = { Text(tr("Zapisywanie…", "Saving…", de = "Speichern…", fr = "Enregistrement…", es = "Guardando…", pt = "A guardar…", it = "Salvataggio…", nl = "Opslaan…", sv = "Sparar…", cs = "Ukládám…", sk = "Ukladám…", da = "Gemmer…", ru = "Сохранение…"), fontFamily = Sora, fontWeight = FontWeight.Bold, color = Tokens.TextPrimary) },
         text = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 CircularProgressIndicator(modifier = Modifier.size(22.dp), color = Tokens.Blue, strokeWidth = 2.dp)
@@ -135,9 +137,9 @@ private fun ResultDialog(success: Boolean, message: String, onAcknowledge: () ->
         title = {
             Text(
                 if (success) {
-                    tr("Zapisano", "Saved", de = "Gespeichert", fr = "Enregistré", es = "Guardado", pt = "Guardado", it = "Salvato", nl = "Opgeslagen", sv = "Sparat", cs = "Uloženo", sk = "Uložené")
+                    tr("Zapisano", "Saved", de = "Gespeichert", fr = "Enregistré", es = "Guardado", pt = "Guardado", it = "Salvato", nl = "Opgeslagen", sv = "Sparat", cs = "Uloženo", sk = "Uložené", da = "Gemt", ru = "Сохранено")
                 } else {
-                    tr("Coś poszło nie tak", "Something went wrong", de = "Etwas ist schiefgelaufen", fr = "Une erreur s'est produite", es = "Algo salió mal", pt = "Algo correu mal", it = "Qualcosa è andato storto", nl = "Er is iets misgegaan", sv = "Något gick fel", cs = "Něco se pokazilo", sk = "Niečo sa pokazilo")
+                    tr("Coś poszło nie tak", "Something went wrong", de = "Etwas ist schiefgelaufen", fr = "Une erreur s'est produite", es = "Algo salió mal", pt = "Algo correu mal", it = "Qualcosa è andato storto", nl = "Er is iets misgegaan", sv = "Något gick fel", cs = "Něco se pokazilo", sk = "Niečo sa pokazilo", da = "Noget gik galt", ru = "Что-то пошло не так")
                 },
                 fontFamily = Sora, fontWeight = FontWeight.Bold,
                 color = if (success) Tokens.Emerald else Tokens.Red,

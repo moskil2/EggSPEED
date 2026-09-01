@@ -48,9 +48,9 @@ fun BbsFwInfoScreen(state: UiState) {
             MicroLabel("bbs-fw")
             Spacer(Modifier.height(6.dp))
             TokenCard(borderColor = Tokens.WhiteBorder) {
-                ParamRow(tr("Wersja firmware", "Firmware version", de = "Firmware-Version", fr = "Version du firmware", es = "Versión de firmware", pt = "Versão de firmware", it = "Versione firmware", nl = "Firmwareversie", sv = "Firmwareversion", cs = "Verze firmwaru", sk = "Verzia firmvéru"), v.versionLabel)
-                ParamRow(tr("Wersja formatu konfiguracji", "Config format version", de = "Konfigurationsformat-Version", fr = "Version du format de configuration", es = "Versión del formato de configuración", pt = "Versão do formato de configuração", it = "Versione formato configurazione", nl = "Configuratieformaat-versie", sv = "Konfigurationsformatversion", cs = "Verze formátu konfigurace", sk = "Verzia formátu konfigurácie"), v.configVersion.toString())
-                ParamRow(tr("Typ sterownika", "Controller type", de = "Steuergerätetyp", fr = "Type de contrôleur", es = "Tipo de controlador", pt = "Tipo de controlador", it = "Tipo di controller", nl = "Controllertype", sv = "Kontrollertyp", cs = "Typ řadiče", sk = "Typ radiča"), "${BbsFwController.name(v.ctrlType)} (${v.ctrlType})", last = true)
+                ParamRow(tr("Wersja firmware", "Firmware version", de = "Firmware-Version", fr = "Version du firmware", es = "Versión de firmware", pt = "Versão de firmware", it = "Versione firmware", nl = "Firmwareversie", sv = "Firmwareversion", cs = "Verze firmwaru", sk = "Verzia firmvéru", da = "Firmwareversion", ru = "Версия прошивки"), v.versionLabel)
+                ParamRow(tr("Wersja formatu konfiguracji", "Config format version", de = "Konfigurationsformat-Version", fr = "Version du format de configuration", es = "Versión del formato de configuración", pt = "Versão do formato de configuração", it = "Versione formato configurazione", nl = "Configuratieformaat-versie", sv = "Konfigurationsformatversion", cs = "Verze formátu konfigurace", sk = "Verzia formátu konfigurácie", da = "Konfigurationsformatversion", ru = "Версия формата конфигурации"), v.configVersion.toString())
+                ParamRow(tr("Typ sterownika", "Controller type", de = "Steuergerätetyp", fr = "Type de contrôleur", es = "Tipo de controlador", pt = "Tipo de controlador", it = "Tipo di controller", nl = "Controllertype", sv = "Kontrollertyp", cs = "Typ řadiče", sk = "Typ radiča", da = "Controllertype", ru = "Тип контроллера"), "${BbsFwController.name(v.ctrlType)} (${v.ctrlType})", last = true)
             }
             Spacer(Modifier.height(10.dp))
             PreviewBanner(
@@ -91,6 +91,12 @@ fun BbsFwInfoScreen(state: UiState) {
                     sk = "Táto aplikácia pozná formát konfigurácie verzie 5. Ak sa vyššie uvedená verzia líši, " +
                         "čítanie/zápis celej konfigurácie je zablokované (bbs-fw zmenil usporiadanie dát medzi " +
                         "verziami) - zobrazovací režim (Cockpit/Diagnostika) napriek tomu funguje ďalej.",
+                    da = "Denne app kender konfigurationsformat version 5. Hvis versionen ovenfor afviger, er " +
+                        "læsning/skrivning af den fulde konfiguration blokeret (bbs-fw ændrede datalayoutet mellem " +
+                        "versioner) - displaytilstanden (Cockpit/Diagnostik) fungerer stadig uafhængigt af dette.",
+                    ru = "Это приложение знает формат конфигурации версии 5. Если указанная выше версия отличается, " +
+                        "чтение/запись полной конфигурации заблокированы (bbs-fw изменил структуру данных между " +
+                        "версиями) - режим отображения (Кокпит/Диагностика) при этом продолжает работать.",
                 ),
             )
         } ?: PreviewBanner(
@@ -105,7 +111,7 @@ fun BbsFwInfoScreen(state: UiState) {
                 nl = "Verbind met je controller om hier de bbs-fw-versie en het controllertype te zien.",
                 sv = "Anslut till din styrenhet för att se bbs-fw-versionen och kontrollertypen här.",
                 cs = "Připoj se k řadiči, abys zde viděl verzi bbs-fw a typ řadiče.",
-                sk = "Pripoj sa k radiču, aby si tu videl verziu bbs-fw a typ radiča.",
+                sk = "Pripoj sa k radiču, aby si tu videl verziu bbs-fw a typ radiča.", da = "Opret forbindelse til din controller for at se bbs-fw-versionen og controllertypen her.", ru = "Подключитесь к контроллеру, чтобы увидеть здесь версию bbs-fw и тип контроллера.",
             ),
         )
     }

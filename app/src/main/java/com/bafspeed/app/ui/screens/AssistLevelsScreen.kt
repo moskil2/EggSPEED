@@ -91,7 +91,7 @@ fun AssistLevelsScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Poziom $selected - limit prędkości", "Level $selected - speed limit", de = "Stufe $selected - Geschwindigkeitslimit", fr = "Niveau $selected - limite de vitesse", es = "Nivel $selected - límite de velocidad", pt = "Nível $selected - limite de velocidade", it = "Livello $selected - limite di velocità", nl = "Niveau $selected - snelheidslimiet", sv = "Nivå $selected - hastighetsgräns", cs = "Úroveň $selected - limit rychlosti", sk = "Úroveň $selected - limit rýchlosti"),
+            label = tr("Poziom $selected - limit prędkości", "Level $selected - speed limit", de = "Stufe $selected - Geschwindigkeitslimit", fr = "Niveau $selected - limite de vitesse", es = "Nivel $selected - límite de velocidad", pt = "Nível $selected - limite de velocidade", it = "Livello $selected - limite di velocità", nl = "Niveau $selected - snelheidslimiet", sv = "Nivå $selected - hastighetsgräns", cs = "Úroveň $selected - limit rychlosti", sk = "Úroveň $selected - limit rýchlosti", da = "Niveau $selected - hastighedsgrænse", ru = "Уровень $selected - ограничение скорости"),
             valueLabel = "${basic.assistSpeedPct[selected]}%",
             description = tr(
                 "Procent maksymalnej prędkości (ustawionej w Bafang Pedal (PAS) / Bafang Throttle) " +
@@ -127,6 +127,12 @@ fun AssistLevelsScreen(
                 sk = "Percento maximálnej rýchlosti (nastavenej v Bafang Pedal (PAS) / Bafang Throttle) dostupné " +
                     "na tejto úrovni asistencie. Napr. ak je limit rýchlosti 40 km/h a tu nastavíš 50%, na tejto " +
                     "úrovni dosiahneš maximálne 20 km/h.",
+                da = "Procentdel af maksimalhastigheden (indstillet i Bafang Pedal (PAS) / Bafang Throttle) der er " +
+                    "tilgængelig på dette understøttelsesniveau. F.eks. hvis hastighedsgrænsen er 40 km/t, og du " +
+                    "indstiller 50% her, når du på dette niveau maksimalt 20 km/t.",
+                ru = "Процент от максимальной скорости (заданной в Bafang Pedal (PAS) / Bafang Throttle), " +
+                    "доступный на этом уровне помощи. Например, если ограничение скорости - 40 км/ч, а здесь вы " +
+                    "установите 50%, на этом уровне вы достигнете максимум 20 км/ч.",
             ),
         ) {
             FlankedSlider(
@@ -138,7 +144,7 @@ fun AssistLevelsScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Poziom $selected - limit prądu", "Level $selected - current limit", de = "Stufe $selected - Strombegrenzung", fr = "Niveau $selected - limite de courant", es = "Nivel $selected - límite de corriente", pt = "Nível $selected - limite de corrente", it = "Livello $selected - limite di corrente", nl = "Niveau $selected - stroomlimiet", sv = "Nivå $selected - strömgräns", cs = "Úroveň $selected - limit proudu", sk = "Úroveň $selected - limit prúdu"),
+            label = tr("Poziom $selected - limit prądu", "Level $selected - current limit", de = "Stufe $selected - Strombegrenzung", fr = "Niveau $selected - limite de courant", es = "Nivel $selected - límite de corriente", pt = "Nível $selected - limite de corrente", it = "Livello $selected - limite di corrente", nl = "Niveau $selected - stroomlimiet", sv = "Nivå $selected - strömgräns", cs = "Úroveň $selected - limit proudu", sk = "Úroveň $selected - limit prúdu", da = "Niveau $selected - strømgrænse", ru = "Уровень $selected - ограничение тока"),
             valueLabel = "${basic.assistCurrentPct[selected]}%",
             description = tr(
                 "Procent maksymalnego prądu (Current Limit z Bafang Basic) dostępny na tym poziomie " +
@@ -174,6 +180,12 @@ fun AssistLevelsScreen(
                 sk = "Percento maximálneho prúdu (Current Limit z Bafang Basic) dostupné na tejto úrovni " +
                     "asistencie. Napr. ak je Current Limit 24A a tu nastavíš 50%, na tejto úrovni motor dostane " +
                     "maximálne 12A.",
+                da = "Procentdel af maksimalstrømmen (Current Limit fra Bafang Basic) der er tilgængelig på dette " +
+                    "understøttelsesniveau. F.eks. hvis Current Limit er 24A, og du indstiller 50% her, får motoren " +
+                    "maksimalt 12A på dette niveau.",
+                ru = "Процент от максимального тока (Current Limit из Bafang Basic), доступный на этом уровне " +
+                    "помощи. Например, если Current Limit равен 24А, а здесь вы установите 50%, на этом уровне " +
+                    "мотор получит максимум 12А.",
             ),
         ) {
             FlankedSlider(
@@ -186,7 +198,7 @@ fun AssistLevelsScreen(
 
         // Wykres mocy - wszystkie poziomy na raz (tylko podglad, bez edycji)
         TokenCard(borderColor = Color(0x59FFFFFF)) {
-            MicroLabel(tr("Rozkład mocy - wszystkie poziomy", "Power distribution - all levels", de = "Leistungsverteilung - alle Stufen", fr = "Répartition de puissance - tous niveaux", es = "Distribución de potencia - todos los niveles", pt = "Distribuição de potência - todos os níveis", it = "Distribuzione di potenza - tutti i livelli", nl = "Vermogensverdeling - alle niveaus", sv = "Effektfördelning - alla nivåer", cs = "Rozložení výkonu - všechny úrovně", sk = "Rozloženie výkonu - všetky úrovne"))
+            MicroLabel(tr("Rozkład mocy - wszystkie poziomy", "Power distribution - all levels", de = "Leistungsverteilung - alle Stufen", fr = "Répartition de puissance - tous niveaux", es = "Distribución de potencia - todos los niveles", pt = "Distribuição de potência - todos os níveis", it = "Distribuzione di potenza - tutti i livelli", nl = "Vermogensverdeling - alle niveaus", sv = "Effektfördelning - alla nivåer", cs = "Rozložení výkonu - všechny úrovně", sk = "Rozloženie výkonu - všetky úrovne", da = "Effektfordeling - alle niveauer", ru = "Распределение мощности - все уровни"))
             Spacer(Modifier.height(12.dp))
             Row(
                 Modifier.fillMaxWidth().height(120.dp),
@@ -212,7 +224,7 @@ fun AssistLevelsScreen(
         // Wykres predkosci - wszystkie poziomy na raz (tylko podglad, bez edycji) - identyczny
         // uklad co wykres mocy powyzej, ale dla assistSpeedPct.
         TokenCard(borderColor = Color(0x59FFFFFF)) {
-            MicroLabel(tr("Rozkład prędkości - wszystkie poziomy", "Speed distribution - all levels", de = "Geschwindigkeitsverteilung - alle Stufen", fr = "Répartition de vitesse - tous niveaux", es = "Distribución de velocidad - todos los niveles", pt = "Distribuição de velocidade - todos os níveis", it = "Distribuzione di velocità - tutti i livelli", nl = "Snelheidsverdeling - alle niveaus", sv = "Hastighetsfördelning - alla nivåer", cs = "Rozložení rychlosti - všechny úrovně", sk = "Rozloženie rýchlosti - všetky úrovne"))
+            MicroLabel(tr("Rozkład prędkości - wszystkie poziomy", "Speed distribution - all levels", de = "Geschwindigkeitsverteilung - alle Stufen", fr = "Répartition de vitesse - tous niveaux", es = "Distribución de velocidad - todos los niveles", pt = "Distribuição de velocidade - todos os níveis", it = "Distribuzione di velocità - tutti i livelli", nl = "Snelheidsverdeling - alle niveaus", sv = "Hastighetsfördelning - alla nivåer", cs = "Rozložení rychlosti - všechny úrovně", sk = "Rozloženie rýchlosti - všetky úrovne", da = "Hastighedsfordeling - alle niveauer", ru = "Распределение скорости - все уровни"))
             Spacer(Modifier.height(12.dp))
             Row(
                 Modifier.fillMaxWidth().height(120.dp),

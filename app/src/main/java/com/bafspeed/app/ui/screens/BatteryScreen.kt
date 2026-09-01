@@ -88,6 +88,10 @@ fun BatteryScreen(
                     "potřeba, aby EggSPEED mohl správně vypočítat dojezd kola na obrazovce Cockpit.",
                 sk = "Počet článkov a kapacita sú pomocné údaje aplikácie - neukladajú sa do riadiacej jednotky, ale sú " +
                     "potrebné na to, aby EggSPEED mohol správne vypočítať dojazd bicykla na obrazovke Cockpit.",
+                da = "Antal celler og kapacitet er hjælpedata på appsiden - de gemmes ikke i styreenheden, men er " +
+                    "nødvendige, for at EggSPEED korrekt kan beregne cyklens rækkevidde på Cockpit-skærmen.",
+                ru = "Количество ячеек и ёмкость - это вспомогательные данные приложения - они не сохраняются в " +
+                    "контроллере, но нужны, чтобы EggSPEED мог правильно рассчитать запас хода велосипеда на экране Кокпита.",
             ),
             borderWidth = 2.dp,
         )
@@ -95,7 +99,7 @@ fun BatteryScreen(
         val isBbsFw = state.firmwareType == FirmwareType.BBS_FW
         val bbsFwCfg = state.bbsFwConfigOrDefault
 
-        MicroLabel(tr("Twoja bateria", "Your battery", de = "Deine Batterie", fr = "Votre batterie", es = "Tu batería", pt = "A tua bateria", it = "La tua batteria", nl = "Jouw batterij", sv = "Ditt batteri", cs = "Tvoje baterie", sk = "Tvoja batéria"))
+        MicroLabel(tr("Twoja bateria", "Your battery", de = "Deine Batterie", fr = "Votre batterie", es = "Tu batería", pt = "A tua bateria", it = "La tua batteria", nl = "Jouw batterij", sv = "Ditt batteri", cs = "Tvoje baterie", sk = "Tvoja batéria", da = "Dit batteri", ru = "Ваша батарея"))
 
         // Trzy progi napięcia baterii scalone w jeden kafelek - to same dane informacyjne (odczyt
         // lub wyliczone z liczby cel), użytkownik nic tu nie ustawia, więc osobne karty tylko
@@ -106,7 +110,7 @@ fun BatteryScreen(
         // odczytu z wyliczoną estymatą.
         val lbpV = if (isBbsFw) bbsFwCfg.lowCutOffV else basic.lowBatteryProtection
         ExpandableParamTile(
-            label = tr("Napięcie baterii", "Battery voltage", de = "Batteriespannung", fr = "Tension de la batterie", es = "Voltaje de la batería", pt = "Voltagem da bateria", it = "Tensione della batteria", nl = "Batterijspanning", sv = "Batterispänning", cs = "Napětí baterie", sk = "Napätie batérie"),
+            label = tr("Napięcie baterii", "Battery voltage", de = "Batteriespannung", fr = "Tension de la batterie", es = "Voltaje de la batería", pt = "Voltagem da bateria", it = "Tensione della batteria", nl = "Batterijspanning", sv = "Batterispänning", cs = "Napětí baterie", sk = "Napätie batérie", da = "Batterispænding", ru = "Напряжение батареи"),
             // Puste - kafelek jest rozwijalnym zestawieniem trzech progów, więc nagłówek nie
             // powiela żadnego z nich osobną wartością (dawniej powtarzał tu napięcie nominalne).
             valueLabel = "",
@@ -116,14 +120,14 @@ fun BatteryScreen(
             },
         ) {
             Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                VoltageReadout(tr("Dolne napięcie odcięcia (LBP)", "Low voltage cutoff (LBP)", de = "Untere Abschaltspannung (LBP)", fr = "Coupure basse tension (LBP)", es = "Corte de baja tensión (LBP)", pt = "Corte de baixa tensão (LBP)", it = "Soglia di taglio bassa tensione (LBP)", nl = "Onderste afsluitspanning (LBP)", sv = "Nedre avstängningsspänning (LBP)", cs = "Dolní vypínací napětí (LBP)", sk = "Dolné vypínacie napätie (LBP)"), "$lbpV V")
-                VoltageReadout(tr("Napięcie nominalne", "Nominal voltage", de = "Nennspannung", fr = "Tension nominale", es = "Voltaje nominal", pt = "Tensão nominal", it = "Tensione nominale", nl = "Nominale spanning", sv = "Nominell spänning", cs = "Jmenovité napětí", sk = "Menovité napätie"), "${state.nominalPackVoltage} V")
-                VoltageReadout(tr("Górny limit naładowania", "Upper charge limit", de = "Obere Ladegrenze", fr = "Limite de charge haute", es = "Límite superior de carga", pt = "Limite superior de carga", it = "Limite di carica superiore", nl = "Bovengrens laadspanning", sv = "Övre laddningsgräns", cs = "Horní limit nabíjení", sk = "Horný limit nabíjania"), "${String.format("%.1f", state.cellCount * 4.2)} V")
+                VoltageReadout(tr("Dolne napięcie odcięcia (LBP)", "Low voltage cutoff (LBP)", de = "Untere Abschaltspannung (LBP)", fr = "Coupure basse tension (LBP)", es = "Corte de baja tensión (LBP)", pt = "Corte de baixa tensão (LBP)", it = "Soglia di taglio bassa tensione (LBP)", nl = "Onderste afsluitspanning (LBP)", sv = "Nedre avstängningsspänning (LBP)", cs = "Dolní vypínací napětí (LBP)", sk = "Dolné vypínacie napätie (LBP)", da = "Nedre afbrydelsesspænding (LBP)", ru = "Нижнее напряжение отключения (LBP)"), "$lbpV V")
+                VoltageReadout(tr("Napięcie nominalne", "Nominal voltage", de = "Nennspannung", fr = "Tension nominale", es = "Voltaje nominal", pt = "Tensão nominal", it = "Tensione nominale", nl = "Nominale spanning", sv = "Nominell spänning", cs = "Jmenovité napětí", sk = "Menovité napätie", da = "Nominel spænding", ru = "Номинальное напряжение"), "${state.nominalPackVoltage} V")
+                VoltageReadout(tr("Górny limit naładowania", "Upper charge limit", de = "Obere Ladegrenze", fr = "Limite de charge haute", es = "Límite superior de carga", pt = "Limite superior de carga", it = "Limite di carica superiore", nl = "Bovengrens laadspanning", sv = "Övre laddningsgräns", cs = "Horní limit nabíjení", sk = "Horný limit nabíjania", da = "Øvre opladningsgrænse", ru = "Верхний предел зарядки"), "${String.format("%.1f", state.cellCount * 4.2)} V")
             }
         }
 
         ExpandableParamTile(
-            label = tr("Liczba cel", "Cell count", de = "Zellenzahl", fr = "Nombre de cellules", es = "Número de celdas", pt = "Número de células", it = "Numero di celle", nl = "Aantal cellen", sv = "Antal celler", cs = "Počet článků", sk = "Počet článkov"),
+            label = tr("Liczba cel", "Cell count", de = "Zellenzahl", fr = "Nombre de cellules", es = "Número de celdas", pt = "Número de células", it = "Numero di celle", nl = "Aantal cellen", sv = "Antal celler", cs = "Počet článků", sk = "Počet článkov", da = "Antal celler", ru = "Количество ячеек"),
             valueLabel = "${state.cellCount}S",
             description = tr(
                 "Liczba ogniw połączonych szeregowo w Twoim pakiecie (np. 13S = 13 ogniw). Razem z " +
@@ -170,6 +174,14 @@ fun BatteryScreen(
                     "s napätím článku (cca 3,7V) určuje menovité napätie packu (tu: ${state.nominalPackVoltage}V) - " +
                     "EggSPEED to používa na prepočet prúdu na výkon a na odhad dojazdu. Sú to pomocné údaje aplikácie, " +
                     "neposielajú sa do riadiacej jednotky.",
+                da = "Antallet af celler forbundet i serie i din pakke (f.eks. 13S = 13 celler). Sammen med " +
+                    "cellespændingen (ca. 3,7V) bestemmer det pakkens nominelle spænding (her: ${state.nominalPackVoltage}V) - " +
+                    "EggSPEED bruger det til at omregne strøm til effekt og til at estimere rækkevidden. Dette er hjælpedata " +
+                    "på appsiden, det sendes ikke til styreenheden.",
+                ru = "Количество ячеек, соединённых последовательно в вашей батарее (например, 13S = 13 ячеек). Вместе " +
+                    "с напряжением ячейки (примерно 3,7В) оно определяет номинальное напряжение батареи (здесь: ${state.nominalPackVoltage}В) - " +
+                    "EggSPEED использует это для пересчёта тока в мощность и оценки запаса хода. Это вспомогательные данные приложения, " +
+                    "они не отправляются в контроллер.",
             ),
         ) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -188,7 +200,7 @@ fun BatteryScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Pojemność", "Capacity", de = "Kapazität", fr = "Capacité", es = "Capacidad", pt = "Capacidade", it = "Capacità", nl = "Capaciteit", sv = "Kapacitet", cs = "Kapacita", sk = "Kapacita"),
+            label = tr("Pojemność", "Capacity", de = "Kapazität", fr = "Capacité", es = "Capacidad", pt = "Capacidade", it = "Capacità", nl = "Capaciteit", sv = "Kapacitet", cs = "Kapacita", sk = "Kapacita", da = "Kapacitet", ru = "Ёмкость"),
             valueLabel = "${String.format("%.1f", state.capacityAh)} Ah",
             description = tr(
                 "Pojemność Twojego pakietu w Ah (amperogodzinach) i Wh (watogodzinach, Ah × napięcie " +
@@ -235,6 +247,14 @@ fun BatteryScreen(
                     "napätie) - zadaj hodnotu z etikety batérie alebo stránky produktu. EggSPEED ju používa spolu " +
                     "s aktuálnym odberom výkonu na odhad dojazdu na obrazovke Cockpit. Sú to pomocné údaje aplikácie, " +
                     "neposielajú sa do riadiacej jednotky.",
+                da = "Din pakkes kapacitet i Ah (amperetimer) og Wh (watttimer, Ah × nominel " +
+                    "spænding) - indtast værdien fra batterietiketten eller produktsiden. EggSPEED bruger den sammen " +
+                    "med det aktuelle effektforbrug til at estimere rækkevidden på Cockpit-skærmen. Dette er hjælpedata " +
+                    "på appsiden, det sendes ikke til styreenheden.",
+                ru = "Ёмкость вашей батареи в Ah (ампер-часах) и Wh (ватт-часах, Ah × номинальное " +
+                    "напряжение) - введите значение с этикетки батареи или страницы товара. EggSPEED использует его вместе " +
+                    "с текущим энергопотреблением для оценки запаса хода на экране Кокпита. Это вспомогательные данные приложения, " +
+                    "они не отправляются в контроллер.",
             ),
         ) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -280,13 +300,15 @@ private fun BatteryVoltageDescription(isBbsFw: Boolean, cellCount: Int) {
                 sv = "Tre informativa spänningströsklar - ingen av dem ställs in här.",
                 cs = "Tři informativní napěťové prahy - žádný z nich se zde nenastavuje.",
                 sk = "Tri informatívne napäťové prahy - žiadny z nich sa tu nenastavuje.",
+                da = "Tre informative spændingsgrænser - ingen af dem indstilles her.",
+                ru = "Три информационных порога напряжения - ни один из них здесь не устанавливается.",
             ),
             fontFamily = Manrope, fontSize = 11.sp, lineHeight = 15.sp, color = Tokens.TextSecondary,
         )
         Text(
             buildAnnotatedString {
                 withStyle(nameStyle) {
-                    append(tr("Dolne napięcie odcięcia (LBP)", "Low voltage cutoff (LBP)", de = "Untere Abschaltspannung (LBP)", fr = "Coupure basse tension (LBP)", es = "Corte de baja tensión (LBP)", pt = "Corte de baixa tensão (LBP)", it = "Soglia di taglio bassa tensione (LBP)", nl = "Onderste afsluitspanning (LBP)", sv = "Nedre avstängningsspänning (LBP)", cs = "Dolní vypínací napětí (LBP)", sk = "Dolné vypínacie napätie (LBP)"))
+                    append(tr("Dolne napięcie odcięcia (LBP)", "Low voltage cutoff (LBP)", de = "Untere Abschaltspannung (LBP)", fr = "Coupure basse tension (LBP)", es = "Corte de baja tensión (LBP)", pt = "Corte de baixa tensão (LBP)", it = "Soglia di taglio bassa tensione (LBP)", nl = "Onderste afsluitspanning (LBP)", sv = "Nedre avstängningsspänning (LBP)", cs = "Dolní vypínací napětí (LBP)", sk = "Dolné vypínacie napätie (LBP)", da = "Nedre afbrydelsesspænding (LBP)", ru = "Нижнее напряжение отключения (LBP)"))
                 }
                 withStyle(bodyStyle) {
                     append(
@@ -324,6 +346,12 @@ private fun BatteryVoltageDescription(isBbsFw: Boolean, cellCount: Int) {
                             sk = " - reálna hodnota z riadiacej jednotky: prah, pri ktorom odpojí napájanie, aby chránila " +
                                 "články pred hlbokým vybitím. Upraviteľné na karte " +
                                 (if (isBbsFw) "bbs-fw General." else "Bafang Basic."),
+                            da = " - en reel aflæsning fra styreenheden: det punkt, hvor den afbryder strømmen for at " +
+                                "beskytte cellerne mod dyb afladning. Redigerbar på fanen " +
+                                (if (isBbsFw) "bbs-fw General." else "Bafang Basic."),
+                            ru = " - реальное показание с контроллера: порог, при котором он отключает питание для " +
+                                "защиты ячеек от глубокого разряда. Редактируется на вкладке " +
+                                (if (isBbsFw) "bbs-fw General." else "Bafang Basic."),
                         ),
                     )
                 }
@@ -332,7 +360,7 @@ private fun BatteryVoltageDescription(isBbsFw: Boolean, cellCount: Int) {
         )
         Text(
             buildAnnotatedString {
-                withStyle(nameStyle) { append(tr("Napięcie nominalne", "Nominal voltage", de = "Nennspannung", fr = "Tension nominale", es = "Voltaje nominal", pt = "Tensão nominal", it = "Tensione nominale", nl = "Nominale spanning", sv = "Nominell spänning", cs = "Jmenovité napětí", sk = "Menovité napätie")) }
+                withStyle(nameStyle) { append(tr("Napięcie nominalne", "Nominal voltage", de = "Nennspannung", fr = "Tension nominale", es = "Voltaje nominal", pt = "Tensão nominal", it = "Tensione nominale", nl = "Nominale spanning", sv = "Nominell spänning", cs = "Jmenovité napětí", sk = "Menovité napätie", da = "Nominel spænding", ru = "Номинальное напряжение")) }
                 withStyle(bodyStyle) {
                     append(
                         tr(
@@ -358,6 +386,10 @@ private fun BatteryVoltageDescription(isBbsFw: Boolean, cellCount: Int) {
                                 "jako v dlaždici \"Počet článků\" níže.",
                             sk = " - vypočítané z počtu článkov (${cellCount}S x cca 3,7V/článok) - rovnaká hodnota " +
                                 "ako v dlaždici \"Počet článkov\" nižšie.",
+                            da = " - beregnet ud fra antal celler (${cellCount}S x ca. 3,7V/celle) - samme værdi " +
+                                "som vist i feltet \"Antal celler\" nedenfor.",
+                            ru = " - рассчитано на основе количества ячеек (${cellCount}S x примерно 3,7В/ячейка) - то же " +
+                                "значение, что показано в плитке \"Количество ячеек\" ниже.",
                         ),
                     )
                 }
@@ -366,7 +398,7 @@ private fun BatteryVoltageDescription(isBbsFw: Boolean, cellCount: Int) {
         )
         Text(
             buildAnnotatedString {
-                withStyle(nameStyle) { append(tr("Górny limit naładowania", "Upper charge limit", de = "Obere Ladegrenze", fr = "Limite de charge haute", es = "Límite superior de carga", pt = "Limite superior de carga", it = "Limite di carica superiore", nl = "Bovengrens laadspanning", sv = "Övre laddningsgräns", cs = "Horní limit nabíjení", sk = "Horný limit nabíjania")) }
+                withStyle(nameStyle) { append(tr("Górny limit naładowania", "Upper charge limit", de = "Obere Ladegrenze", fr = "Limite de charge haute", es = "Límite superior de carga", pt = "Limite superior de carga", it = "Limite di carica superiore", nl = "Bovengrens laadspanning", sv = "Övre laddningsgräns", cs = "Horní limit nabíjení", sk = "Horný limit nabíjania", da = "Øvre opladningsgrænse", ru = "Верхний предел зарядки")) }
                 withStyle(bodyStyle) {
                     append(
                         tr(
@@ -398,6 +430,10 @@ private fun BatteryVoltageDescription(isBbsFw: Boolean, cellCount: Int) {
                                 "horní limit jsou přibližné odhady - skutečné napětí pod zátěží se mění podle úrovně nabití.",
                             sk = " - vypočítané zo špecifikácie Li-ion článkov (4,2V x počet článkov). Menovitá hodnota a " +
                                 "horný limit sú približné odhady - skutočné napätie pod záťažou sa mení podľa úrovne nabitia.",
+                            da = " - beregnet ud fra Li-ion-cellespecifikationen (4,2V x antal celler). Nominel værdi og " +
+                                "øvre grænse er omtrentlige estimater - den reelle spænding under belastning varierer med ladeniveauet.",
+                            ru = " - рассчитано по характеристикам Li-ion ячеек (4,2В x количество ячеек). Номинальное и " +
+                                "верхнее значения являются приблизительными оценками - реальное напряжение под нагрузкой меняется в зависимости от уровня заряда.",
                         ),
                     )
                 }

@@ -46,12 +46,12 @@ fun BafangTypeScreen(state: UiState) {
             MicroLabel("Bafang")
             Spacer(Modifier.height(6.dp))
             TokenCard(borderColor = Tokens.WhiteBorder) {
-                ParamRow(tr("Producent", "Manufacturer", de = "Hersteller", fr = "Fabricant", es = "Fabricante", pt = "Fabricante", it = "Produttore", nl = "Fabrikant", sv = "Tillverkare", cs = "Výrobce", sk = "Výrobca"), gen.manufacturer)
+                ParamRow(tr("Producent", "Manufacturer", de = "Hersteller", fr = "Fabricant", es = "Fabricante", pt = "Fabricante", it = "Produttore", nl = "Fabrikant", sv = "Tillverkare", cs = "Výrobce", sk = "Výrobca", da = "Producent", ru = "Производитель"), gen.manufacturer)
                 ParamRow("Model", gen.model)
-                ParamRow(tr("Wersja sprzętu", "Hardware version", de = "Hardware-Version", fr = "Version matérielle", es = "Versión de hardware", pt = "Versão de hardware", it = "Versione hardware", nl = "Hardwareversie", sv = "Hårdvaruversion", cs = "Verze hardwaru", sk = "Verzia hardvéru"), gen.hardwareVersion)
-                ParamRow(tr("Wersja firmware", "Firmware version", de = "Firmware-Version", fr = "Version du firmware", es = "Versión de firmware", pt = "Versão de firmware", it = "Versione firmware", nl = "Firmwareversie", sv = "Firmwareversion", cs = "Verze firmwaru", sk = "Verzia firmwaru"), gen.firmwareVersion)
-                ParamRow(tr("Napięcie nominalne", "Nominal voltage", de = "Nennspannung", fr = "Tension nominale", es = "Voltaje nominal", pt = "Tensão nominal", it = "Tensione nominale", nl = "Nominale spanning", sv = "Nominell spänning", cs = "Jmenovité napětí", sk = "Menovité napätie"), "${gen.nominalVoltage} V")
-                ParamRow(tr("Prąd maksymalny", "Max current", de = "Maximalstrom", fr = "Courant maximal", es = "Corriente máxima", pt = "Corrente máxima", it = "Corrente massima", nl = "Maximale stroom", sv = "Max ström", cs = "Maximální proud", sk = "Maximálny prúd"), "${gen.maxCurrentA} A", last = true)
+                ParamRow(tr("Wersja sprzętu", "Hardware version", de = "Hardware-Version", fr = "Version matérielle", es = "Versión de hardware", pt = "Versão de hardware", it = "Versione hardware", nl = "Hardwareversie", sv = "Hårdvaruversion", cs = "Verze hardwaru", sk = "Verzia hardvéru", da = "Hardwareversion", ru = "Версия оборудования"), gen.hardwareVersion)
+                ParamRow(tr("Wersja firmware", "Firmware version", de = "Firmware-Version", fr = "Version du firmware", es = "Versión de firmware", pt = "Versão de firmware", it = "Versione firmware", nl = "Firmwareversie", sv = "Firmwareversion", cs = "Verze firmwaru", sk = "Verzia firmwaru", da = "Firmwareversion", ru = "Версия прошивки"), gen.firmwareVersion)
+                ParamRow(tr("Napięcie nominalne", "Nominal voltage", de = "Nennspannung", fr = "Tension nominale", es = "Voltaje nominal", pt = "Tensão nominal", it = "Tensione nominale", nl = "Nominale spanning", sv = "Nominell spänning", cs = "Jmenovité napětí", sk = "Menovité napätie", da = "Nominel spænding", ru = "Номинальное напряжение"), "${gen.nominalVoltage} V")
+                ParamRow(tr("Prąd maksymalny", "Max current", de = "Maximalstrom", fr = "Courant maximal", es = "Corriente máxima", pt = "Corrente máxima", it = "Corrente massima", nl = "Maximale stroom", sv = "Max ström", cs = "Maximální proud", sk = "Maximálny prúd", da = "Maks. strøm", ru = "Макс. ток"), "${gen.maxCurrentA} A", last = true)
             }
         } ?: PreviewBanner(
             tr(
@@ -65,7 +65,7 @@ fun BafangTypeScreen(state: UiState) {
                 nl = "Verbind met je controller om hier de identiteit ervan te zien (fabrikant, model, firmware).",
                 sv = "Anslut till din styrenhet för att se dess identitet här (tillverkare, modell, firmware).",
                 cs = "Připoj se ke své řídicí jednotce, abys zde viděl její identitu (výrobce, model, firmware).",
-                sk = "Pripoj sa k svojej riadiacej jednotke, aby si tu videl jej identitu (výrobca, model, firmware).",
+                sk = "Pripoj sa k svojej riadiacej jednotke, aby si tu videl jej identitu (výrobca, model, firmware).", da = "Opret forbindelse til din controller for at se dens identitet her (producent, model, firmware).", ru = "Подключитесь к контроллеру, чтобы увидеть здесь его данные (производитель, модель, прошивка).",
             ),
         )
     }

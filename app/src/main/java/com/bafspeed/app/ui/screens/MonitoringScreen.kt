@@ -90,6 +90,10 @@ fun MonitoringScreen(
                     "hodnotu ve zvoleném okamžiku.",
                 sk = "Vzorkovanie každých 0,5 s, história až 10 minút dozadu. Potiahnutím po grafe je možné " +
                     "zobraziť hodnotu vo zvolenom okamihu.",
+                da = "Prøvetagning hvert 0,5 s, historik op til 10 minutter tilbage. Træk hen over en graf for at " +
+                    "aflæse værdien på et givet tidspunkt.",
+                ru = "Дискретизация каждые 0,5 с, история до 10 минут назад. Проведите пальцем по графику, чтобы " +
+                    "увидеть значение в конкретный момент.",
             ),
             borderWidth = 2.dp,
         )
@@ -97,7 +101,7 @@ fun MonitoringScreen(
         TokenCard(contentPadding = 12.dp, contentPaddingVertical = 6.dp) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text(tr("Monitoring", "Monitoring", de = "Monitoring", fr = "Monitoring", es = "Monitoring", pt = "Monitoring", it = "Monitoring", nl = "Monitoring", sv = "Monitoring", cs = "Monitoring", sk = "Monitoring"), fontFamily = Manrope, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = Tokens.TextPrimary)
+                    Text(tr("Monitoring", "Monitoring", de = "Monitoring", fr = "Monitoring", es = "Monitoring", pt = "Monitoring", it = "Monitoring", nl = "Monitoring", sv = "Monitoring", cs = "Monitoring", sk = "Monitoring", da = "Monitoring", ru = "Monitoring"), fontFamily = Manrope, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = Tokens.TextPrimary)
                     Text(
                         tr(
                             "Włącza próbkowanie i rysowanie wykresów poniżej", "Enables sampling and drawing the charts below",
@@ -109,7 +113,7 @@ fun MonitoringScreen(
                             nl = "Schakelt bemonstering en het tekenen van de grafieken hieronder in",
                             sv = "Aktiverar avläsning och ritning av graferna nedan",
                             cs = "Zapíná vzorkování a vykreslování grafů níže",
-                            sk = "Zapína vzorkovanie a vykresľovanie grafov nižšie",
+                            sk = "Zapína vzorkovanie a vykresľovanie grafov nižšie", da = "Aktiverer prøvetagning og tegning af graferne nedenfor", ru = "Включает выборку и отрисовку графиков ниже",
                         ),
                         fontFamily = Manrope, fontSize = 12.sp, color = Tokens.TextSecondary,
                     )
@@ -118,15 +122,15 @@ fun MonitoringScreen(
             }
         }
 
-        MicroLabel(tr("Wykresy", "Charts", de = "Diagramme", fr = "Graphiques", es = "Gráficos", pt = "Gráficos", it = "Grafici", nl = "Grafieken", sv = "Diagram", cs = "Grafy", sk = "Grafy"))
+        MicroLabel(tr("Wykresy", "Charts", de = "Diagramme", fr = "Graphiques", es = "Gráficos", pt = "Gráficos", it = "Grafici", nl = "Grafieken", sv = "Diagram", cs = "Grafy", sk = "Grafy", da = "Grafer", ru = "Графики"))
 
         // Definicje serii wspólne dla kafelka zbiorczego i osobnych kafelków poniżej - jedno
         // źródło tytułu/jednostki/koloru, żeby oba miejsca się nie rozjechały.
         val allSeries = listOf(
-            SeriesSpec(MonitoringChart.POWER, tr("Moc", "Power", de = "Leistung", fr = "Puissance", es = "Potencia", pt = "Potência", it = "Potenza", nl = "Vermogen", sv = "Effekt", cs = "Výkon", sk = "Výkon"), "W", Tokens.Purple, MonitoringSample::powerW),
-            SeriesSpec(MonitoringChart.CURRENT, tr("Prąd", "Current", de = "Strom", fr = "Courant", es = "Corriente", pt = "Corrente", it = "Corrente", nl = "Stroom", sv = "Ström", cs = "Proud", sk = "Prúd"), "A", Tokens.Red, MonitoringSample::currentA),
-            SeriesSpec(MonitoringChart.VOLTAGE, tr("Napięcie", "Voltage", de = "Spannung", fr = "Tension", es = "Voltaje", pt = "Tensão", it = "Tensione", nl = "Spanning", sv = "Spänning", cs = "Napětí", sk = "Napätie"), "V", Tokens.Blue, MonitoringSample::voltageV),
-            SeriesSpec(MonitoringChart.SPEED, tr("Prędkość", "Speed", de = "Geschwindigkeit", fr = "Vitesse", es = "Velocidad", pt = "Velocidade", it = "Velocità", nl = "Snelheid", sv = "Hastighet", cs = "Rychlost", sk = "Rýchlosť"), "km/h", Tokens.Emerald, MonitoringSample::speedKmh),
+            SeriesSpec(MonitoringChart.POWER, tr("Moc", "Power", de = "Leistung", fr = "Puissance", es = "Potencia", pt = "Potência", it = "Potenza", nl = "Vermogen", sv = "Effekt", cs = "Výkon", sk = "Výkon", da = "Effekt", ru = "Мощность"), "W", Tokens.Purple, MonitoringSample::powerW),
+            SeriesSpec(MonitoringChart.CURRENT, tr("Prąd", "Current", de = "Strom", fr = "Courant", es = "Corriente", pt = "Corrente", it = "Corrente", nl = "Stroom", sv = "Ström", cs = "Proud", sk = "Prúd", da = "Strøm", ru = "Ток"), "A", Tokens.Red, MonitoringSample::currentA),
+            SeriesSpec(MonitoringChart.VOLTAGE, tr("Napięcie", "Voltage", de = "Spannung", fr = "Tension", es = "Voltaje", pt = "Tensão", it = "Tensione", nl = "Spanning", sv = "Spänning", cs = "Napětí", sk = "Napätie", da = "Spænding", ru = "Напряжение"), "V", Tokens.Blue, MonitoringSample::voltageV),
+            SeriesSpec(MonitoringChart.SPEED, tr("Prędkość", "Speed", de = "Geschwindigkeit", fr = "Vitesse", es = "Velocidad", pt = "Velocidade", it = "Velocità", nl = "Snelheid", sv = "Hastighet", cs = "Rychlost", sk = "Rýchlosť", da = "Hastighed", ru = "Скорость"), "km/h", Tokens.Emerald, MonitoringSample::speedKmh),
         )
 
         CombinedMonitoringChartCard(series = allSeries, monitoring = monitoring)
@@ -183,8 +187,8 @@ private fun MonitoringChartCard(
             Box(Modifier.fillMaxWidth().height(120.dp), contentAlignment = Alignment.Center) {
                 Text(
                     when {
-                        !monitoring.masterEnabled -> tr("Monitoring wyłączony", "Monitoring is off", de = "Monitoring aus", fr = "Monitoring désactivé", es = "Monitoring desactivado", pt = "Monitoring desativado", it = "Monitoring disattivato", nl = "Monitoring uit", sv = "Monitoring är avstängd", cs = "Monitoring je vypnutý", sk = "Monitoring je vypnutý")
-                        !chartEnabled -> tr("Wykres wyłączony", "Chart is off", de = "Diagramm aus", fr = "Graphique désactivé", es = "Gráfico desactivado", pt = "Gráfico desativado", it = "Grafico disattivato", nl = "Grafiek uit", sv = "Diagrammet är avstängt", cs = "Graf je vypnutý", sk = "Graf je vypnutý")
+                        !monitoring.masterEnabled -> tr("Monitoring wyłączony", "Monitoring is off", de = "Monitoring aus", fr = "Monitoring désactivé", es = "Monitoring desactivado", pt = "Monitoring desativado", it = "Monitoring disattivato", nl = "Monitoring uit", sv = "Monitoring är avstängd", cs = "Monitoring je vypnutý", sk = "Monitoring je vypnutý", da = "Monitoring er slukket", ru = "Мониторинг отключён")
+                        !chartEnabled -> tr("Wykres wyłączony", "Chart is off", de = "Diagramm aus", fr = "Graphique désactivé", es = "Gráfico desactivado", pt = "Gráfico desativado", it = "Grafico disattivato", nl = "Grafiek uit", sv = "Diagrammet är avstängt", cs = "Graf je vypnutý", sk = "Graf je vypnutý", da = "Diagram er slukket", ru = "График отключён")
                         else -> tr(
                             "Brak danych - czekam na próbki", "No data yet - waiting for samples",
                             de = "Keine Daten - warte auf Messwerte",
@@ -195,7 +199,7 @@ private fun MonitoringChartCard(
                             nl = "Nog geen data - wachten op metingen",
                             sv = "Ingen data ännu - väntar på mätningar",
                             cs = "Zatím žádná data - čeká se na vzorky",
-                            sk = "Zatiaľ žiadne dáta - čaká sa na vzorky",
+                            sk = "Zatiaľ žiadne dáta - čaká sa na vzorky", da = "Endnu ingen data - venter på målinger", ru = "Пока нет данных - ожидание отсчётов",
                         )
                     },
                     fontFamily = Manrope, fontSize = 12.sp, color = Tokens.TextTertiary,
@@ -244,8 +248,8 @@ private fun CombinedMonitoringChartCard(
             Box(Modifier.fillMaxWidth().height(120.dp), contentAlignment = Alignment.Center) {
                 Text(
                     when {
-                        !monitoring.masterEnabled -> tr("Monitoring wyłączony", "Monitoring is off", de = "Monitoring aus", fr = "Monitoring désactivé", es = "Monitoring desactivado", pt = "Monitoring desativado", it = "Monitoring disattivato", nl = "Monitoring uit", sv = "Monitoring är avstängd", cs = "Monitoring je vypnutý", sk = "Monitoring je vypnutý")
-                        activeSeries.isEmpty() -> tr("Wszystkie parametry wyłączone", "All parameters are off", de = "Alle Parameter deaktiviert", fr = "Tous les paramètres sont désactivés", es = "Todos los parámetros desactivados", pt = "Todos os parâmetros desativados", it = "Tutti i parametri disattivati", nl = "Alle parameters uit", sv = "Alla parametrar är avstängda", cs = "Všechny parametry jsou vypnuté", sk = "Všetky parametre sú vypnuté")
+                        !monitoring.masterEnabled -> tr("Monitoring wyłączony", "Monitoring is off", de = "Monitoring aus", fr = "Monitoring désactivé", es = "Monitoring desactivado", pt = "Monitoring desativado", it = "Monitoring disattivato", nl = "Monitoring uit", sv = "Monitoring är avstängd", cs = "Monitoring je vypnutý", sk = "Monitoring je vypnutý", da = "Monitoring er slukket", ru = "Мониторинг отключён")
+                        activeSeries.isEmpty() -> tr("Wszystkie parametry wyłączone", "All parameters are off", de = "Alle Parameter deaktiviert", fr = "Tous les paramètres sont désactivés", es = "Todos los parámetros desactivados", pt = "Todos os parâmetros desativados", it = "Tutti i parametri disattivati", nl = "Alle parameters uit", sv = "Alla parametrar är avstängda", cs = "Všechny parametry jsou vypnuté", sk = "Všetky parametre sú vypnuté", da = "Alle parametre er slukket", ru = "Все параметры отключены")
                         else -> tr(
                             "Brak danych - czekam na próbki", "No data yet - waiting for samples",
                             de = "Keine Daten - warte auf Messwerte",
@@ -256,7 +260,7 @@ private fun CombinedMonitoringChartCard(
                             nl = "Nog geen data - wachten op metingen",
                             sv = "Ingen data ännu - väntar på mätningar",
                             cs = "Zatím žádná data - čeká se na vzorky",
-                            sk = "Zatiaľ žiadne dáta - čaká sa na vzorky",
+                            sk = "Zatiaľ žiadne dáta - čaká sa na vzorky", da = "Endnu ingen data - venter på målinger", ru = "Пока нет данных - ожидание отсчётов",
                         )
                     },
                     fontFamily = Manrope, fontSize = 12.sp, color = Tokens.TextTertiary,
@@ -356,7 +360,7 @@ private fun MultiLineChart(samples: List<MonitoringSample>, series: List<SeriesS
 /** Wiek próbki pod kursorem jako "teraz" albo "-M:SS" (np. "-1:35") zamiast samych sekund. */
 @Composable
 private fun formatSampleAge(ageS: Double): String {
-    if (ageS < 1.0) return tr("teraz", "now", de = "jetzt", fr = "maintenant", es = "ahora", pt = "agora", it = "ora", nl = "nu", sv = "nu", cs = "teď", sk = "teraz")
+    if (ageS < 1.0) return tr("teraz", "now", de = "jetzt", fr = "maintenant", es = "ahora", pt = "agora", it = "ora", nl = "nu", sv = "nu", cs = "teď", sk = "teraz", da = "nu", ru = "сейчас")
     val totalS = ageS.roundToInt()
     val m = totalS / 60
     val s = totalS % 60

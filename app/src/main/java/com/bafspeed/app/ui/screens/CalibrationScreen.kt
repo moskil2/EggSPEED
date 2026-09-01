@@ -112,12 +112,18 @@ fun CalibrationScreen(
                 sk = "Pri radičoch so shunt modom býva odčítanie prúdu podhodnotené/nadhodnotené. Faktor X " +
                     "násobí VÝHRADNE hodnotu zobrazenú v aplikácii (prúd a výkon) - v radiči sa " +
                     "nič neukladá ani nemení. 1,00× = žiadna kalibrácia.",
+                da = "På controllere med shunt mod er strømaflæsningen nogle gange for lav/høj. Faktor X " +
+                    "multiplicerer UDELUKKENDE værdien der vises i appen (strøm og effekt) - der gemmes " +
+                    "eller ændres intet i controlleren. 1,00× = ingen kalibrering.",
+                ru = "На контроллерах с shunt-модом показания тока иногда занижены/завышены. Коэффициент X " +
+                    "умножает ТОЛЬКО значение, отображаемое в приложении (ток и мощность) - в контроллере " +
+                    "ничего не сохраняется и не изменяется. 1,00× = без калибровки.",
             ),
             collapsible = true,
         )
 
         ExpandableParamTile(
-            label = tr("Współczynnik kalibracji prądu", "Current calibration factor", de = "Stromkalibrierungsfaktor", fr = "Facteur de calibration du courant", es = "Factor de calibración de corriente", pt = "Fator de calibração de corrente", it = "Fattore di calibrazione corrente", nl = "Kalibratiefactor stroom", sv = "Kalibreringsfaktor för ström", cs = "Kalibrační faktor proudu", sk = "Kalibračný faktor prúdu"),
+            label = tr("Współczynnik kalibracji prądu", "Current calibration factor", de = "Stromkalibrierungsfaktor", fr = "Facteur de calibration du courant", es = "Factor de calibración de corriente", pt = "Fator de calibração de corrente", it = "Fattore di calibrazione corrente", nl = "Kalibratiefactor stroom", sv = "Kalibreringsfaktor för ström", cs = "Kalibrační faktor proudu", sk = "Kalibračný faktor prúdu", da = "Kalibreringsfaktor for strøm", ru = "Калибровочный коэффициент тока"),
             valueLabel = String.format("%.2f×", factor),
             description = tr(
                 "Współczynnik mnoży surowy odczyt prądu z kontrolera przed wyświetleniem go w Kokpicie " +
@@ -153,6 +159,12 @@ fun CalibrationScreen(
                 sk = "Faktor násobí surový odčítaný prúd z radiča, kým sa zobrazí v " +
                     "Cockpite (prúd a výkon). Užitočné, keď má radič shunt mod a hlási " +
                     "podhodnotenú/nadhodnotenú hodnotu - v samotnom radiči sa nič nemení.",
+                da = "Faktoren multiplicerer den rå strømaflæsning fra controlleren, før den vises i " +
+                    "Cockpit (strøm og effekt). Nyttigt når controlleren har en shunt mod og viser en " +
+                    "for lav/høj værdi - der ændres intet i selve controlleren.",
+                ru = "Коэффициент умножает необработанное значение тока от контроллера перед тем, как оно " +
+                    "отображается в Кокпите (ток и мощность). Полезно, когда контроллер имеет shunt-мод и " +
+                    "показывает заниженное/завышенное значение - в самом контроллере ничего не меняется.",
             ),
         ) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -189,6 +201,8 @@ fun CalibrationScreen(
                         sv = "Återställ till 1,00× (ingen kalibrering)",
                         cs = "Obnovit na 1,00× (žádná kalibrace)",
                         sk = "Obnoviť na 1,00× (žiadna kalibrácia)",
+                        da = "Nulstil til 1,00× (ingen kalibrering)",
+                        ru = "Сбросить на 1,00× (без калибровки)",
                     ),
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
@@ -197,20 +211,20 @@ fun CalibrationScreen(
             }
         }
 
-        CollapsibleMicroLabel(tr("Podgląd prądu", "Current preview", de = "Stromvorschau", fr = "Aperçu du courant", es = "Vista previa de corriente", pt = "Pré-visualização de corrente", it = "Anteprima corrente", nl = "Voorbeeld stroom", sv = "Förhandsvisning av ström", cs = "Náhled proudu", sk = "Náhľad prúdu")) {
+        CollapsibleMicroLabel(tr("Podgląd prądu", "Current preview", de = "Stromvorschau", fr = "Aperçu du courant", es = "Vista previa de corriente", pt = "Pré-visualização de corrente", it = "Anteprima corrente", nl = "Voorbeeld stroom", sv = "Förhandsvisning av ström", cs = "Náhled proudu", sk = "Náhľad prúdu", da = "Forhåndsvisning af strøm", ru = "Просмотр тока")) {
             TokenCard(borderColor = Tokens.WhiteBorder, contentPaddingVertical = 8.dp) {
-                InfoRow(tr("Limit prądu (zadeklarowany)", "Current limit (declared)", de = "Stromlimit (deklariert)", fr = "Limite de courant (déclarée)", es = "Límite de corriente (declarado)", pt = "Limite de corrente (declarado)", it = "Limite di corrente (dichiarato)", nl = "Stroomlimiet (opgegeven)", sv = "Strömgräns (angiven)", cs = "Omezení proudu (uvedené)", sk = "Obmedzenie prúdu (uvedené)"), String.format("%.1f A", declaredLimitA))
+                InfoRow(tr("Limit prądu (zadeklarowany)", "Current limit (declared)", de = "Stromlimit (deklariert)", fr = "Limite de courant (déclarée)", es = "Límite de corriente (declarado)", pt = "Limite de corrente (declarado)", it = "Limite di corrente (dichiarato)", nl = "Stroomlimiet (opgegeven)", sv = "Strömgräns (angiven)", cs = "Omezení proudu (uvedené)", sk = "Obmedzenie prúdu (uvedené)", da = "Strømgrænse (angivet)", ru = "Ограничение тока (заявленное)"), String.format("%.1f A", declaredLimitA))
                 HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
-                InfoRow(tr("Po kalibracji", "After calibration", de = "Nach Kalibrierung", fr = "Après calibration", es = "Tras la calibración", pt = "Após calibração", it = "Dopo la calibrazione", nl = "Na kalibratie", sv = "Efter kalibrering", cs = "Po kalibraci", sk = "Po kalibrácii"), String.format("%.1f A", declaredLimitA * factor))
+                InfoRow(tr("Po kalibracji", "After calibration", de = "Nach Kalibrierung", fr = "Après calibration", es = "Tras la calibración", pt = "Após calibração", it = "Dopo la calibrazione", nl = "Na kalibratie", sv = "Efter kalibrering", cs = "Po kalibraci", sk = "Po kalibrácii", da = "Efter kalibrering", ru = "После калибровки"), String.format("%.1f A", declaredLimitA * factor))
                 HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
                 // Maksymalne napiecie (cellCount x 4,2V - "Gorny limit naladowania" w zakladce
                 // Bateria), nie nominalne - moc szczytowa jest liczona przy pelnym naladowaniu.
-                InfoRow(tr("Moc po kalibracji", "Power after calibration", de = "Leistung nach Kalibrierung", fr = "Puissance après calibration", es = "Potencia tras la calibración", pt = "Potência após calibração", it = "Potenza dopo la calibrazione", nl = "Vermogen na kalibratie", sv = "Effekt efter kalibrering", cs = "Výkon po kalibraci", sk = "Výkon po kalibrácii"), String.format("%.0f W", state.cellCount * 4.2 * declaredLimitA * factor))
+                InfoRow(tr("Moc po kalibracji", "Power after calibration", de = "Leistung nach Kalibrierung", fr = "Puissance après calibration", es = "Potencia tras la calibración", pt = "Potência após calibração", it = "Potenza dopo la calibrazione", nl = "Vermogen na kalibratie", sv = "Effekt efter kalibrering", cs = "Výkon po kalibraci", sk = "Výkon po kalibrácii", da = "Effekt efter kalibrering", ru = "Мощность после калибровки"), String.format("%.0f W", state.cellCount * 4.2 * declaredLimitA * factor))
             }
         }
 
         ExpandableParamTile(
-            label = tr("Korekta napięcia", "Voltage correction", de = "Spannungskorrektur", fr = "Correction de tension", es = "Corrección de voltaje", pt = "Correção de tensão", it = "Correzione tensione", nl = "Spanningscorrectie", sv = "Spänningskorrigering", cs = "Korekce napětí", sk = "Korekcia napätia"),
+            label = tr("Korekta napięcia", "Voltage correction", de = "Spannungskorrektur", fr = "Correction de tension", es = "Corrección de voltaje", pt = "Correção de tensão", it = "Correzione tensione", nl = "Spanningscorrectie", sv = "Spänningskorrigering", cs = "Korekce napětí", sk = "Korekcia napätia", da = "Spændingskorrektion", ru = "Коррекция напряжения"),
             valueLabel = "${if (voltageOffsetV > 0) "+" else ""}${String.format("%.1f", voltageOffsetV)} V",
             description = if (state.firmwareType == FirmwareType.BBS_FW) {
                 tr(
@@ -258,6 +272,14 @@ fun CalibrationScreen(
                         "register 0x24, na rozdiel od továrenského firmvéru, kde je tento register mŕtvy) - ak " +
                         "napriek tomu nezodpovedá meraniu multimetrom (napr. drift ADC), oprav rozdiel tu. " +
                         "Korekcia sa pripočíta ku každému ďalšiemu odčítaniu napätia (a tým aj k výkonu).",
+                    da = "Spændingen i Cockpit er en reel ADC-måling fra controlleren (bbs-fw eksponerer den via " +
+                        "register 0x24, i modsætning til fabriksfirmwaren, hvor dette register er dødt) - hvis " +
+                        "den alligevel afviger fra en multimetermåling (f.eks. ADC-drift), så korrigér forskellen " +
+                        "her. Korrektionen lægges til hver efterfølgende spændingsmåling (og dermed også til effekten).",
+                    ru = "Напряжение в Кокпите - это реальное ADC-измерение от контроллера (bbs-fw предоставляет " +
+                        "его через регистр 0x24, в отличие от заводской прошивки, где этот регистр мёртв) - если " +
+                        "оно всё же отличается от показаний мультиметра (например, дрейф ADC), скорректируй " +
+                        "разницу здесь. Коррекция добавляется к каждому последующему измерению напряжения (а значит и к мощности).",
                 )
             } else {
                 tr(
@@ -294,6 +316,12 @@ fun CalibrationScreen(
                     sk = "Napätie v Cockpite je odhadované z % batérie (register 0x24 je v továrenskom " +
                         "firmvéri mŕtvy) - ak sa líši od reálneho merania (multimeter), oprav " +
                         "rozdiel tu. Korekcia sa pripočíta ku každému ďalšiemu odčítaniu napätia (a tým aj k výkonu).",
+                    da = "Spændingen i Cockpit estimeres ud fra batteri-% (register 0x24 er dødt på " +
+                        "fabriksfirmwaren) - hvis den afviger fra en reel måling (multimeter), så korrigér " +
+                        "forskellen her. Korrektionen lægges til hver efterfølgende spændingsmåling (og dermed også til effekten).",
+                    ru = "Напряжение в Кокпите оценивается по % заряда батареи (регистр 0x24 мёртв на " +
+                        "заводской прошивке) - если оно отличается от реального измерения (мультиметром), " +
+                        "скорректируй разницу здесь. Коррекция добавляется к каждому последующему измерению напряжения (а значит и к мощности).",
                 )
             },
         ) {
@@ -331,6 +359,8 @@ fun CalibrationScreen(
                         sv = "Återställ till 0,0 V (ingen korrigering)",
                         cs = "Obnovit na 0,0 V (žádná korekce)",
                         sk = "Obnoviť na 0,0 V (žiadna korekcia)",
+                        da = "Nulstil til 0,0 V (ingen korrektion)",
+                        ru = "Сбросить на 0,0 В (без коррекции)",
                     ),
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
@@ -339,7 +369,7 @@ fun CalibrationScreen(
             }
         }
 
-        CollapsibleMicroLabel(tr("Podgląd napięcia", "Voltage preview", de = "Spannungsvorschau", fr = "Aperçu de la tension", es = "Vista previa de voltaje", pt = "Pré-visualização de tensão", it = "Anteprima tensione", nl = "Voorbeeld spanning", sv = "Förhandsvisning av spänning", cs = "Náhled napětí", sk = "Náhľad napätia")) {
+        CollapsibleMicroLabel(tr("Podgląd napięcia", "Voltage preview", de = "Spannungsvorschau", fr = "Aperçu de la tension", es = "Vista previa de voltaje", pt = "Pré-visualização de tensão", it = "Anteprima tensione", nl = "Voorbeeld spanning", sv = "Förhandsvisning av spänning", cs = "Náhled napětí", sk = "Náhľad napätia", da = "Forhåndsvisning af spænding", ru = "Просмотр напряжения")) {
             TokenCard(borderColor = Tokens.WhiteBorder, contentPaddingVertical = 8.dp) {
                 // Offline: pokazujemy ostatnie znane napięcie sprzed rozłączenia (state.lastKnownVoltageV),
                 // a jeśli go nigdy nie było (0,0 - apka jeszcze się nie łączyła) - estymatę z napięcia
@@ -349,14 +379,14 @@ fun CalibrationScreen(
                     state.lastKnownVoltageV > 0.0 -> state.lastKnownVoltageV
                     else -> nominalVoltageV
                 }
-                InfoRow(tr("Napięcie odczytane", "Voltage read", de = "Gemessene Spannung", fr = "Tension lue", es = "Voltaje leído", pt = "Tensão lida", it = "Tensione letta", nl = "Gemeten spanning", sv = "Uppmätt spänning", cs = "Naměřené napětí", sk = "Namerané napätie"), String.format("%.1f V", readV))
+                InfoRow(tr("Napięcie odczytane", "Voltage read", de = "Gemessene Spannung", fr = "Tension lue", es = "Voltaje leído", pt = "Tensão lida", it = "Tensione letta", nl = "Gemeten spanning", sv = "Uppmätt spänning", cs = "Naměřené napětí", sk = "Namerané napätie", da = "Målt spænding", ru = "Измеренное напряжение"), String.format("%.1f V", readV))
                 HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
-                InfoRow(tr("Napięcie po korekcie", "Voltage after correction", de = "Spannung nach Korrektur", fr = "Tension après correction", es = "Voltaje tras la corrección", pt = "Tensão após correção", it = "Tensione dopo la correzione", nl = "Spanning na correctie", sv = "Spänning efter korrigering", cs = "Napětí po korekci", sk = "Napätie po korekcii"), String.format("%.1f V", readV + voltageOffsetV))
+                InfoRow(tr("Napięcie po korekcie", "Voltage after correction", de = "Spannung nach Korrektur", fr = "Tension après correction", es = "Voltaje tras la corrección", pt = "Tensão após correção", it = "Tensione dopo la correzione", nl = "Spanning na correctie", sv = "Spänning efter korrigering", cs = "Napětí po korekci", sk = "Napätie po korekcii", da = "Spænding efter korrektion", ru = "Напряжение после коррекции"), String.format("%.1f V", readV + voltageOffsetV))
             }
         }
 
         ExpandableParamTile(
-            label = tr("Kalibracja prędkości", "Speed calibration", de = "Geschwindigkeitskalibrierung", fr = "Calibration de la vitesse", es = "Calibración de velocidad", pt = "Calibração de velocidade", it = "Calibrazione velocità", nl = "Snelheidskalibratie", sv = "Hastighetskalibrering", cs = "Kalibrace rychlosti", sk = "Kalibrácia rýchlosti"),
+            label = tr("Kalibracja prędkości", "Speed calibration", de = "Geschwindigkeitskalibrierung", fr = "Calibration de la vitesse", es = "Calibración de velocidad", pt = "Calibração de velocidade", it = "Calibrazione velocità", nl = "Snelheidskalibratie", sv = "Hastighetskalibrering", cs = "Kalibrace rychlosti", sk = "Kalibrácia rýchlosti", da = "Hastighedskalibrering", ru = "Калибровка скорости"),
             valueLabel = String.format("%.2f×", speedFactor),
             description = tr(
                 "Współczynnik mnoży surowy odczyt prędkości z kontrolera przed wyświetleniem jej w Kokpicie " +
@@ -392,6 +422,12 @@ fun CalibrationScreen(
                 sk = "Faktor násobí surovú odčítanú rýchlosť z radiča, kým sa zobrazí v " +
                     "Cockpite a v grafoch Monitoringu. Užitočné, keď je rýchlosť podhodnotená/nadhodnotená (napr. " +
                     "nesprávny obvod kolesa alebo snímač rýchlosti) - v samotnom radiči sa nič nemení.",
+                da = "Faktoren multiplicerer den rå hastighedsaflæsning fra controlleren, før den vises i " +
+                    "Cockpit og i Monitoring-graferne. Nyttigt når hastigheden er for lav/høj (f.eks. forkert " +
+                    "hjulomkreds eller hastighedssensor) - der ændres intet i selve controlleren.",
+                ru = "Коэффициент умножает необработанное значение скорости от контроллера перед тем, как " +
+                    "оно отображается в Кокпите и на графиках Мониторинга. Полезно, когда скорость занижена/" +
+                    "завышена (например, неверная окружность колеса или датчик скорости) - в самом контроллере ничего не меняется.",
             ),
         ) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -428,6 +464,8 @@ fun CalibrationScreen(
                         sv = "Återställ till 1,00× (ingen kalibrering)",
                         cs = "Obnovit na 1,00× (žádná kalibrace)",
                         sk = "Obnoviť na 1,00× (žiadna kalibrácia)",
+                        da = "Nulstil til 1,00× (ingen kalibrering)",
+                        ru = "Сбросить на 1,00× (без калибровки)",
                     ),
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
@@ -436,11 +474,11 @@ fun CalibrationScreen(
             }
         }
 
-        CollapsibleMicroLabel(tr("Podgląd prędkości", "Speed preview", de = "Geschwindigkeitsvorschau", fr = "Aperçu de la vitesse", es = "Vista previa de velocidad", pt = "Pré-visualização de velocidade", it = "Anteprima velocità", nl = "Voorbeeld snelheid", sv = "Förhandsvisning av hastighet", cs = "Náhled rychlosti", sk = "Náhľad rýchlosti")) {
+        CollapsibleMicroLabel(tr("Podgląd prędkości", "Speed preview", de = "Geschwindigkeitsvorschau", fr = "Aperçu de la vitesse", es = "Vista previa de velocidad", pt = "Pré-visualização de velocidade", it = "Anteprima velocità", nl = "Voorbeeld snelheid", sv = "Förhandsvisning av hastighet", cs = "Náhled rychlosti", sk = "Náhľad rýchlosti", da = "Forhåndsvisning af hastighed", ru = "Просмотр скорости")) {
             TokenCard(borderColor = Tokens.WhiteBorder, contentPaddingVertical = 8.dp) {
-                InfoRow(tr("Prędkość przed kalibracją", "Speed before calibration", de = "Geschwindigkeit vor Kalibrierung", fr = "Vitesse avant calibration", es = "Velocidad antes de calibrar", pt = "Velocidade antes da calibração", it = "Velocità prima della calibrazione", nl = "Snelheid vóór kalibratie", sv = "Hastighet före kalibrering", cs = "Rychlost před kalibrací", sk = "Rýchlosť pred kalibráciou"), String.format("%.1f %s", referenceSpeed, unitLabel))
+                InfoRow(tr("Prędkość przed kalibracją", "Speed before calibration", de = "Geschwindigkeit vor Kalibrierung", fr = "Vitesse avant calibration", es = "Velocidad antes de calibrar", pt = "Velocidade antes da calibração", it = "Velocità prima della calibrazione", nl = "Snelheid vóór kalibratie", sv = "Hastighet före kalibrering", cs = "Rychlost před kalibrací", sk = "Rýchlosť pred kalibráciou", da = "Hastighed før kalibrering", ru = "Скорость до калибровки"), String.format("%.1f %s", referenceSpeed, unitLabel))
                 HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
-                InfoRow(tr("Prędkość po kalibracji", "Speed after calibration", de = "Geschwindigkeit nach Kalibrierung", fr = "Vitesse après calibration", es = "Velocidad tras calibrar", pt = "Velocidade após calibração", it = "Velocità dopo la calibrazione", nl = "Snelheid na kalibratie", sv = "Hastighet efter kalibrering", cs = "Rychlost po kalibraci", sk = "Rýchlosť po kalibrácii"), String.format("%.1f %s", referenceSpeed * speedFactor, unitLabel))
+                InfoRow(tr("Prędkość po kalibracji", "Speed after calibration", de = "Geschwindigkeit nach Kalibrierung", fr = "Vitesse après calibration", es = "Velocidad tras calibrar", pt = "Velocidade após calibração", it = "Velocità dopo la calibrazione", nl = "Snelheid na kalibratie", sv = "Hastighet efter kalibrering", cs = "Rychlost po kalibraci", sk = "Rýchlosť po kalibrácii", da = "Hastighed efter kalibrering", ru = "Скорость после калибровки"), String.format("%.1f %s", referenceSpeed * speedFactor, unitLabel))
             }
         }
         Spacer(Modifier.height(8.dp))

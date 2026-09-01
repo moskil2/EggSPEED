@@ -61,7 +61,7 @@ fun ThrottleScreen(
         TelemetryPausedNotice(monitoringActive = monitoringActive, aodActive = state.aodEnabled)
 
         ExpandableParamTile(
-            label = tr("Napięcie startowe", "Start Voltage", de = "Startspannung", fr = "Tension de démarrage", es = "Voltaje de arranque", pt = "Tensão de arranque", it = "Tensione di avvio", nl = "Startspanning", sv = "Startspänning", cs = "Počáteční napětí", sk = "Počiatočné napätie"),
+            label = tr("Napięcie startowe", "Start Voltage", de = "Startspannung", fr = "Tension de démarrage", es = "Voltaje de arranque", pt = "Tensão de arranque", it = "Tensione di avvio", nl = "Startspanning", sv = "Startspänning", cs = "Počáteční napětí", sk = "Počiatočné napätie", da = "Startspænding", ru = "Начальное напряжение"),
             valueLabel = String.format("%.1f V", thr.startVoltage / 10.0),
             description = tr(
                 "To jest napięcie wyjściowe manetki, przy którym silnik zacznie działać. " +
@@ -90,6 +90,10 @@ fun ThrottleScreen(
                     "řadič reaguje, je 1,1V, takže tento parametr je obvykle nastaven na 11 (11×100mV = 1,1V).",
                 sk = "Toto je výstupné napätie plynovej páčky, pri ktorom motor spustí. Minimum, na ktoré " +
                     "radič reaguje, je 1,1V, takže tento parameter je zvyčajne nastavený na 11 (11×100mV = 1,1V).",
+                da = "Dette er gashåndtagets udgangsspænding, ved hvilken motoren starter. Minimum, som " +
+                    "controlleren reagerer på, er 1,1V, så denne parameter er normalt sat til 11 (11×100mV = 1,1V).",
+                ru = "Это выходное напряжение ручки газа, при котором двигатель начнёт работать. Минимум, на который " +
+                    "реагирует контроллер, - 1,1V, поэтому этот параметр обычно устанавливается на 11 (11×100mV = 1,1V).",
             ),
         ) {
             FlankedSlider(
@@ -101,7 +105,7 @@ fun ThrottleScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Napięcie końcowe", "End Voltage", de = "Endspannung", fr = "Tension finale", es = "Voltaje final", pt = "Tensão final", it = "Tensione finale", nl = "Eindspanning", sv = "Slutspänning", cs = "Konečné napětí", sk = "Konečné napätie"),
+            label = tr("Napięcie końcowe", "End Voltage", de = "Endspannung", fr = "Tension finale", es = "Voltaje final", pt = "Tensão final", it = "Tensione finale", nl = "Eindspanning", sv = "Slutspänning", cs = "Konečné napětí", sk = "Konečné napätie", da = "Slutspænding", ru = "Конечное напряжение"),
             valueLabel = String.format("%.1f V", thr.endVoltage / 10.0),
             description = tr(
                 "To jest napięcie wyjściowe manetki, przy którym silnik osiągnie maksymalną moc " +
@@ -157,6 +161,16 @@ fun ThrottleScreen(
                     "(42×100mV = 4,2V). Skutočné maximálne napätie páčky sa môže líšiť podľa modelu " +
                     "- nastavené príliš nízko dostaneš takmer žiadnu reakciu, nastavené na skutočné maximum " +
                     "páčky dostaneš najširší možný rozsah ovládania.",
+                da = "Dette er gashåndtagets udgangsspænding, ved hvilken motoren når sin maksimale effekt " +
+                    "(begrænset af andre indstillinger). Maksimum accepteret af controlleren er 4,2V " +
+                    "(42×100mV = 4,2V). Håndtagets reelle maksimale udgang kan variere efter model " +
+                    "- sat for lavt får du næsten ingen respons, sat til håndtagets reelle maksimum får du " +
+                    "det bredest mulige kontrolområde.",
+                ru = "Это выходное напряжение ручки газа, при котором двигатель достигнет своей максимальной мощности " +
+                    "(ограниченной другими настройками). Максимум, принимаемый контроллером, - 4,2V " +
+                    "(42×100mV = 4,2V). Реальный максимальный выход ручки газа может отличаться в зависимости от модели " +
+                    "- если установлено слишком низко, отклика почти нет, если установлено на реальный максимум " +
+                    "ручки, получаете максимально широкий диапазон управления.",
             ),
         ) {
             FlankedSlider(
@@ -168,7 +182,7 @@ fun ThrottleScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Tryb", "Mode", de = "Modus", fr = "Mode", es = "Modo", pt = "Modo", it = "Modalità", nl = "Modus", sv = "Läge", cs = "Režim", sk = "Režim"),
+            label = tr("Tryb", "Mode", de = "Modus", fr = "Mode", es = "Modo", pt = "Modo", it = "Modalità", nl = "Modus", sv = "Läge", cs = "Režim", sk = "Režim", da = "Tilstand", ru = "Режим"),
             valueLabel = THROTTLE_MODE_LABELS.getOrElse(thr.mode) { "?" },
             description = tr(
                 "Tryb prędkości reaguje wolniej, ale daje precyzyjną kontrolę ściśle związaną z dokładną pozycją " +
@@ -240,6 +254,18 @@ fun ThrottleScreen(
                     "pozície plynovej páčky - je tu výrazné oneskorenie a reakcia je často slabá. Prúd: páčka " +
                     "ovláda prúd motora priamo na základe svojej pozície - tento režim funguje lepšie, podobne " +
                     "ako plynový pedál v aute.",
+                da = "Hastighedstilstand reagerer langsommere, men giver præcis kontrol tæt knyttet til " +
+                    "gashåndtagets nøjagtige position. Strømtilstand reagerer hurtigt, men føles mere på/af, " +
+                    "mindre gradvis. Hastighed: controlleren bruger kørehastigheden til at indstille motoreffekten " +
+                    "baseret på gashåndtagets position - der er en betydelig forsinkelse, og responsen er ofte dårlig. " +
+                    "Strøm: håndtaget styrer motorstrømmen direkte baseret på dets position - denne tilstand " +
+                    "fungerer bedre, svarende til speederen i en bil.",
+                ru = "Режим скорости реагирует медленнее, но даёт точное управление, тесно связанное с точным " +
+                    "положением ручки газа. Режим тока реагирует быстро, но ощущается скорее как вкл/выкл, " +
+                    "менее плавно. Скорость: контроллер использует скорость движения для установки мощности " +
+                    "двигателя на основе положения ручки газа - здесь есть значительная задержка, и отклик часто " +
+                    "слабый. Ток: ручка управляет током двигателя напрямую на основе своего положения - этот " +
+                    "режим работает лучше, похоже на педаль газа автомобиля.",
             ),
         ) {
             SegmentedControl(
@@ -250,7 +276,7 @@ fun ThrottleScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Wskazany poziom wspomagania", "Designated Assist Level", de = "Festgelegte Unterstützungsstufe", fr = "Niveau d'assistance désigné", es = "Nivel de asistencia designado", pt = "Nível de assistência designado", it = "Livello di assistenza designato", nl = "Aangewezen ondersteuningsniveau", sv = "Angiven assistansnivå", cs = "Určená úroveň asistence", sk = "Určená úroveň asistencie"),
+            label = tr("Wskazany poziom wspomagania", "Designated Assist Level", de = "Festgelegte Unterstützungsstufe", fr = "Niveau d'assistance désigné", es = "Nivel de asistencia designado", pt = "Nível de assistência designado", it = "Livello di assistenza designato", nl = "Aangewezen ondersteuningsniveau", sv = "Angiven assistansnivå", cs = "Určená úroveň asistence", sk = "Určená úroveň asistencie", da = "Angivet assistanceniveau", ru = "Заданный уровень ассистирования"),
             valueLabel = designatedAssistLabel(thr.designatedAssist),
             description = tr(
                 "\"By Display's Command\" używa poziomu wspomagania wybranego na Twoim LCD, więc maksymalna moc " +
@@ -322,6 +348,18 @@ fun ThrottleScreen(
                     "úroveň (0-9) zabezpečí, že plynová páčka vždy používa maximálny prúd a rýchlosť tejto " +
                     "úrovne, bez ohľadu na LCD. Buď opatrný s úrovňou 9: netlač plynovú páčku na maximum " +
                     "pri státí, vysoký prúd môže poškodiť radič a motor.",
+                da = "\"By Display's Command\" bruger det assistanceniveau, der er valgt på dit LCD, så den " +
+                    "maksimale udgangseffekt og hastighed afhænger af det niveau og gashåndtagets position - " +
+                    "et lavt PAS-niveau holder strøm og hastighed lave selv ved fuld gas. Et fast " +
+                    "niveau (0-9) gør, at gashåndtaget altid bruger det niveaus maksimale strøm og hastighed, " +
+                    "uanset LCD'et. Vær forsigtig med niveau 9: skub ikke gashåndtaget til maks, mens du " +
+                    "holder stille, den høje strøm kan beskadige controlleren og motoren.",
+                ru = "«By Display's Command» использует уровень ассистирования, выбранный на вашем LCD, поэтому " +
+                    "максимальная выходная мощность и скорость зависят от этого уровня и положения ручки газа - " +
+                    "низкий уровень PAS удерживает ток и скорость низкими даже при полностью открытой ручке газа. " +
+                    "Фиксированный уровень (0-9) заставляет ручку газа всегда использовать максимальный ток и " +
+                    "скорость этого уровня, независимо от LCD. Будьте осторожны с уровнем 9: не выжимайте ручку " +
+                    "газа до максимума стоя на месте, высокий ток может повредить контроллер и двигатель.",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -332,7 +370,7 @@ fun ThrottleScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Limit prędkości", "Speed Limit", de = "Geschwindigkeitslimit", fr = "Limite de vitesse", es = "Límite de velocidad", pt = "Limite de velocidade", it = "Limite di velocità", nl = "Snelheidslimiet", sv = "Hastighetsgräns", cs = "Omezení rychlosti", sk = "Obmedzenie rýchlosti"),
+            label = tr("Limit prędkości", "Speed Limit", de = "Geschwindigkeitslimit", fr = "Limite de vitesse", es = "Límite de velocidad", pt = "Limite de velocidade", it = "Limite di velocità", nl = "Snelheidslimiet", sv = "Hastighetsgräns", cs = "Omezení rychlosti", sk = "Obmedzenie rýchlosti", da = "Hastighedsgrænse", ru = "Ограничение скорости"),
             valueLabel = speedLimitLabel(thr.speedLimit),
             description = tr(
                 "Ogranicza maksymalną prędkość podczas używania manetki. To nadpisuje maksymalną prędkość " +
@@ -357,6 +395,10 @@ fun ThrottleScreen(
                     "rychlost určené úrovně asistence, pokud je nastavena vyšší.",
                 sk = "Obmedzuje maximálnu rýchlosť pri použití plynovej páčky. Toto prepisuje maximálnu " +
                     "rýchlosť určenej úrovne asistencie, ak je nastavená vyššie.",
+                da = "Begrænser den maksimale hastighed ved brug af gashåndtaget. Dette tilsidesætter det " +
+                    "angivne assistanceniveaus maksimale hastighed, hvis den er sat højere.",
+                ru = "Ограничивает максимальную скорость при использовании ручки газа. Это переопределяет " +
+                    "максимальную скорость заданного уровня ассистирования, если она установлена выше.",
             ),
         ) {
             FlankedSlider(
@@ -368,7 +410,7 @@ fun ThrottleScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Prąd startowy", "Start Current", de = "Startstrom", fr = "Courant de démarrage", es = "Corriente de arranque", pt = "Corrente de arranque", it = "Corrente di avvio", nl = "Startstroom", sv = "Startström", cs = "Počáteční proud", sk = "Počiatočný prúd"),
+            label = tr("Prąd startowy", "Start Current", de = "Startstrom", fr = "Courant de démarrage", es = "Corriente de arranque", pt = "Corrente de arranque", it = "Corrente di avvio", nl = "Startstroom", sv = "Startström", cs = "Počáteční proud", sk = "Počiatočný prúd", da = "Startstrøm", ru = "Начальный ток"),
             valueLabel = "${thr.startCurrentPct}%",
             description = tr(
                 "Procent maksymalnego prądu podawanego do silnika, gdy manetka generuje minimalne przyjmowane " +
@@ -413,6 +455,14 @@ fun ThrottleScreen(
                     "minimálne prijímané napätie. 10-20% zvyčajne funguje dobre - napr. s " +
                     "Current Limit 25A a Start Current 10% dostaneš plynulý štart na 2,5A. Príliš " +
                     "vysoká hodnota môže poškodiť vnútorné prevody a motor.",
+                da = "Procentdel af maksimal strøm, der tilføres motoren, når gashåndtaget genererer den " +
+                    "minimalt accepterede spænding. 10-20% fungerer normalt godt - f.eks. med en " +
+                    "Current Limit på 25A og 10% Start Current får du en jævn start på 2,5A. En for " +
+                    "høj værdi kan beskadige de interne gear og motoren.",
+                ru = "Процент максимального тока, подаваемого на двигатель, когда ручка газа генерирует " +
+                    "минимально принимаемое напряжение. 10-20% обычно работает хорошо - например, с " +
+                    "Current Limit 25A и Start Current 10% вы получаете плавный старт на 2,5A. Слишком " +
+                    "высокое значение может повредить внутренние шестерни и двигатель.",
             ),
         ) {
             FlankedSlider(

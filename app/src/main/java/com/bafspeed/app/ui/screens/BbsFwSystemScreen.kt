@@ -85,9 +85,9 @@ fun BbsFwSystemScreen(
         TelemetryPausedNotice(monitoringActive = monitoringActive, aodActive = state.aodEnabled)
 
         // --- Global ---
-        MicroLabel(tr("Globalne", "Global", de = "Global", fr = "Global", es = "Global", pt = "Global", it = "Globale", nl = "Algemeen", sv = "Globalt", cs = "Globální", sk = "Globálne"))
+        MicroLabel(tr("Globalne", "Global", de = "Global", fr = "Global", es = "Global", pt = "Global", it = "Globale", nl = "Algemeen", sv = "Globalt", cs = "Globální", sk = "Globálne", da = "Globalt", ru = "Общие"))
         ExpandableParamTile(
-            label = tr("Maks. prąd (A)", "Max Current (A)", de = "Max. Strom (A)", fr = "Courant max (A)", es = "Corriente máx. (A)", pt = "Corrente máx. (A)", it = "Corrente max (A)", nl = "Max. stroom (A)", sv = "Max ström (A)", cs = "Max. proud (A)", sk = "Max. prúd (A)"),
+            label = tr("Maks. prąd (A)", "Max Current (A)", de = "Max. Strom (A)", fr = "Courant max (A)", es = "Corriente máx. (A)", pt = "Corrente máx. (A)", it = "Corrente max (A)", nl = "Max. stroom (A)", sv = "Max ström (A)", cs = "Max. proud (A)", sk = "Max. prúd (A)", da = "Maks. strøm (A)", ru = "Макс. ток (A)"),
             valueLabel = "${cfg.maxCurrentAmps} A",
             description = tr(
                 "Maksymalny prąd pobierany z baterii (do ${maxCurrentLimit}A dla Twojego sterownika). Na BBS02 nie " +
@@ -112,12 +112,16 @@ fun BbsFwSystemScreen(
                     "řadič). U BBS02 nepřekračuj bezpečné limity, aby nedošlo k poškození motoru.",
                 sk = "Maximálny prúd odoberaný z batérie (až ${maxCurrentLimit}A pre tvoj " +
                     "radič). Pri BBS02 neprekračuj bezpečné limity, aby nedošlo k poškodeniu motora.",
+                da = "Maksimal strøm, der trækkes fra batteriet (op til ${maxCurrentLimit}A for din " +
+                    "controller). På BBS02 må du ikke overskride sikre grænser for at undgå motorskader.",
+                ru = "Максимальный ток, потребляемый от батареи (до ${maxCurrentLimit}А для вашего " +
+                    "контроллера). На BBS02 не превышайте безопасные пределы, чтобы избежать повреждения мотора.",
             ),
         ) {
             FlankedSlider(value = cfg.maxCurrentAmps, range = 5..maxCurrentLimit, accent = Tokens.Amber, onValueChange = onMaxCurrent)
         }
         ExpandableParamTile(
-            label = tr("Narastanie prądu (A/s)", "Current Ramp (A/s)", de = "Stromanstieg (A/s)", fr = "Rampe de courant (A/s)", es = "Rampa de corriente (A/s)", pt = "Rampa de corrente (A/s)", it = "Rampa di corrente (A/s)", nl = "Stroomoploop (A/s)", sv = "Strömramp (A/s)", cs = "Náběh proudu (A/s)", sk = "Nábeh prúdu (A/s)"),
+            label = tr("Narastanie prądu (A/s)", "Current Ramp (A/s)", de = "Stromanstieg (A/s)", fr = "Rampe de courant (A/s)", es = "Rampa de corriente (A/s)", pt = "Rampa de corrente (A/s)", it = "Rampa di corrente (A/s)", nl = "Stroomoploop (A/s)", sv = "Strömramp (A/s)", cs = "Náběh proudu (A/s)", sk = "Nábeh prúdu (A/s)", da = "Strømrampe (A/s)", ru = "Нарастание тока (А/с)"),
             valueLabel = "${cfg.currentRampAmpsS} A/s",
             description = tr(
                 "Narastanie prądu w amperach na sekundę przy załączaniu PAS lub Cruise.",
@@ -130,13 +134,13 @@ fun BbsFwSystemScreen(
                 nl = "Stroomtoename in ampère per seconde bij het activeren van PAS of Cruise.",
                 sv = "Strömökning i ampere per sekund vid aktivering av PAS eller Cruise.",
                 cs = "Náběh proudu v ampérech za sekundu při zapnutí PAS nebo Cruise.",
-                sk = "Nábeh prúdu v ampéroch za sekundu pri zapnutí PAS alebo Cruise.",
+                sk = "Nábeh prúdu v ampéroch za sekundu pri zapnutí PAS alebo Cruise.", da = "Strømstigning i ampere per sekund ved aktivering af PAS eller Cruise.", ru = "Нарастание тока в амперах в секунду при включении PAS или Cruise.",
             ),
         ) {
             FlankedSlider(value = cfg.currentRampAmpsS, range = 1..255, accent = Tokens.Amber, onValueChange = onCurrentRamp)
         }
         ExpandableParamTile(
-            label = tr("Maks. napięcie baterii (V)", "Max Battery Voltage (V)", de = "Max. Batteriespannung (V)", fr = "Tension batterie max (V)", es = "Voltaje máx. de batería (V)", pt = "Voltagem máx. da bateria (V)", it = "Tensione max batteria (V)", nl = "Max. batterijspanning (V)", sv = "Max batterispänning (V)", cs = "Max. napětí baterie (V)", sk = "Max. napätie batérie (V)"),
+            label = tr("Maks. napięcie baterii (V)", "Max Battery Voltage (V)", de = "Max. Batteriespannung (V)", fr = "Tension batterie max (V)", es = "Voltaje máx. de batería (V)", pt = "Voltagem máx. da bateria (V)", it = "Tensione max batteria (V)", nl = "Max. batterijspanning (V)", sv = "Max batterispänning (V)", cs = "Max. napětí baterie (V)", sk = "Max. napätie batérie (V)", da = "Maks. batterispænding (V)", ru = "Макс. напряжение батареи (В)"),
             valueLabel = "${cfg.maxBatteryX100v / 100.0} V",
             description = tr(
                 "Maksymalne napięcie Twojej baterii - używane do wyliczenia % naładowania (SOC).",
@@ -149,13 +153,13 @@ fun BbsFwSystemScreen(
                 nl = "Maximale spanning van je batterij - gebruikt voor de berekening van het laadpercentage (SOC%).",
                 sv = "Maximal spänning på ditt batteri - används för beräkning av laddningsnivå (SOC%).",
                 cs = "Maximální napětí tvé baterie - používá se pro výpočet stavu nabití (SOC %).",
-                sk = "Maximálne napätie tvojej batérie - používa sa na výpočet stavu nabitia (SOC %).",
+                sk = "Maximálne napätie tvojej batérie - používa sa na výpočet stavu nabitia (SOC %).", da = "Maksimal spænding på dit batteri - bruges til beregning af batteriets ladetilstand (SOC%).", ru = "Максимальное напряжение вашей батареи - используется для расчёта уровня заряда (SOC%).",
             ),
         ) {
             FlankedSlider(value = cfg.maxBatteryX100v / 100, range = 1..100, accent = Tokens.Blue, onValueChange = { onMaxBatteryVoltageX100(it * 100) })
         }
         ExpandableParamTile(
-            label = tr("Odcięcie niskiego napięcia (V)", "Low Voltage Cutoff (V)", de = "Unterspannungsabschaltung (V)", fr = "Coupure basse tension (V)", es = "Corte de bajo voltaje (V)", pt = "Corte de baixa tensão (V)", it = "Taglio bassa tensione (V)", nl = "Onderspanningsafsluiting (V)", sv = "Underspänningsavstängning (V)", cs = "Vypnutí při nízkém napětí (V)", sk = "Vypnutie pri nízkom napätí (V)"),
+            label = tr("Odcięcie niskiego napięcia (V)", "Low Voltage Cutoff (V)", de = "Unterspannungsabschaltung (V)", fr = "Coupure basse tension (V)", es = "Corte de bajo voltaje (V)", pt = "Corte de baixa tensão (V)", it = "Taglio bassa tensione (V)", nl = "Onderspanningsafsluiting (V)", sv = "Underspänningsavstängning (V)", cs = "Vypnutí při nízkém napětí (V)", sk = "Vypnutie pri nízkom napätí (V)", da = "Underspændingsafbrydelse (V)", ru = "Отключение при низком напряжении (В)"),
             valueLabel = "${cfg.lowCutOffV} V",
             description = tr(
                 "Próg niskiego napięcia, przy którym moc silnika jest odcinana, żeby chronić baterię.",
@@ -174,12 +178,16 @@ fun BbsFwSystemScreen(
                     "baterie.",
                 sk = "Detekcia nízkeho napätia na určenie, kedy odpojiť výkon motora na ochranu " +
                     "batérie.",
+                da = "Registrering af lav spænding for at afgøre, hvornår motorens effekt skal afbrydes for at " +
+                    "beskytte batteriet.",
+                ru = "Определение низкого напряжения для отключения питания мотора с целью защиты " +
+                    "батареи.",
             ),
         ) {
             FlankedSlider(value = cfg.lowCutOffV, range = 1..100, accent = Tokens.Blue, onValueChange = onLowCutOff)
         }
         ExpandableParamTile(
-            label = tr("Maks. prędkość (km/h)", "Max Speed (km/h)", de = "Max. Geschwindigkeit (km/h)", fr = "Vitesse max (km/h)", es = "Velocidad máx. (km/h)", pt = "Velocidade máx. (km/h)", it = "Velocità max (km/h)", nl = "Max. snelheid (km/u)", sv = "Max hastighet (km/h)", cs = "Max. rychlost (km/h)", sk = "Max. rýchlosť (km/h)"),
+            label = tr("Maks. prędkość (km/h)", "Max Speed (km/h)", de = "Max. Geschwindigkeit (km/h)", fr = "Vitesse max (km/h)", es = "Velocidad máx. (km/h)", pt = "Velocidade máx. (km/h)", it = "Velocità max (km/h)", nl = "Max. snelheid (km/u)", sv = "Max hastighet (km/h)", cs = "Max. rychlost (km/h)", sk = "Max. rýchlosť (km/h)", da = "Maks. hastighed (km/t)", ru = "Макс. скорость (км/ч)"),
             valueLabel = "${cfg.maxSpeedKph} km/h",
             description = tr(
                 "Maksymalna prędkość (przy włączonym czujniku prędkości) w km/h.",
@@ -192,16 +200,16 @@ fun BbsFwSystemScreen(
                 nl = "Maximale snelheid (bij gebruik van een snelheidssensor) in km/u.",
                 sv = "Maximal hastighet (vid användning av hastighetssensor) i km/h.",
                 cs = "Maximální rychlost (při použití snímače rychlosti) v km/h.",
-                sk = "Maximálna rýchlosť (pri použití snímača rýchlosti) v km/h.",
+                sk = "Maximálna rýchlosť (pri použití snímača rýchlosti) v km/h.", da = "Maksimal hastighed (ved brug af hastighedssensor) i km/t.", ru = "Максимальная скорость (при использовании датчика скорости) в км/ч.",
             ),
         ) {
             FlankedSlider(value = cfg.maxSpeedKph, range = 0..180, accent = Tokens.Emerald, onValueChange = onMaxSpeed)
         }
 
         // --- Throttle ---
-        MicroLabel(tr("Manetka", "Throttle", de = "Gasgriff", fr = "Accélérateur", es = "Acelerador", pt = "Acelerador", it = "Acceleratore", nl = "Gasgreep", sv = "Gasreglage", cs = "Plynová páčka", sk = "Plynová páčka"))
+        MicroLabel(tr("Manetka", "Throttle", de = "Gasgriff", fr = "Accélérateur", es = "Acelerador", pt = "Acelerador", it = "Acceleratore", nl = "Gasgreep", sv = "Gasreglage", cs = "Plynová páčka", sk = "Plynová páčka", da = "Gashåndtag", ru = "Газ"))
         ExpandableParamTile(
-            label = tr("Napięcie startowe (mV)", "Start Voltage (mV)", de = "Startspannung (mV)", fr = "Tension de démarrage (mV)", es = "Voltaje de arranque (mV)", pt = "Tensão de arranque (mV)", it = "Tensione di avvio (mV)", nl = "Startspanning (mV)", sv = "Startspänning (mV)", cs = "Počáteční napětí (mV)", sk = "Počiatočné napätie (mV)"),
+            label = tr("Napięcie startowe (mV)", "Start Voltage (mV)", de = "Startspannung (mV)", fr = "Tension de démarrage (mV)", es = "Voltaje de arranque (mV)", pt = "Tensão de arranque (mV)", it = "Tensione di avvio (mV)", nl = "Startspanning (mV)", sv = "Startspänning (mV)", cs = "Počáteční napětí (mV)", sk = "Počiatočné napätie (mV)", da = "Startspænding (mV)", ru = "Начальное напряжение (мВ)"),
             valueLabel = "${cfg.throttleStartVoltageMv} mV",
             description = tr(
                 "Ustawienie niższe niż minimalne napięcie sygnału z manetki spowoduje błąd.",
@@ -214,13 +222,13 @@ fun BbsFwSystemScreen(
                 nl = "Een instelling lager dan de minimale signaalspanning van de gasgreep resulteert in een fout.",
                 sv = "En inställning lägre än den minsta signalspänningen från gasreglaget resulterar i ett fel.",
                 cs = "Nastavení nižší než minimální napětí signálu z plynové páčky způsobí chybu.",
-                sk = "Nastavenie nižšie ako minimálne napätie signálu z plynovej páčky spôsobí chybu.",
+                sk = "Nastavenie nižšie ako minimálne napätie signálu z plynovej páčky spôsobí chybu.", da = "En indstilling lavere end minimumsspændingssignalet fra gashåndtaget vil resultere i en fejl.", ru = "Значение ниже минимального сигнала напряжения от газа приведёт к ошибке.",
             ),
         ) {
             FlankedSlider(value = cfg.throttleStartVoltageMv, range = 200..2500, accent = Tokens.Amber, onValueChange = onThrottleStartVoltageMv)
         }
         ExpandableParamTile(
-            label = tr("Napięcie końcowe (mV)", "End Voltage (mV)", de = "Endspannung (mV)", fr = "Tension finale (mV)", es = "Voltaje final (mV)", pt = "Tensão final (mV)", it = "Tensione finale (mV)", nl = "Eindspanning (mV)", sv = "Slutspänning (mV)", cs = "Konečné napětí (mV)", sk = "Konečné napätie (mV)"),
+            label = tr("Napięcie końcowe (mV)", "End Voltage (mV)", de = "Endspannung (mV)", fr = "Tension finale (mV)", es = "Voltaje final (mV)", pt = "Tensão final (mV)", it = "Tensione finale (mV)", nl = "Eindspanning (mV)", sv = "Slutspänning (mV)", cs = "Konečné napětí (mV)", sk = "Konečné napätie (mV)", da = "Slutspænding (mV)", ru = "Конечное напряжение (мВ)"),
             valueLabel = "${cfg.throttleEndVoltageMv} mV",
             description = tr(
                 "Ustawienie wyższe niż maksymalny sygnał z manetki uniemożliwi osiągnięcie pełnej mocy.",
@@ -241,12 +249,16 @@ fun BbsFwSystemScreen(
                     "maximálního výkonu.",
                 sk = "Nastavenie vyššie ako maximálny signál plynovej páčky znemožní dosiahnutie " +
                     "maximálneho výkonu.",
+                da = "Hvis dette indstilles højere end det maksimale signal fra gashåndtaget, bliver det umuligt " +
+                    "at nå maksimal effekt.",
+                ru = "Установка значения выше максимального сигнала газа сделает невозможным достижение " +
+                    "максимальной мощности.",
             ),
         ) {
             FlankedSlider(value = cfg.throttleEndVoltageMv, range = 2500..5000, accent = Tokens.Amber, onValueChange = onThrottleEndVoltageMv)
         }
         ExpandableParamTile(
-            label = tr("Prąd startowy (%)", "Start Current (%)", de = "Startstrom (%)", fr = "Courant de démarrage (%)", es = "Corriente de arranque (%)", pt = "Corrente de arranque (%)", it = "Corrente di avvio (%)", nl = "Startstroom (%)", sv = "Startström (%)", cs = "Počáteční proud (%)", sk = "Počiatočný prúd (%)"),
+            label = tr("Prąd startowy (%)", "Start Current (%)", de = "Startstrom (%)", fr = "Courant de démarrage (%)", es = "Corriente de arranque (%)", pt = "Corrente de arranque (%)", it = "Corrente di avvio (%)", nl = "Startstroom (%)", sv = "Startström (%)", cs = "Počáteční proud (%)", sk = "Počiatočný prúd (%)", da = "Startstrøm (%)", ru = "Начальный ток (%)"),
             valueLabel = "${cfg.throttleStartPercent}%",
             description = tr(
                 "Minimalna moc przy najmniejszym wychyleniu manetki.",
@@ -259,17 +271,17 @@ fun BbsFwSystemScreen(
                 nl = "Minimaal vermogen dat wordt toegepast bij de laagste gasgreepinvoer.",
                 sv = "Minsta effekt som appliceras vid lägsta gasreglageinsats.",
                 cs = "Minimální výkon uplatněný při nejnižším vstupu plynové páčky.",
-                sk = "Minimálny výkon uplatnený pri najnižšom vstupe plynovej páčky.",
+                sk = "Minimálny výkon uplatnený pri najnižšom vstupe plynovej páčky.", da = "Minimal effekt der anvendes ved laveste gasindgang.", ru = "Минимальная мощность, применяемая при минимальном сигнале газа.",
             ),
         ) {
             FlankedSlider(value = cfg.throttleStartPercent, range = 0..100, accent = Tokens.Amber, onValueChange = onThrottleStartPercent)
         }
         ExpandableParamTile(
-            label = tr("Opcje globalnego limitu prędkości", "Global Speed Limit Options", de = "Optionen für globales Geschwindigkeitslimit", fr = "Options de limite de vitesse globale", es = "Opciones de límite de velocidad global", pt = "Opções de limite de velocidade global", it = "Opzioni limite di velocità globale", nl = "Opties globale snelheidslimiet", sv = "Alternativ för global hastighetsgräns", cs = "Možnosti globálního omezení rychlosti", sk = "Možnosti globálneho obmedzenia rýchlosti"),
+            label = tr("Opcje globalnego limitu prędkości", "Global Speed Limit Options", de = "Optionen für globales Geschwindigkeitslimit", fr = "Options de limite de vitesse globale", es = "Opciones de límite de velocidad global", pt = "Opções de limite de velocidade global", it = "Opzioni limite di velocità globale", nl = "Opties globale snelheidslimiet", sv = "Alternativ för global hastighetsgräns", cs = "Možnosti globálního omezení rychlosti", sk = "Možnosti globálneho obmedzenia rýchlosti", da = "Globale hastighedsgrænseindstillinger", ru = "Параметры глобального ограничения скорости"),
             valueLabel = listOf(
-                tr("Wyłączony", "Disabled", de = "Deaktiviert", fr = "Désactivé", es = "Desactivado", pt = "Desativado", it = "Disattivato", nl = "Uitgeschakeld", sv = "Avstängd", cs = "Vypnuto", sk = "Vypnuté"),
-                tr("Włączony", "Enabled", de = "Aktiviert", fr = "Activé", es = "Activado", pt = "Ativado", it = "Attivato", nl = "Ingeschakeld", sv = "Aktiverad", cs = "Zapnuto", sk = "Zapnuté"),
-                tr("Standardowe poziomy", "Standard Levels", de = "Standard-Stufen", fr = "Niveaux Standard", es = "Niveles Standard", pt = "Níveis Standard", it = "Livelli Standard", nl = "Standaardniveaus", sv = "Standardnivåer", cs = "Standardní úrovně", sk = "Štandardné úrovne"),
+                tr("Wyłączony", "Disabled", de = "Deaktiviert", fr = "Désactivé", es = "Desactivado", pt = "Desativado", it = "Disattivato", nl = "Uitgeschakeld", sv = "Avstängd", cs = "Vypnuto", sk = "Vypnuté", da = "Deaktiveret", ru = "Отключено"),
+                tr("Włączony", "Enabled", de = "Aktiviert", fr = "Activé", es = "Activado", pt = "Ativado", it = "Attivato", nl = "Ingeschakeld", sv = "Aktiverad", cs = "Zapnuto", sk = "Zapnuté", da = "Aktiveret", ru = "Включено"),
+                tr("Standardowe poziomy", "Standard Levels", de = "Standard-Stufen", fr = "Niveaux Standard", es = "Niveles Standard", pt = "Níveis Standard", it = "Livelli Standard", nl = "Standaardniveaus", sv = "Standardnivåer", cs = "Standardní úrovně", sk = "Štandardné úrovne", da = "Standardniveauer", ru = "Стандартные уровни"),
             ).getOrElse(cfg.throttleGlobalSpdLimOpt) { "?" },
             description = tr(
                 "Globalny limit prędkości dla manetki, przydatny tam, gdzie prawo ogranicza użycie manetki do " +
@@ -312,6 +324,14 @@ fun BbsFwSystemScreen(
                     "použitie plynovej páčky iba do určitej rýchlosti. Vypnuté = žiadny limit. " +
                     "Zapnuté = platí pre všetky úrovne asistencie. Štandardné úrovne = iba " +
                     "profil Standard (nie Sport).",
+                da = "Global hastighedsgrænse for gashåndtaget, nyttig hvor lokal lovgivning kun tillader brug " +
+                    "af gashåndtaget op til en bestemt hastighed. Deaktiveret = ingen grænse. " +
+                    "Aktiveret = gælder alle understøttelsesniveauer. Standardniveauer = kun " +
+                    "Standard-profilen (ikke Sport).",
+                ru = "Глобальное ограничение скорости для газа, полезно там, где местное законодательство " +
+                    "разрешает использование газа только до определённой скорости. Отключено = без " +
+                    "ограничения. Включено = применяется ко всем уровням помощи. Стандартные уровни = " +
+                    "только профиль Standard (не Sport).",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -321,7 +341,7 @@ fun BbsFwSystemScreen(
             }
         }
         ExpandableParamTile(
-            label = tr("Globalny limit prędkości (%)", "Global Speed Limit (%)", de = "Globales Geschwindigkeitslimit (%)", fr = "Limite de vitesse globale (%)", es = "Límite de velocidad global (%)", pt = "Limite de velocidade global (%)", it = "Limite di velocità globale (%)", nl = "Globale snelheidslimiet (%)", sv = "Global hastighetsgräns (%)", cs = "Globální omezení rychlosti (%)", sk = "Globálne obmedzenie rýchlosti (%)"),
+            label = tr("Globalny limit prędkości (%)", "Global Speed Limit (%)", de = "Globales Geschwindigkeitslimit (%)", fr = "Limite de vitesse globale (%)", es = "Límite de velocidad global (%)", pt = "Limite de velocidade global (%)", it = "Limite di velocità globale (%)", nl = "Globale snelheidslimiet (%)", sv = "Global hastighetsgräns (%)", cs = "Globální omezení rychlosti (%)", sk = "Globálne obmedzenie rýchlosti (%)", da = "Global hastighedsgrænse (%)", ru = "Глобальное ограничение скорости (%)"),
             valueLabel = "${cfg.throttleGlobalSpdLimPercent}%",
             description = tr(
                 "Limit prędkości w % skonfigurowanej prędkości maksymalnej, gdy powyższa opcja jest włączona.",
@@ -342,15 +362,19 @@ fun BbsFwSystemScreen(
                     "uvedená možnost zapnutá.",
                 sk = "Nastaví limit rýchlosti v % nakonfigurovanej maximálnej rýchlosti, keď je vyššie " +
                     "uvedená možnosť zapnutá.",
+                da = "Indstiller hastighedsgrænsen i % af den konfigurerede maksimale hastighed, når " +
+                    "ovenstående globale hastighedsgrænse for gashåndtaget er aktiveret.",
+                ru = "Устанавливает ограничение скорости в % от настроенной максимальной скорости, когда " +
+                    "включена указанная выше опция глобального ограничения.",
             ),
         ) {
             FlankedSlider(value = cfg.throttleGlobalSpdLimPercent, range = 0..100, accent = Tokens.Amber, onValueChange = onThrottleGlobalSpdLimPercent)
         }
 
         // --- Pedal Assist ---
-        MicroLabel(tr("Wspomaganie pedałowania", "Pedal Assist", de = "Pedal Assist", fr = "Assistance au pédalage", es = "Asistencia de pedaleo", pt = "Assistência de pedalada", it = "Assistenza pedalata", nl = "Trapondersteuning", sv = "Pedalassistans", cs = "Asistence šlapání", sk = "Asistencia šliapania"))
+        MicroLabel(tr("Wspomaganie pedałowania", "Pedal Assist", de = "Pedal Assist", fr = "Assistance au pédalage", es = "Asistencia de pedaleo", pt = "Assistência de pedalada", it = "Assistenza pedalata", nl = "Trapondersteuning", sv = "Pedalassistans", cs = "Asistence šlapání", sk = "Asistencia šliapania", da = "Pedalassistance", ru = "Педальная поддержка"))
         ExpandableParamTile(
-            label = tr("Opóźnienie startu (°)", "Start Delay (°)", de = "Startverzögerung (°)", fr = "Délai de démarrage (°)", es = "Retardo de arranque (°)", pt = "Atraso de arranque (°)", it = "Ritardo di avvio (°)", nl = "Startvertraging (°)", sv = "Startfördröjning (°)", cs = "Prodleva startu (°)", sk = "Oneskorenie štartu (°)"),
+            label = tr("Opóźnienie startu (°)", "Start Delay (°)", de = "Startverzögerung (°)", fr = "Délai de démarrage (°)", es = "Retardo de arranque (°)", pt = "Atraso de arranque (°)", it = "Ritardo di avvio (°)", nl = "Startvertraging (°)", sv = "Startfördröjning (°)", cs = "Prodleva startu (°)", sk = "Oneskorenie štartu (°)", da = "Startforsinkelse (°)", ru = "Задержка старта (°)"),
             valueLabel = "${cfg.pasStartDelayPulses * 15}°",
             description = tr(
                 "Opóźnienie startu w stopniach obrotu korby, po którym załącza się PAS (24 impulsy = 360° = pełny obrót).",
@@ -373,6 +397,10 @@ fun BbsFwSystemScreen(
                     "jedna plná otáčka kliky).",
                 sk = "Oneskorenie štartu v stupňoch otáčania kľuky, po ktorom sa PAS zapne (24 impulzov = 360° = " +
                     "jedna plná otáčka kľuky).",
+                da = "Startforsinkelse i grader af krankrotation, hvorefter PAS aktiveres (24 impulser = 360° = " +
+                    "én hel krankomdrejning).",
+                ru = "Задержка старта в градусах вращения шатуна, после которой включается PAS (24 импульса = " +
+                    "360° = один полный оборот шатуна).",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -382,7 +410,7 @@ fun BbsFwSystemScreen(
             }
         }
         ExpandableParamTile(
-            label = tr("Opóźnienie zatrzymania (ms)", "Stop Delay (ms)", de = "Stoppverzögerung (ms)", fr = "Délai d'arrêt (ms)", es = "Retardo de parada (ms)", pt = "Atraso de paragem (ms)", it = "Ritardo di arresto (ms)", nl = "Stopvertraging (ms)", sv = "Stoppfördröjning (ms)", cs = "Prodleva vypnutí (ms)", sk = "Oneskorenie vypnutia (ms)"),
+            label = tr("Opóźnienie zatrzymania (ms)", "Stop Delay (ms)", de = "Stoppverzögerung (ms)", fr = "Délai d'arrêt (ms)", es = "Retardo de parada (ms)", pt = "Atraso de paragem (ms)", it = "Ritardo di arresto (ms)", nl = "Stopvertraging (ms)", sv = "Stoppfördröjning (ms)", cs = "Prodleva vypnutí (ms)", sk = "Oneskorenie vypnutia (ms)", da = "Stopforsinkelse (ms)", ru = "Задержка остановки (мс)"),
             valueLabel = "${cfg.pasStopDelayX100s * 10} ms",
             description = tr(
                 "Opóźnienie w milisekundach, po którym PAS się wyłącza po zatrzymaniu pedałowania.",
@@ -395,7 +423,7 @@ fun BbsFwSystemScreen(
                 nl = "Stopvertraging in milliseconden waarna PAS wordt gedeactiveerd zodra je stopt met trappen.",
                 sv = "Stoppfördröjning i millisekunder tills PAS kopplas ur när du slutar trampa.",
                 cs = "Prodleva vypnutí v milisekundách, po které se PAS vypne po zastavení šlapání.",
-                sk = "Oneskorenie vypnutia v milisekundách, po ktorom sa PAS vypne po zastavení šliapania.",
+                sk = "Oneskorenie vypnutia v milisekundách, po ktorom sa PAS vypne po zastavení šliapania.", da = "Stopforsinkelse i millisekunder, hvorefter PAS deaktiveres.", ru = "Задержка отключения в миллисекундах, после которой PAS выключается.",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -405,7 +433,7 @@ fun BbsFwSystemScreen(
             }
         }
         ExpandableParamTile(
-            label = tr("Podtrzymanie prądu (%)", "Keep Current (%)", de = "Stromhaltung (%)", fr = "Maintien du courant (%)", es = "Mantenimiento de corriente (%)", pt = "Manutenção de corrente (%)", it = "Mantenimento corrente (%)", nl = "Stroom vasthouden (%)", sv = "Bibehållen ström (%)", cs = "Udržení proudu (%)", sk = "Udržanie prúdu (%)"),
+            label = tr("Podtrzymanie prądu (%)", "Keep Current (%)", de = "Stromhaltung (%)", fr = "Maintien du courant (%)", es = "Mantenimiento de corriente (%)", pt = "Manutenção de corrente (%)", it = "Mantenimento corrente (%)", nl = "Stroom vasthouden (%)", sv = "Bibehållen ström (%)", cs = "Udržení proudu (%)", sk = "Udržanie prúdu (%)", da = "Bevar strøm (%)", ru = "Удержание тока (%)"),
             valueLabel = "${cfg.pasKeepCurrentPercent}%",
             description = tr(
                 "Podtrzymuje ten procent zadanego prądu poziomu, gdy osiągnięto docelową kadencję. Dotyczy tylko " +
@@ -436,12 +464,18 @@ fun BbsFwSystemScreen(
                 sk = "Udržiava toto percento cieľového prúdu úrovne asistencie po dosiahnutí " +
                     "cieľovej kadencie úrovne asistencie. Platí iba pre režimy založené na " +
                     "kadencii (nie Torque/Variable).",
+                da = "Bevarer denne procentdel af assistanceniveauets målstrøm, når assistanceniveauets " +
+                    "målkadence er nået. Gælder kun for kadencebaserede tilstande " +
+                    "(ikke Torque/Variable).",
+                ru = "Удерживает этот процент от целевого тока уровня помощи по достижении " +
+                    "целевого каденса уровня помощи. Применяется только к режимам на основе " +
+                    "каденса (не Torque/Variable).",
             ),
         ) {
             FlankedSlider(value = cfg.pasKeepCurrentPercent, range = 10..100, accent = Tokens.Amber, onValueChange = onPasKeepCurrentPercent)
         }
         ExpandableParamTile(
-            label = tr("Kadencja podtrzymania prądu (rpm)", "Keep Current Cadence (rpm)", de = "Kadenz für Stromhaltung (U/min)", fr = "Cadence de maintien du courant (rpm)", es = "Cadencia de mantenimiento de corriente (rpm)", pt = "Cadência de manutenção de corrente (rpm)", it = "Cadenza di mantenimento corrente (rpm)", nl = "Cadans voor stroom vasthouden (rpm)", sv = "Kadens för bibehållen ström (rpm)", cs = "Kadence pro udržení proudu (rpm)", sk = "Kadencia pre udržanie prúdu (rpm)"),
+            label = tr("Kadencja podtrzymania prądu (rpm)", "Keep Current Cadence (rpm)", de = "Kadenz für Stromhaltung (U/min)", fr = "Cadence de maintien du courant (rpm)", es = "Cadencia de mantenimiento de corriente (rpm)", pt = "Cadência de manutenção de corrente (rpm)", it = "Cadenza di mantenimento corrente (rpm)", nl = "Cadans voor stroom vasthouden (rpm)", sv = "Kadens för bibehållen ström (rpm)", cs = "Kadence pro udržení proudu (rpm)", sk = "Kadencia pre udržanie prúdu (rpm)", da = "Kadence for strømfastholdelse (rpm)", ru = "Каденс удержания тока (об/мин)"),
             valueLabel = "${cfg.pasKeepCurrentCadenceRpm} rpm",
             description = tr(
                 "Dolny próg kadencji, od którego zaczyna działać rampa \"Keep Current %\" powyżej.",
@@ -454,7 +488,7 @@ fun BbsFwSystemScreen(
                 nl = "Onderste cadanslimiet waarbij de «Keep Current %»-rampe hierboven begint te werken.",
                 sv = "Nedre kadensgräns där rampen «Keep Current %» ovan börjar verka.",
                 cs = "Dolní limit kadence, od kterého začíná působit rampa «Keep Current %» výše.",
-                sk = "Dolný limit kadencie, od ktorého začína pôsobiť rampa «Keep Current %» vyššie.",
+                sk = "Dolný limit kadencie, od ktorého začína pôsobiť rampa «Keep Current %» vyššie.", da = "Nedre kadencegrænse for, hvornår «Keep Current %»-rampen ovenfor starter.", ru = "Нижний порог каденса, с которого начинает действовать рампа «Keep Current %» выше.",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -465,10 +499,10 @@ fun BbsFwSystemScreen(
         }
 
         // --- Features ---
-        MicroLabel(tr("Funkcje", "Features", de = "Funktionen", fr = "Fonctionnalités", es = "Funciones", pt = "Funcionalidades", it = "Funzionalità", nl = "Functies", sv = "Funktioner", cs = "Funkce", sk = "Funkcie"))
+        MicroLabel(tr("Funkcje", "Features", de = "Funktionen", fr = "Fonctionnalités", es = "Funciones", pt = "Funcionalidades", it = "Funzionalità", nl = "Functies", sv = "Funktioner", cs = "Funkce", sk = "Funkcie", da = "Funktioner", ru = "Функции"))
         TokenCard(borderColor = Tokens.WhiteBorder) {
             ToggleRow(
-                tr("Czujnik prędkości", "Speed Sensor", de = "Geschwindigkeitssensor", fr = "Capteur de vitesse", es = "Sensor de velocidad", pt = "Sensor de velocidade", it = "Sensore di velocità", nl = "Snelheidssensor", sv = "Hastighetssensor", cs = "Snímač rychlosti", sk = "Snímač rýchlosti"), cfg.useSpeedSensor, onUseSpeedSensor, accent = Tokens.Blue,
+                tr("Czujnik prędkości", "Speed Sensor", de = "Geschwindigkeitssensor", fr = "Capteur de vitesse", es = "Sensor de velocidad", pt = "Sensor de velocidade", it = "Sensore di velocità", nl = "Snelheidssensor", sv = "Hastighetssensor", cs = "Snímač rychlosti", sk = "Snímač rýchlosti", da = "Hastighedssensor", ru = "Датчик скорости"), cfg.useSpeedSensor, onUseSpeedSensor, accent = Tokens.Blue,
                 description = tr(
                     "Jeśli czujnik prędkości ulegnie awarii, silnik nadal będzie działał.",
                     "If your speed sensor malfunctions your motor will still work.",
@@ -480,14 +514,14 @@ fun BbsFwSystemScreen(
                     nl = "Als je snelheidssensor defect raakt, blijft de motor werken.",
                     sv = "Om din hastighetssensor slutar fungera kommer motorn ändå att fungera.",
                     cs = "Pokud tvůj snímač rychlosti selže, motor bude přesto fungovat.",
-                    sk = "Ak tvoj snímač rýchlosti zlyhá, motor bude napriek tomu fungovať.",
+                    sk = "Ak tvoj snímač rýchlosti zlyhá, motor bude napriek tomu fungovať.", da = "Hvis din hastighedssensor svigter, vil din motor stadig fungere.", ru = "Если датчик скорости выйдет из строя, мотор всё равно будет работать.",
                 ),
             )
             HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
-            ToggleRow(tr("Czujnik zmiany biegów", "Shift Sensor", de = "Schaltsensor", fr = "Capteur de dérailleur", es = "Sensor de cambio", pt = "Sensor de mudança", it = "Sensore cambio", nl = "Schakelsensor", sv = "Växelsensor", cs = "Snímač řazení", sk = "Snímač radenia"), cfg.useShiftSensor, onUseShiftSensor, accent = Tokens.Blue)
+            ToggleRow(tr("Czujnik zmiany biegów", "Shift Sensor", de = "Schaltsensor", fr = "Capteur de dérailleur", es = "Sensor de cambio", pt = "Sensor de mudança", it = "Sensore cambio", nl = "Schakelsensor", sv = "Växelsensor", cs = "Snímač řazení", sk = "Snímač radenia", da = "Gearskiftesensor", ru = "Датчик переключения передач"), cfg.useShiftSensor, onUseShiftSensor, accent = Tokens.Blue)
             HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
             ToggleRow(
-                tr("Tryb prowadzenia", "Walk Mode", de = "Schiebemodus", fr = "Mode marche", es = "Modo caminar", pt = "Modo caminhar", it = "Modalità camminata", nl = "Loopmodus", sv = "Gångläge", cs = "Režim chůze", sk = "Režim chôdze"), cfg.usePushWalk, onUsePushWalk, accent = Tokens.Blue,
+                tr("Tryb prowadzenia", "Walk Mode", de = "Schiebemodus", fr = "Mode marche", es = "Modo caminar", pt = "Modo caminhar", it = "Modalità camminata", nl = "Loopmodus", sv = "Gångläge", cs = "Režim chůze", sk = "Režim chôdze", da = "Gåtilstand", ru = "Режим ходьбы"), cfg.usePushWalk, onUsePushWalk, accent = Tokens.Blue,
                 description = tr(
                     "Gdy wyłączony w konfiguracji, ale aktywowany komendą z wyświetlacza - kontynuuje z poprzednio wybranym poziomem wspomagania.",
                     "When walk mode is disabled in configuration but activated by command from the display the previously selected assist level will continue to be used.",
@@ -510,15 +544,19 @@ fun BbsFwSystemScreen(
                         "displeje, i nadále se používá dříve zvolená úroveň asistence.",
                     sk = "Keď je režim chôdze v konfigurácii vypnutý, ale je aktivovaný príkazom z " +
                         "displeja, naďalej sa používa predtým zvolená úroveň asistencie.",
+                    da = "Når gåtilstand er deaktiveret i konfigurationen, men aktiveres via en kommando fra " +
+                        "displayet, fortsætter det tidligere valgte assistanceniveau med at blive brugt.",
+                    ru = "Если режим ходьбы отключён в конфигурации, но активирован командой с дисплея, " +
+                        "продолжает использоваться ранее выбранный уровень помощи.",
                 ),
             )
         }
         ExpandableParamTile(
-            label = tr("Czujnik temperatury", "Temperature Sensor", de = "Temperatursensor", fr = "Capteur de température", es = "Sensor de temperatura", pt = "Sensor de temperatura", it = "Sensore di temperatura", nl = "Temperatuursensor", sv = "Temperatursensor", cs = "Snímač teploty", sk = "Snímač teploty"),
+            label = tr("Czujnik temperatury", "Temperature Sensor", de = "Temperatursensor", fr = "Capteur de température", es = "Sensor de temperatura", pt = "Sensor de temperatura", it = "Sensore di temperatura", nl = "Temperatuursensor", sv = "Temperatursensor", cs = "Snímač teploty", sk = "Snímač teploty", da = "Temperatursensor", ru = "Датчик температуры"),
             valueLabel = listOf(
-                tr("Wyłączony", "Disabled", de = "Deaktiviert", fr = "Désactivé", es = "Desactivado", pt = "Desativado", it = "Disattivato", nl = "Uitgeschakeld", sv = "Avstängd", cs = "Vypnuto", sk = "Vypnuté"),
-                tr("Sterownika", "Controller", de = "Steuergerät", fr = "Contrôleur", es = "Controlador", pt = "Controlador", it = "Controller", nl = "Controller", sv = "Styrenhet", cs = "Řadič", sk = "Radič"),
-                tr("Silnika", "Motor", de = "Motor", fr = "Moteur", es = "Motor", pt = "Motor", it = "Motore", nl = "Motor", sv = "Motor", cs = "Motor", sk = "Motor"),
+                tr("Wyłączony", "Disabled", de = "Deaktiviert", fr = "Désactivé", es = "Desactivado", pt = "Desativado", it = "Disattivato", nl = "Uitgeschakeld", sv = "Avstängd", cs = "Vypnuto", sk = "Vypnuté", da = "Deaktiveret", ru = "Отключено"),
+                tr("Sterownika", "Controller", de = "Steuergerät", fr = "Contrôleur", es = "Controlador", pt = "Controlador", it = "Controller", nl = "Controller", sv = "Styrenhet", cs = "Řadič", sk = "Radič", da = "Controller", ru = "Контроллер"),
+                tr("Silnika", "Motor", de = "Motor", fr = "Moteur", es = "Motor", pt = "Motor", it = "Motore", nl = "Motor", sv = "Motor", cs = "Motor", sk = "Motor", da = "Motor", ru = "Мотор"),
                 "All",
             ).getOrElse(cfg.temperatureSensorMode) { "?" },
             description = tr(
@@ -552,6 +590,12 @@ fun BbsFwSystemScreen(
                 sk = "Vyberá, ktoré teplotné senzory sa používajú na tepelné obmedzenie. " +
                     "BBSHD má dva teplotné senzory, BBS02 iba jeden. Bežne ponechaj na «All» " +
                     "- užitočné iba ak je jeden senzor poškodený.",
+                da = "Vælger hvilke temperatursensorer der bruges til termisk begrænsning. " +
+                    "BBSHD har to temperatursensorer, BBS02 har kun én. Lad normalt stå på «All» " +
+                    "- kun nyttigt hvis en sensor er defekt.",
+                ru = "Выбирает, какие датчики температуры используются для теплового ограничения. " +
+                    "BBSHD имеет два датчика температуры, BBS02 - только один. Обычно оставляйте «All» " +
+                    "- полезно только если один из датчиков неисправен.",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -561,12 +605,12 @@ fun BbsFwSystemScreen(
             }
         }
         ExpandableParamTile(
-            label = tr("Tryb świateł", "Lights Mode", de = "Lichtmodus", fr = "Mode des feux", es = "Modo de luces", pt = "Modo de luzes", it = "Modalità luci", nl = "Lichtmodus", sv = "Ljusläge", cs = "Režim světel", sk = "Režim svetiel"),
+            label = tr("Tryb świateł", "Lights Mode", de = "Lichtmodus", fr = "Mode des feux", es = "Modo de luces", pt = "Modo de luzes", it = "Modalità luci", nl = "Lichtmodus", sv = "Ljusläge", cs = "Režim světel", sk = "Režim svetiel", da = "Lystilstand", ru = "Режим освещения"),
             valueLabel = listOf(
-                tr("Domyślny (z wyświetlacza)", "Default (display-controlled)", de = "Standard (vom Display gesteuert)", fr = "Par défaut (contrôlé par l'écran)", es = "Predeterminado (controlado por pantalla)", pt = "Predefinido (controlado pelo visor)", it = "Predefinito (controllato dal display)", nl = "Standaard (displaygestuurd)", sv = "Standard (styrs av display)", cs = "Výchozí (řízeno displejem)", sk = "Predvolené (riadené displejom)"),
-                tr("Wyłączone", "Disabled", de = "Deaktiviert", fr = "Désactivé", es = "Desactivado", pt = "Desativado", it = "Disattivato", nl = "Uitgeschakeld", sv = "Avstängd", cs = "Vypnuto", sk = "Vypnuté"),
-                tr("Zawsze włączone", "Always On", de = "Immer an", fr = "Toujours allumé", es = "Siempre encendido", pt = "Sempre ligado", it = "Sempre acceso", nl = "Altijd aan", sv = "Alltid på", cs = "Vždy zapnuto", sk = "Vždy zapnuté"),
-                tr("Światło stopu", "Brake Light", de = "Bremslicht", fr = "Feu stop", es = "Luz de freno", pt = "Luz de travagem", it = "Luce di stop", nl = "Remlicht", sv = "Bromsljus", cs = "Brzdové světlo", sk = "Brzdové svetlo"),
+                tr("Domyślny (z wyświetlacza)", "Default (display-controlled)", de = "Standard (vom Display gesteuert)", fr = "Par défaut (contrôlé par l'écran)", es = "Predeterminado (controlado por pantalla)", pt = "Predefinido (controlado pelo visor)", it = "Predefinito (controllato dal display)", nl = "Standaard (displaygestuurd)", sv = "Standard (styrs av display)", cs = "Výchozí (řízeno displejem)", sk = "Predvolené (riadené displejom)", da = "Standard (styret af display)", ru = "По умолчанию (управляется дисплеем)"),
+                tr("Wyłączone", "Disabled", de = "Deaktiviert", fr = "Désactivé", es = "Desactivado", pt = "Desativado", it = "Disattivato", nl = "Uitgeschakeld", sv = "Avstängd", cs = "Vypnuto", sk = "Vypnuté", da = "Deaktiveret", ru = "Отключено"),
+                tr("Zawsze włączone", "Always On", de = "Immer an", fr = "Toujours allumé", es = "Siempre encendido", pt = "Sempre ligado", it = "Sempre acceso", nl = "Altijd aan", sv = "Alltid på", cs = "Vždy zapnuto", sk = "Vždy zapnuté", da = "Altid tændt", ru = "Всегда включено"),
+                tr("Światło stopu", "Brake Light", de = "Bremslicht", fr = "Feu stop", es = "Luz de freno", pt = "Luz de travagem", it = "Luce di stop", nl = "Remlicht", sv = "Bromsljus", cs = "Brzdové světlo", sk = "Brzdové svetlo", da = "Bremselys", ru = "Стоп-сигнал"),
             ).getOrElse(cfg.lightsMode) { "?" },
             description = tr(
                 "Sterowanie wyjściem świateł zewnętrznych.",
@@ -579,7 +623,7 @@ fun BbsFwSystemScreen(
                 nl = "Opties voor het bedienen van de externe lichtuitgang.",
                 sv = "Alternativ för att styra den externa ljusutgången.",
                 cs = "Možnosti ovládání výstupu externích světel.",
-                sk = "Možnosti ovládania výstupu externých svetiel.",
+                sk = "Možnosti ovládania výstupu externých svetiel.", da = "Indstillinger til styring af det eksterne lysudgang.", ru = "Параметры управления выходом внешнего освещения.",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -589,9 +633,9 @@ fun BbsFwSystemScreen(
             }
         }
         // --- Speed Sensor ---
-        MicroLabel(tr("Czujnik prędkości", "Speed Sensor", de = "Geschwindigkeitssensor", fr = "Capteur de vitesse", es = "Sensor de velocidad", pt = "Sensor de velocidade", it = "Sensore di velocità", nl = "Snelheidssensor", sv = "Hastighetssensor", cs = "Snímač rychlosti", sk = "Snímač rýchlosti"))
+        MicroLabel(tr("Czujnik prędkości", "Speed Sensor", de = "Geschwindigkeitssensor", fr = "Capteur de vitesse", es = "Sensor de velocidad", pt = "Sensor de velocidade", it = "Sensore di velocità", nl = "Snelheidssensor", sv = "Hastighetssensor", cs = "Snímač rychlosti", sk = "Snímač rýchlosti", da = "Hastighedssensor", ru = "Датчик скорости"))
         ExpandableParamTile(
-            label = tr("Rozmiar koła (cale)", "Wheel Size (inch)", de = "Radgröße (Zoll)", fr = "Taille de roue (pouces)", es = "Tamaño de rueda (pulgadas)", pt = "Tamanho da roda (polegadas)", it = "Dimensione ruota (pollici)", nl = "Wielgrootte (inch)", sv = "Hjulstorlek (tum)", cs = "Velikost kola (palce)", sk = "Veľkosť kolesa (palce)"),
+            label = tr("Rozmiar koła (cale)", "Wheel Size (inch)", de = "Radgröße (Zoll)", fr = "Taille de roue (pouces)", es = "Tamaño de rueda (pulgadas)", pt = "Tamanho da roda (polegadas)", it = "Dimensione ruota (pollici)", nl = "Wielgrootte (inch)", sv = "Hjulstorlek (tum)", cs = "Velikost kola (palce)", sk = "Veľkosť kolesa (palce)", da = "Hjulstørrelse (tommer)", ru = "Размер колеса (дюймы)"),
             valueLabel = "${cfg.wheelSizeInchX10 / 10.0}\"",
             description = tr(
                 "Rozmiar koła (w calach) używany do przeliczeń prędkości.",
@@ -604,13 +648,13 @@ fun BbsFwSystemScreen(
                 nl = "Wielgrootte (in inch) te gebruiken voor snelheidsberekeningen.",
                 sv = "Hjulstorlek (i tum) att använda för hastighetsberäkningar.",
                 cs = "Velikost kola (v palcích) použitá pro výpočty rychlosti.",
-                sk = "Veľkosť kolesa (v palcoch) použitá na výpočty rýchlosti.",
+                sk = "Veľkosť kolesa (v palcoch) použitá na výpočty rýchlosti.", da = "Hjulstørrelse (i tommer), der bruges til hastighedsberegninger.", ru = "Размер колеса (в дюймах), используемый для расчёта скорости.",
             ),
         ) {
             FlankedSlider(value = cfg.wheelSizeInchX10, range = 100..400, accent = Tokens.Emerald, onValueChange = onWheelSizeX10)
         }
         ExpandableParamTile(
-            label = tr("Sygnały (na obrót)", "Signals (per rotation)", de = "Signale (pro Umdrehung)", fr = "Signaux (par tour)", es = "Señales (por vuelta)", pt = "Sinais (por rotação)", it = "Segnali (per rotazione)", nl = "Signalen (per omwenteling)", sv = "Signaler (per varv)", cs = "Signály (na otáčku)", sk = "Signály (na otáčku)"),
+            label = tr("Sygnały (na obrót)", "Signals (per rotation)", de = "Signale (pro Umdrehung)", fr = "Signaux (par tour)", es = "Señales (por vuelta)", pt = "Sinais (por rotação)", it = "Segnali (per rotazione)", nl = "Signalen (per omwenteling)", sv = "Signaler (per varv)", cs = "Signály (na otáčku)", sk = "Signály (na otáčku)", da = "Signaler (pr. omdrejning)", ru = "Сигналы (на оборот)"),
             valueLabel = cfg.speedSensorSignals.toString(),
             description = tr(
                 "Liczba sygnałów czujnika prędkości na jeden obrót koła.",
@@ -623,7 +667,7 @@ fun BbsFwSystemScreen(
                 nl = "Aantal snelheidssensor-signalen per wielomwenteling.",
                 sv = "Antal hastighetssensorsignaler per hjulvarv.",
                 cs = "Počet signálů snímače rychlosti na jednu otáčku kola.",
-                sk = "Počet signálov snímača rýchlosti na jednu otáčku kolesa.",
+                sk = "Počet signálov snímača rýchlosti na jednu otáčku kolesa.", da = "Antal hastighedssensorsignaler pr. hjulomdrejning.", ru = "Количество сигналов датчика скорости на один оборот колеса.",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -634,9 +678,9 @@ fun BbsFwSystemScreen(
         }
 
         // --- Shift Sensor ---
-        MicroLabel(tr("Czujnik zmiany biegów", "Shift Sensor", de = "Schaltsensor", fr = "Capteur de dérailleur", es = "Sensor de cambio", pt = "Sensor de mudança", it = "Sensore cambio", nl = "Schakelsensor", sv = "Växelsensor", cs = "Snímač řazení", sk = "Snímač radenia"))
+        MicroLabel(tr("Czujnik zmiany biegów", "Shift Sensor", de = "Schaltsensor", fr = "Capteur de dérailleur", es = "Sensor de cambio", pt = "Sensor de mudança", it = "Sensore cambio", nl = "Schakelsensor", sv = "Växelsensor", cs = "Snímač řazení", sk = "Snímač radenia", da = "Gearskiftesensor", ru = "Датчик переключения передач"))
         ExpandableParamTile(
-            label = tr("Czas przerwania przy zmianie biegu (ms)", "Shift Interrupt Duration (ms)", de = "Dauer der Schaltunterbrechung (ms)", fr = "Durée de coupure au changement (ms)", es = "Duración de interrupción al cambiar (ms)", pt = "Duração da interrupção na mudança (ms)", it = "Durata interruzione cambio (ms)", nl = "Duur schakelonderbreking (ms)", sv = "Varaktighet växlingsavbrott (ms)", cs = "Doba přerušení při řazení (ms)", sk = "Doba prerušenia pri radení (ms)"),
+            label = tr("Czas przerwania przy zmianie biegu (ms)", "Shift Interrupt Duration (ms)", de = "Dauer der Schaltunterbrechung (ms)", fr = "Durée de coupure au changement (ms)", es = "Duración de interrupción al cambiar (ms)", pt = "Duração da interrupção na mudança (ms)", it = "Durata interruzione cambio (ms)", nl = "Duur schakelonderbreking (ms)", sv = "Varaktighet växlingsavbrott (ms)", cs = "Doba přerušení při řazení (ms)", sk = "Doba prerušenia pri radení (ms)", da = "Varighed af skifteafbrydelse (ms)", ru = "Длительность прерывания при переключении (мс)"),
             valueLabel = "${cfg.shiftInterruptDurationMs} ms",
             description = tr(
                 "Czas trwania przerwania mocy po wykryciu zmiany biegu.",
@@ -649,7 +693,7 @@ fun BbsFwSystemScreen(
                 nl = "Duur in milliseconden van de vermogensonderbreking die moet plaatsvinden.",
                 sv = "Varaktighet i millisekunder för effektavbrottet som ska ske.",
                 cs = "Doba trvání přerušení výkonu v milisekundách, ke kterému má dojít.",
-                sk = "Doba trvania prerušenia výkonu v milisekundách, ku ktorému má dôjsť.",
+                sk = "Doba trvania prerušenia výkonu v milisekundách, ku ktorému má dôjsť.", da = "Varighed i millisekunder af den effektafbrydelse, der skal ske.", ru = "Длительность в миллисекундах прерывания мощности, которое должно произойти.",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -659,7 +703,7 @@ fun BbsFwSystemScreen(
             }
         }
         ExpandableParamTile(
-            label = tr("Próg prądu przy zmianie biegu (%)", "Shift Current Threshold (%)", de = "Stromschwelle beim Schalten (%)", fr = "Seuil de courant au changement (%)", es = "Umbral de corriente al cambiar (%)", pt = "Limiar de corrente na mudança (%)", it = "Soglia di corrente al cambio (%)", nl = "Stroomdrempel bij schakelen (%)", sv = "Strömtröskel vid växling (%)", cs = "Práh proudu při řazení (%)", sk = "Prah prúdu pri radení (%)"),
+            label = tr("Próg prądu przy zmianie biegu (%)", "Shift Current Threshold (%)", de = "Stromschwelle beim Schalten (%)", fr = "Seuil de courant au changement (%)", es = "Umbral de corriente al cambiar (%)", pt = "Limiar de corrente na mudança (%)", it = "Soglia di corrente al cambio (%)", nl = "Stroomdrempel bij schakelen (%)", sv = "Strömtröskel vid växling (%)", cs = "Práh proudu při řazení (%)", sk = "Prah prúdu pri radení (%)", da = "Strømtærskel ved gearskift (%)", ru = "Порог тока при переключении (%)"),
             valueLabel = "${cfg.shiftInterruptCurrentThresholdPercent}%",
             description = tr(
                 "Maksymalny prąd silnika podczas zmiany biegu, w % Max Current (A) z sekcji Global.",
@@ -682,20 +726,24 @@ fun BbsFwSystemScreen(
                     "ze sekce Global.",
                 sk = "Maximálny prúd motora počas radenia, vyjadrený ako percento Max Current (A) " +
                     "zo sekcie Global.",
+                da = "Maksimal motorstrøm under gearskift, udtrykt som en procentdel af Max Current (A) " +
+                    "fra afsnittet Global.",
+                ru = "Максимальный ток мотора во время переключения передач, выраженный в процентах от " +
+                    "Max Current (A) из раздела Global.",
             ),
         ) {
             FlankedSlider(value = cfg.shiftInterruptCurrentThresholdPercent, range = 0..100, accent = Tokens.Amber, onValueChange = onShiftInterruptCurrentThreshold)
         }
 
         // --- Miscellaneous ---
-        MicroLabel(tr("Różne", "Miscellaneous", de = "Sonstiges", fr = "Divers", es = "Varios", pt = "Diversos", it = "Varie", nl = "Diversen", sv = "Övrigt", cs = "Různé", sk = "Rôzne"))
+        MicroLabel(tr("Różne", "Miscellaneous", de = "Sonstiges", fr = "Divers", es = "Varios", pt = "Diversos", it = "Varie", nl = "Diversen", sv = "Övrigt", cs = "Různé", sk = "Rôzne", da = "Diverse", ru = "Разное"))
         ExpandableParamTile(
-            label = tr("Dane na wyświetlaczu w trybie prowadzenia", "Walk Mode Data Display", de = "Datenanzeige im Schiebemodus", fr = "Affichage des données en mode marche", es = "Visualización de datos en modo caminar", pt = "Exibição de dados no modo caminhar", it = "Visualizzazione dati in modalità camminata", nl = "Gegevensweergave in loopmodus", sv = "Datavisning i gångläge", cs = "Zobrazení dat v režimu chůze", sk = "Zobrazenie dát v režime chôdze"),
+            label = tr("Dane na wyświetlaczu w trybie prowadzenia", "Walk Mode Data Display", de = "Datenanzeige im Schiebemodus", fr = "Affichage des données en mode marche", es = "Visualización de datos en modo caminar", pt = "Exibição de dados no modo caminhar", it = "Visualizzazione dati in modalità camminata", nl = "Gegevensweergave in loopmodus", sv = "Datavisning i gångläge", cs = "Zobrazení dat v režimu chůze", sk = "Zobrazenie dát v režime chôdze", da = "Datavisning i gåtilstand", ru = "Отображение данных в режиме ходьбы"),
             valueLabel = listOf(
                 "Speed",
-                tr("Temperatura (°C)", "Temperature (C)", de = "Temperatur (°C)", fr = "Température (°C)", es = "Temperatura (°C)", pt = "Temperatura (°C)", it = "Temperatura (°C)", nl = "Temperatuur (°C)", sv = "Temperatur (°C)", cs = "Teplota (°C)", sk = "Teplota (°C)"),
-                tr("Żądana moc (%)", "Requested Power (%)", de = "Angeforderte Leistung (%)", fr = "Puissance demandée (%)", es = "Potencia solicitada (%)", pt = "Potência solicitada (%)", it = "Potenza richiesta (%)", nl = "Gevraagd vermogen (%)", sv = "Begärd effekt (%)", cs = "Požadovaný výkon (%)", sk = "Požadovaný výkon (%)"),
-                tr("Poziom baterii (%)", "Battery Level (%)", de = "Batteriestand (%)", fr = "Niveau de batterie (%)", es = "Nivel de batería (%)", pt = "Nível de bateria (%)", it = "Livello batteria (%)", nl = "Batterijniveau (%)", sv = "Batterinivå (%)", cs = "Úroveň baterie (%)", sk = "Úroveň batérie (%)"),
+                tr("Temperatura (°C)", "Temperature (C)", de = "Temperatur (°C)", fr = "Température (°C)", es = "Temperatura (°C)", pt = "Temperatura (°C)", it = "Temperatura (°C)", nl = "Temperatuur (°C)", sv = "Temperatur (°C)", cs = "Teplota (°C)", sk = "Teplota (°C)", da = "Temperatur (°C)", ru = "Температура (°C)"),
+                tr("Żądana moc (%)", "Requested Power (%)", de = "Angeforderte Leistung (%)", fr = "Puissance demandée (%)", es = "Potencia solicitada (%)", pt = "Potência solicitada (%)", it = "Potenza richiesta (%)", nl = "Gevraagd vermogen (%)", sv = "Begärd effekt (%)", cs = "Požadovaný výkon (%)", sk = "Požadovaný výkon (%)", da = "Ønsket effekt (%)", ru = "Запрошенная мощность (%)"),
+                tr("Poziom baterii (%)", "Battery Level (%)", de = "Batteriestand (%)", fr = "Niveau de batterie (%)", es = "Nivel de batería (%)", pt = "Nível de bateria (%)", it = "Livello batteria (%)", nl = "Batterijniveau (%)", sv = "Batterinivå (%)", cs = "Úroveň baterie (%)", sk = "Úroveň batérie (%)", da = "Batteriniveau (%)", ru = "Уровень заряда батареи (%)"),
             ).getOrElse(cfg.walkModeDataDisplay) { "?" },
             description = tr(
                 "Nadpisuje pole prędkości na wyświetlaczu inną daną, gdy aktywny jest tryb prowadzenia roweru.",
@@ -718,6 +766,10 @@ fun BbsFwSystemScreen(
                     "Úroveň baterie nebo Rychlost, dokud je aktivní režim chůze.",
                 sk = "Nahrádza pole rýchlosti na displeji hodnotou Teplota, Požadovaný výkon, " +
                     "Úroveň batérie alebo Rýchlosť, kým je aktívny režim chôdze.",
+                da = "Erstatter hastighedsfeltet på displayet med Temperatur, Ønsket Effekt, " +
+                    "Batteriniveau eller Hastighed, mens gåtilstand er aktiv.",
+                ru = "Заменяет поле скорости на дисплее значением Температура, Запрошенная мощность, " +
+                    "Уровень заряда батареи или Скорость, пока активен режим ходьбы.",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -728,7 +780,7 @@ fun BbsFwSystemScreen(
         }
         TokenCard(borderColor = Tokens.WhiteBorder) {
             ToggleRow(
-                tr("Jednostki imperialne (mph)", "Freedom units (mph)", de = "Imperiale Einheiten (mph)", fr = "Unités impériales (mph)", es = "Unidades imperiales (mph)", pt = "Unidades imperiais (mph)", it = "Unità imperiali (mph)", nl = "Imperiale eenheden (mph)", sv = "Imperialistiska enheter (mph)", cs = "Imperiální jednotky (mph)", sk = "Imperiálne jednotky (mph)"),
+                tr("Jednostki imperialne (mph)", "Freedom units (mph)", de = "Imperiale Einheiten (mph)", fr = "Unités impériales (mph)", es = "Unidades imperiales (mph)", pt = "Unidades imperiais (mph)", it = "Unità imperiali (mph)", nl = "Imperiale eenheden (mph)", sv = "Imperialistiska enheter (mph)", cs = "Imperiální jednotky (mph)", sk = "Imperiálne jednotky (mph)", da = "Imperiale enheder (mph)", ru = "Имперские единицы (mph)"),
                 cfg.useFreedomUnits, onUseFreedomUnits, accent = Tokens.Blue,
                 description = tr(
                     "Nie ma odpowiednika w zakładce System jego apki (tam to opcja globalna programu, Menu → Options) - " +
@@ -762,6 +814,12 @@ fun BbsFwSystemScreen(
                     sk = "Nemá ekvivalent na karte System v originálnej aplikácii (tam je to globálna " +
                         "možnosť programu, Menu → Options) - ovplyvňuje IBA hodnoty, ktoré bbs-fw " +
                         "posiela na displej, nie jednotky tejto aplikácie (pozri Nastavenia).",
+                    da = "Har ingen tilsvarende funktion i den originale apps System-fane (der er det en global " +
+                        "programindstilling, Menu → Options) - påvirker KUN de værdier, som bbs-fw sender til " +
+                        "displayet, ikke denne apps egne enheder (se Indstillinger).",
+                    ru = "Не имеет аналога на вкладке System оригинального приложения (там это глобальная " +
+                        "настройка программы, Menu → Options) - влияет ТОЛЬКО на значения, которые bbs-fw " +
+                        "отправляет на дисплей, а не на единицы измерения этого приложения (см. Настройки).",
                 ),
             )
         }

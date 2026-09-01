@@ -122,7 +122,7 @@ fun DashboardScreen(
     // Śr. zużycie / Chwil. zuż. / Zasięg - Pair(tytuł, opis), null = dialog ukryty.
     var infoDialog by remember { mutableStateOf<Pair<String, String>?>(null) }
 
-    val avgSpeedLabel = tr("Pręd. śr.", "Avg. speed", de = "Ø-Tempo", fr = "Vit. moy.", es = "Vel. med.", pt = "Vel. méd.", it = "Vel. med.", nl = "Gem. snelh.", sv = "Medelhast.", cs = "Prům. rychl.", sk = "Priem. rýchl.")
+    val avgSpeedLabel = tr("Pręd. śr.", "Avg. speed", de = "Ø-Tempo", fr = "Vit. moy.", es = "Vel. med.", pt = "Vel. méd.", it = "Vel. med.", nl = "Gem. snelh.", sv = "Medelhast.", cs = "Prům. rychl.", sk = "Priem. rýchl.", da = "Middelhast.", ru = "Ср. скор.")
     val avgSpeedInfo = tr(
         "Dystans podzielony przez czas W RUCHU od ostatniego resetu - postoje (np. na światłach) nie obniżają średniej.",
         "Distance divided by time spent moving since the last reset - stops (e.g. at traffic lights) don't lower the average.",
@@ -135,8 +135,10 @@ fun DashboardScreen(
         sv = "Sträcka delat med tiden I RÖRELSE sedan senaste återställningen - stopp (t.ex. vid trafikljus) sänker inte medelvärdet.",
         cs = "Vzdálenost dělená časem STRÁVENÝM V POHYBU od posledního resetu - zastávky (např. na semaforu) nesnižují průměr.",
         sk = "Vzdialenosť delená časom STRÁVENÝM V POHYBE od posledného resetu - zastávky (napr. na semafore) nesnižujú priemer.",
+        da = "Distance divideret med tiden brugt I BEVÆGELSE siden sidste nulstilling - stop (f.eks. ved trafiklys) sænker ikke gennemsnittet.",
+        ru = "Расстояние, делённое на время В ДВИЖЕНИИ с последнего сброса - остановки (например, на светофоре) не снижают среднее значение.",
     )
-    val avgUsageLabel = tr("Śr. zużycie", "Avg. usage", de = "Ø Verbr.", fr = "Conso. moy.", es = "Cons. media", pt = "Cons. médio", it = "Cons. medio", nl = "Gem. verbr.", sv = "Medelförbr.", cs = "Prům. spotř.", sk = "Priem. spotr.")
+    val avgUsageLabel = tr("Śr. zużycie", "Avg. usage", de = "Ø Verbr.", fr = "Conso. moy.", es = "Cons. media", pt = "Cons. médio", it = "Cons. medio", nl = "Gem. verbr.", sv = "Medelförbr.", cs = "Prům. spotř.", sk = "Priem. spotr.", da = "Middelforbr.", ru = "Ср. расход")
     val avgUsageInfo = tr(
         "Cała energia zużyta od ostatniego resetu TRIP, podzielona przez przejechany dystans - czysta średnia dla całej trasy.",
         "Total energy used since the last TRIP reset, divided by the distance traveled - a plain average for the whole trip.",
@@ -149,8 +151,10 @@ fun DashboardScreen(
         sv = "All energi som förbrukats sedan senaste TRIP-återställningen, delat med tillryggalagd sträcka - ett enkelt medelvärde för hela resan.",
         cs = "Veškerá energie spotřebovaná od posledního resetu TRIP, dělená ujetou vzdáleností - jednoduchý průměr za celou jízdu.",
         sk = "Všetka energia spotrebovaná od posledného resetu TRIP, delená prejdenou vzdialenosťou - jednoduchý priemer za celú jazdu.",
+        da = "Al energi forbrugt siden sidste TRIP-nulstilling, divideret med den tilbagelagte distance - et enkelt gennemsnit for hele turen.",
+        ru = "Вся энергия, потреблённая с последнего сброса TRIP, делённая на пройденное расстояние - простое среднее значение для всей поездки.",
     )
-    val actUsageLabel = tr("Chwil. zuż.", "Act. usage", de = "Akt. Verbr.", fr = "Cons. act.", es = "Cons. act.", pt = "Cons. atual", it = "Cons. att.", nl = "Act. verbr.", sv = "Akt. förbr.", cs = "Akt. spotř.", sk = "Akt. spotr.")
+    val actUsageLabel = tr("Chwil. zuż.", "Act. usage", de = "Akt. Verbr.", fr = "Cons. act.", es = "Cons. act.", pt = "Cons. atual", it = "Cons. att.", nl = "Act. verbr.", sv = "Akt. förbr.", cs = "Akt. spotř.", sk = "Akt. spotr.", da = "Akt. forbr.", ru = "Тек. расход")
     val actUsageInfo = tr(
         "Krótkoterminowa średnia krocząca (ostatnie ok. 300 m) - szybko reaguje na Twój aktualny styl jazdy, w odróżnieniu od średniej z całej trasy.",
         "Short-term rolling average (roughly the last 300 m) - reacts quickly to your current riding style, unlike the whole-trip average.",
@@ -163,8 +167,10 @@ fun DashboardScreen(
         sv = "Kortsiktigt glidande medelvärde (ungefär de senaste 300 m) - reagerar snabbt på din nuvarande körstil, till skillnad från medelvärdet för hela resan.",
         cs = "Krátkodobý klouzavý průměr (přibližně posledních 300 m) - rychle reaguje na tvůj aktuální styl jízdy, na rozdíl od průměru za celou jízdu.",
         sk = "Krátkodobý kĺzavý priemer (približne posledných 300 m) - rýchlo reaguje na tvoj aktuálny štýl jazdy, na rozdiel od priemeru za celú jazdu.",
+        da = "Kortsigtet glidende gennemsnit (ca. de sidste 300 m) - reagerer hurtigt på din nuværende kørestil, i modsætning til gennemsnittet for hele turen.",
+        ru = "Краткосрочное скользящее среднее (примерно последние 300 м) - быстро реагирует на твой текущий стиль езды, в отличие от среднего значения за всю поездку.",
     )
-    val rangeLabel = tr("Zasięg ~", "Range ~", de = "Reichw. ~", fr = "Autonomie ~", es = "Autonomía ~", pt = "Autonomia ~", it = "Autonomia ~", nl = "Bereik ~", sv = "Räckvidd ~", cs = "Dojezd ~", sk = "Dojazd ~")
+    val rangeLabel = tr("Zasięg ~", "Range ~", de = "Reichw. ~", fr = "Autonomie ~", es = "Autonomía ~", pt = "Autonomia ~", it = "Autonomia ~", nl = "Bereik ~", sv = "Räckvidd ~", cs = "Dojezd ~", sk = "Dojazd ~", da = "Rækkevidde ~", ru = "Запас хода ~")
     val rangeInfo = tr(
         "Pozostała energia baterii (bateria % × pojemność) podzielona przez zużycie Wh/km. To zużycie to mieszanka Twojej długoterminowej historii jazdy i stylu z ostatnich kilku km - na starcie trasy liczy się głównie historia, po ok. 4 km coraz bardziej bieżący styl jazdy.",
         "Remaining battery energy (battery % × capacity) divided by Wh/km usage. That usage blends your long-term riding history with your style from the last few km - mostly history at the start of a trip, shifting toward your current style after about 4 km.",
@@ -177,6 +183,8 @@ fun DashboardScreen(
         sv = "Återstående batterienergi (batteri % × kapacitet) delat med Wh/km-förbrukningen. Den förbrukningen blandar din långsiktiga körhistorik med din stil de senaste km - mest historik i början av resan, alltmer din nuvarande stil efter ca 4 km.",
         cs = "Zbývající energie baterie (% baterie × kapacita) dělená spotřebou Wh/km. Tato spotřeba kombinuje tvou dlouhodobou historii jízdy s tvým stylem z posledních pár km - hlavně historie na začátku jízdy, po cca 4 km stále více tvůj aktuální styl.",
         sk = "Zostávajúca energia batérie (% batérie × kapacita) delená spotrebou Wh/km. Táto spotreba kombinuje tvoju dlhodobú históriu jazdy s tvojím štýlom z posledných pár km - hlavne história na začiatku jazdy, po cca 4 km čoraz viac tvoj aktuálny štýl.",
+        da = "Resterende batterienergi (batteri % × kapacitet) divideret med Wh/km-forbruget. Det forbrug blander din langsigtede kørehistorik med din stil fra de sidste par km - mest historik i starten af en tur, skiftende mod din nuværende stil efter ca. 4 km.",
+        ru = "Оставшаяся энергия батареи (% батареи × ёмкость), делённая на расход Wh/km. Этот расход сочетает твою долгосрочную историю езды со стилем последних нескольких км - в основном история в начале поездки, всё больше текущий стиль после примерно 4 км.",
     )
 
     Column(
@@ -289,7 +297,7 @@ fun DashboardScreen(
         // w StatCard maja maxLines=1, wiec brakujace miejsce psowaloby uklad (2. linia rozciagala kafelke).
         val statRowModifier = Modifier.fillMaxWidth().horizontalBleed(6.dp)
         Row(horizontalArrangement = Arrangement.spacedBy(3.dp), modifier = statRowModifier) {
-            StatCard(tr("Dystans", "Distance", de = "Distanz", fr = "Distance", es = "Distancia", pt = "Distância", it = "Distanza", nl = "Afstand", sv = "Distans", cs = "Vzdálenost", sk = "Vzdialenosť"), if (t) "10000.0" else String.format("%.1f", unit.fromKmh(state.totalOdoKm)), unit.distanceLabel, Modifier.weight(1f), largeDigits = state.largeCockpitDigits)
+            StatCard(tr("Dystans", "Distance", de = "Distanz", fr = "Distance", es = "Distancia", pt = "Distância", it = "Distanza", nl = "Afstand", sv = "Distans", cs = "Vzdálenost", sk = "Vzdialenosť", da = "Distance", ru = "Дистанция"), if (t) "10000.0" else String.format("%.1f", unit.fromKmh(state.totalOdoKm)), unit.distanceLabel, Modifier.weight(1f), largeDigits = state.largeCockpitDigits)
             StatCard(
                 "Trip", if (t) "1000.0" else String.format("%.1f", unit.fromKmh(state.tripKm)), unit.distanceLabel, Modifier.weight(1f),
                 largeDigits = state.largeCockpitDigits,
@@ -298,9 +306,9 @@ fun DashboardScreen(
         }
         Spacer(Modifier.height(6.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(3.dp), modifier = statRowModifier) {
-            StatCard(tr("Prąd", "Current", de = "Strom", fr = "Courant", es = "Corriente", pt = "Corrente", it = "Corrente", nl = "Stroom", sv = "Ström", cs = "Proud", sk = "Prúd"), if (t) "80.0" else String.format("%.1f", telemetry.currentA), "A", Modifier.weight(1f), largeDigits = state.largeCockpitDigits)
+            StatCard(tr("Prąd", "Current", de = "Strom", fr = "Courant", es = "Corriente", pt = "Corrente", it = "Corrente", nl = "Stroom", sv = "Ström", cs = "Proud", sk = "Prúd", da = "Strøm", ru = "Ток"), if (t) "80.0" else String.format("%.1f", telemetry.currentA), "A", Modifier.weight(1f), largeDigits = state.largeCockpitDigits)
             StatCard(
-                tr("Napięcie", "Voltage", de = "Spannung", fr = "Tension", es = "Voltaje", pt = "Tensão", it = "Tensione", nl = "Spanning", sv = "Spänning", cs = "Napětí", sk = "Napätie"),
+                tr("Napięcie", "Voltage", de = "Spannung", fr = "Tension", es = "Voltaje", pt = "Tensão", it = "Tensione", nl = "Spanning", sv = "Spänning", cs = "Napětí", sk = "Napätie", da = "Spænding", ru = "Напряжение"),
                 // Bez polaczenia pokazujemy ostatnio znane napiecie (UiState.lastKnownVoltageV)
                 // zamiast zerowac kafelke do 0,0.
                 if (t) "80.0" else String.format("%.1f", if (connected) telemetry.voltageV else state.lastKnownVoltageV),
@@ -337,7 +345,7 @@ fun DashboardScreen(
             AlertDialog(
                 containerColor = Tokens.Card,
                 onDismissRequest = { showResetTripConfirm = false },
-                title = { Text(tr("Zresetować TRIP?", "Reset TRIP?", de = "TRIP zurücksetzen?", fr = "Réinitialiser le TRIP ?", es = "¿Reiniciar el TRIP?", pt = "Reiniciar o TRIP?", it = "Reimpostare il TRIP?", nl = "TRIP resetten?", sv = "Återställa TRIP?", cs = "Resetovat TRIP?", sk = "Resetovať TRIP?"), fontFamily = Sora, fontWeight = FontWeight.Bold, color = Tokens.TextPrimary) },
+                title = { Text(tr("Zresetować TRIP?", "Reset TRIP?", de = "TRIP zurücksetzen?", fr = "Réinitialiser le TRIP ?", es = "¿Reiniciar el TRIP?", pt = "Reiniciar o TRIP?", it = "Reimpostare il TRIP?", nl = "TRIP resetten?", sv = "Återställa TRIP?", cs = "Resetovat TRIP?", sk = "Resetovať TRIP?", da = "Nulstille TRIP?", ru = "Сбросить TRIP?"), fontFamily = Sora, fontWeight = FontWeight.Bold, color = Tokens.TextPrimary) },
                 text = {
                     Text(
                         tr(
@@ -351,18 +359,20 @@ fun DashboardScreen(
                             sv = "Är du säker på att du vill återställa TRIP?",
                             cs = "Opravdu chceš resetovat TRIP?",
                             sk = "Naozaj chceš resetovať TRIP?",
+                            da = "Er du sikker på, at du vil nulstille TRIP?",
+                            ru = "Ты уверен, что хочешь сбросить TRIP?",
                         ),
                         fontFamily = Manrope, fontSize = 13.sp, color = Tokens.TextSecondary,
                     )
                 },
                 confirmButton = {
                     TextButton(onClick = { onResetTrip(); showResetTripConfirm = false }) {
-                        Text(tr("Tak", "Yes", de = "Ja", fr = "Oui", es = "Sí", pt = "Sim", it = "Sì", nl = "Ja", sv = "Ja", cs = "Ano", sk = "Áno"), color = Tokens.Blue, fontFamily = Manrope, fontWeight = FontWeight.Bold)
+                        Text(tr("Tak", "Yes", de = "Ja", fr = "Oui", es = "Sí", pt = "Sim", it = "Sì", nl = "Ja", sv = "Ja", cs = "Ano", sk = "Áno", da = "Ja", ru = "Да"), color = Tokens.Blue, fontFamily = Manrope, fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { showResetTripConfirm = false }) {
-                        Text(tr("Nie", "No", de = "Nein", fr = "Non", es = "No", pt = "Não", it = "No", nl = "Nee", sv = "Nej", cs = "Ne", sk = "Nie"), color = Tokens.TextTertiary, fontFamily = Manrope)
+                        Text(tr("Nie", "No", de = "Nein", fr = "Non", es = "No", pt = "Não", it = "No", nl = "Nee", sv = "Nej", cs = "Ne", sk = "Nie", da = "Nej", ru = "Нет"), color = Tokens.TextTertiary, fontFamily = Manrope)
                     }
                 },
             )
@@ -372,7 +382,7 @@ fun DashboardScreen(
             AlertDialog(
                 containerColor = Tokens.Card,
                 onDismissRequest = { showResetAvgSpeedConfirm = false },
-                title = { Text(tr("Zresetować prędkość średnią?", "Reset average speed?", de = "Durchschnittsgeschwindigkeit zurücksetzen?", fr = "Réinitialiser la vitesse moyenne ?", es = "¿Reiniciar la velocidad media?", pt = "Reiniciar a velocidade média?", it = "Reimpostare la velocità media?", nl = "Gemiddelde snelheid resetten?", sv = "Återställa medelhastigheten?", cs = "Resetovat průměrnou rychlost?", sk = "Resetovať priemernú rýchlosť?"), fontFamily = Sora, fontWeight = FontWeight.Bold, color = Tokens.TextPrimary) },
+                title = { Text(tr("Zresetować prędkość średnią?", "Reset average speed?", de = "Durchschnittsgeschwindigkeit zurücksetzen?", fr = "Réinitialiser la vitesse moyenne ?", es = "¿Reiniciar la velocidad media?", pt = "Reiniciar a velocidade média?", it = "Reimpostare la velocità media?", nl = "Gemiddelde snelheid resetten?", sv = "Återställa medelhastigheten?", cs = "Resetovat průměrnou rychlost?", sk = "Resetovať priemernú rýchlosť?", da = "Nulstille gennemsnitshastigheden?", ru = "Сбросить среднюю скорость?"), fontFamily = Sora, fontWeight = FontWeight.Bold, color = Tokens.TextPrimary) },
                 text = {
                     Text(
                         tr(
@@ -386,18 +396,20 @@ fun DashboardScreen(
                             sv = "Är du säker på att du vill återställa medelhastigheten?",
                             cs = "Opravdu chceš resetovat průměrnou rychlost?",
                             sk = "Naozaj chceš resetovať priemernú rýchlosť?",
+                            da = "Er du sikker på, at du vil nulstille gennemsnitshastigheden?",
+                            ru = "Ты уверен, что хочешь сбросить среднюю скорость?",
                         ),
                         fontFamily = Manrope, fontSize = 13.sp, color = Tokens.TextSecondary,
                     )
                 },
                 confirmButton = {
                     TextButton(onClick = { onResetAvgSpeed(); showResetAvgSpeedConfirm = false }) {
-                        Text(tr("Tak", "Yes", de = "Ja", fr = "Oui", es = "Sí", pt = "Sim", it = "Sì", nl = "Ja", sv = "Ja", cs = "Ano", sk = "Áno"), color = Tokens.Blue, fontFamily = Manrope, fontWeight = FontWeight.Bold)
+                        Text(tr("Tak", "Yes", de = "Ja", fr = "Oui", es = "Sí", pt = "Sim", it = "Sì", nl = "Ja", sv = "Ja", cs = "Ano", sk = "Áno", da = "Ja", ru = "Да"), color = Tokens.Blue, fontFamily = Manrope, fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { showResetAvgSpeedConfirm = false }) {
-                        Text(tr("Nie", "No", de = "Nein", fr = "Non", es = "No", pt = "Não", it = "No", nl = "Nee", sv = "Nej", cs = "Ne", sk = "Nie"), color = Tokens.TextTertiary, fontFamily = Manrope)
+                        Text(tr("Nie", "No", de = "Nein", fr = "Non", es = "No", pt = "Não", it = "No", nl = "Nee", sv = "Nej", cs = "Ne", sk = "Nie", da = "Nej", ru = "Нет"), color = Tokens.TextTertiary, fontFamily = Manrope)
                     }
                 },
             )
@@ -413,7 +425,7 @@ fun DashboardScreen(
                 text = { Text(text, fontFamily = Manrope, fontSize = 13.sp, lineHeight = 18.sp, color = Tokens.TextSecondary) },
                 confirmButton = {
                     TextButton(onClick = { infoDialog = null }) {
-                        Text(tr("OK", "OK", de = "OK", fr = "OK", es = "OK", pt = "OK", it = "OK", nl = "OK", sv = "OK", cs = "OK", sk = "OK"), color = Tokens.Blue, fontFamily = Manrope, fontWeight = FontWeight.Bold)
+                        Text(tr("OK", "OK", de = "OK", fr = "OK", es = "OK", pt = "OK", it = "OK", nl = "OK", sv = "OK", cs = "OK", sk = "OK", da = "OK", ru = "ОК"), color = Tokens.Blue, fontFamily = Manrope, fontWeight = FontWeight.Bold)
                     }
                 },
             )
@@ -466,7 +478,7 @@ fun DashboardScreen(
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(COMPACT_TILE_GAP)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     ToggleTile(
-                        label = tr("Światło", "Light", de = "Licht", fr = "Phare", es = "Luz", pt = "Luz", it = "Luce", nl = "Licht", sv = "Ljus", cs = "Světlo", sk = "Svetlo"),
+                        label = tr("Światło", "Light", de = "Licht", fr = "Phare", es = "Luz", pt = "Luz", it = "Luce", nl = "Licht", sv = "Ljus", cs = "Světlo", sk = "Svetlo", da = "Lys", ru = "Свет"),
                         active = state.lightOn,
                         activeColor = Tokens.Amber,
                         activeTextColor = Tokens.OnAccent,
@@ -476,7 +488,7 @@ fun DashboardScreen(
                         onClick = onLightToggle,
                     )
                     ToggleTile(
-                        label = tr("Hamulec", "Brake", de = "Bremse", fr = "Frein", es = "Freno", pt = "Freio", it = "Freno", nl = "Rem", sv = "Broms", cs = "Brzda", sk = "Brzda"),
+                        label = tr("Hamulec", "Brake", de = "Bremse", fr = "Frein", es = "Freno", pt = "Freio", it = "Freno", nl = "Rem", sv = "Broms", cs = "Brzda", sk = "Brzda", da = "Bremse", ru = "Тормоз"),
                         active = telemetry.brakeActive,
                         activeColor = Tokens.Red,
                         activeTextColor = Color.White,
@@ -489,7 +501,7 @@ fun DashboardScreen(
                 // (patrz BafangCommands.setOperationMode) - potwierdzona tylko na bbs-fw.
                 if (showSportMode) {
                     ToggleTile(
-                        label = tr("Tryb: Sport", "Mode: Sport", de = "Sport-Modus", fr = "Mode : Sport", es = "Modo: Sport", pt = "Modo: Sport", it = "Modalità: Sport", nl = "Modus: Sport", sv = "Läge: Sport", cs = "Režim: Sport", sk = "Režim: Sport"),
+                        label = tr("Tryb: Sport", "Mode: Sport", de = "Sport-Modus", fr = "Mode : Sport", es = "Modo: Sport", pt = "Modo: Sport", it = "Modalità: Sport", nl = "Modus: Sport", sv = "Läge: Sport", cs = "Režim: Sport", sk = "Režim: Sport", da = "Tilstand: Sport", ru = "Режим: Sport"),
                         active = state.sportMode,
                         activeColor = Tokens.Red,
                         activeTextColor = Color.White,
@@ -532,6 +544,10 @@ fun DashboardScreen(
                         "tlačítkem světel - tlačítko světel nemusí rozsvítit skutečné světlo a může přepsat tlačítko Sport při každém cyklu.",
                     sk = "Pozor: \"Assist Mode Select\" (karta System v bbs-fw) je nastavené na ovládanie Sport/Normal " +
                         "tlačidlom svetiel - tlačidlo svetiel nemusí rozsvietiť skutočné svetlo a môže prepísať tlačidlo Sport pri každom cykle.",
+                    da = "Advarsel: \"Assist Mode Select\" (bbs-fw System-fanen) er indstillet til at styre Sport/Normal via " +
+                        "Lys-knappen - Lys-knappen tænder muligvis ikke et rigtigt lys og kan tilsidesætte Sport-knappen ved hver cyklus.",
+                    ru = "Внимание: \"Assist Mode Select\" (вкладка System в bbs-fw) настроен на управление Sport/Normal " +
+                        "кнопкой света - кнопка света может не включать настоящий свет и может перезаписывать кнопку Sport при каждом цикле.",
                 ),
                 fontFamily = Manrope, fontSize = 10.sp, color = Tokens.Amber, textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
@@ -852,7 +868,7 @@ private fun ToggleTile(
 private fun ReconnectBadge(state: AutoReconnectState) {
     when (state) {
         AutoReconnectState.RETRYING -> {
-            Text(tr("Łączę ponownie…", "Connecting…", de = "Verbinde…", fr = "Connexion…", es = "Conectando…", pt = "Conectando…", it = "Connessione…", nl = "Verbinden…", sv = "Ansluter igen…", cs = "Připojuji znovu…", sk = "Pripájam znova…"), fontFamily = Manrope, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Tokens.Blue)
+            Text(tr("Łączę ponownie…", "Connecting…", de = "Verbinde…", fr = "Connexion…", es = "Conectando…", pt = "Conectando…", it = "Connessione…", nl = "Verbinden…", sv = "Ansluter igen…", cs = "Připojuji znovu…", sk = "Pripájam znova…", da = "Forbinder…", ru = "Подключение…"), fontFamily = Manrope, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Tokens.Blue)
         }
         AutoReconnectState.FAILED -> {
             Box(Modifier.size(16.dp).background(Tokens.Red, CircleShape), contentAlignment = Alignment.Center) {

@@ -82,7 +82,7 @@ fun DiagnosticsScreen(
         TokenCard(borderColor = Tokens.WhiteBorder) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text(tr("Tryb testowy", "Test mode", de = "Testmodus", fr = "Mode test", es = "Modo de prueba", pt = "Modo de teste", it = "Modalità test", nl = "Testmodus", sv = "Testläge", cs = "Testovací režim", sk = "Testovací režim"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary)
+                    Text(tr("Tryb testowy", "Test mode", de = "Testmodus", fr = "Mode test", es = "Modo de prueba", pt = "Modo de teste", it = "Modalità test", nl = "Testmodus", sv = "Testläge", cs = "Testovací režim", sk = "Testovací režim", da = "Testtilstand", ru = "Тестовый режим"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary)
                     Text(
                         tr(
                             "Wymusza skrajne wartości na Kokpicie - test układu ekranu",
@@ -96,6 +96,8 @@ fun DiagnosticsScreen(
                             sv = "Tvingar fram extremvärden på Cockpit - test av skärmlayout",
                             cs = "Vynucuje extrémní hodnoty v Cockpitu - test rozvržení obrazovky",
                             sk = "Vynucuje extrémne hodnoty v Cockpite - test rozloženia obrazovky",
+                            da = "Tvinger ekstreme værdier frem på Cockpit - test af skærmlayout",
+                            ru = "Принудительно задаёт крайние значения на Cockpit - тест макета экрана",
                         ),
                         fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
                     )
@@ -117,9 +119,9 @@ fun DiagnosticsScreen(
 
         CollapsibleInfoBanner(
             title = if (!connected) {
-                tr("Połącz się, żeby zeskanować rejestry", "Connect to scan registers", de = "Verbinden, um Register zu scannen", fr = "Connectez-vous pour scanner les registres", es = "Conéctate para escanear los registros", pt = "Liga-te para escanear os registos", it = "Connettiti per scansionare i registri", nl = "Verbind om registers te scannen", sv = "Anslut för att skanna register", cs = "Připoj se pro skenování registrů", sk = "Pripoj sa na skenovanie registrov")
+                tr("Połącz się, żeby zeskanować rejestry", "Connect to scan registers", de = "Verbinden, um Register zu scannen", fr = "Connectez-vous pour scanner les registres", es = "Conéctate para escanear los registros", pt = "Liga-te para escanear os registos", it = "Connettiti per scansionare i registri", nl = "Verbind om registers te scannen", sv = "Anslut för att skanna register", cs = "Připoj se pro skenování registrů", sk = "Pripoj sa na skenovanie registrov", da = "Opret forbindelse for at scanne registre", ru = "Подключитесь, чтобы сканировать регистры")
             } else {
-                tr("O pełnym skanie rejestrów", "About the full register scan", de = "Über den vollständigen Registerscan", fr = "À propos du scan complet des registres", es = "Sobre el escaneo completo de registros", pt = "Sobre a verificação completa dos registos", it = "Informazioni sulla scansione completa dei registri", nl = "Over de volledige registerscan", sv = "Om den fullständiga registerskanningen", cs = "O úplném skenování registrů", sk = "O úplnom skenovaní registrov")
+                tr("O pełnym skanie rejestrów", "About the full register scan", de = "Über den vollständigen Registerscan", fr = "À propos du scan complet des registres", es = "Sobre el escaneo completo de registros", pt = "Sobre a verificação completa dos registos", it = "Informazioni sulla scansione completa dei registri", nl = "Over de volledige registerscan", sv = "Om den fullständiga registerskanningen", cs = "O úplném skenování registrů", sk = "O úplnom skenovaní registrov", da = "Om det fulde registerscan", ru = "О полном сканировании регистров")
             },
             text = buildString {
                 if (!connected) {
@@ -136,6 +138,8 @@ fun DiagnosticsScreen(
                             sv = "Anslut på skärmen Anslutning för att skanna register. ",
                             cs = "Připoj se na obrazovce Připojení pro skenování registrů. ",
                             sk = "Pripoj sa na obrazovke Pripojenie na skenovanie registrov. ",
+                            da = "Opret forbindelse på skærmen Forbindelse for at scanne registre. ",
+                            ru = "Подключитесь на экране Подключение, чтобы сканировать регистры. ",
                         ),
                     )
                 }
@@ -194,6 +198,16 @@ fun DiagnosticsScreen(
                             "známych registrov. Každé spustenie pridá nový záznam do histórie " +
                             "nižšie, takže môžeš porovnať niekoľko skenov za sebou. Trvá približne " +
                             "30-50 sekúnd.",
+                        da = "Det fulde scan sender læseanmodninger (præfiks 0x11, aldrig 0x16 skrivning) " +
+                            "for ALLE koder 0x00-0xFF og registrerer dem, der svarede overhovedet - også " +
+                            "uden for kendte registre. Hver kørsel tilføjer en ny post til historikken " +
+                            "nedenfor, så du kan sammenligne flere scan i træk. Tager ca. " +
+                            "30-50 sekunder.",
+                        ru = "Полное сканирование отправляет запросы на чтение (префикс 0x11, никогда не " +
+                            "запись 0x16) для ВСЕХ кодов 0x00-0xFF и записывает те, которые вообще ответили " +
+                            "- даже вне известных регистров. Каждый запуск добавляет новую запись в историю " +
+                            "ниже, так что можно сравнить несколько сканирований подряд. Занимает около " +
+                            "30-50 секунд.",
                     ),
                 )
             },
@@ -208,9 +222,9 @@ fun DiagnosticsScreen(
         ) {
             Text(
                 when {
-                    !connected -> tr("Skanuj wszystkie rejestry (wymaga połączenia)", "Scan all registers (requires connection)", de = "Alle Register scannen (Verbindung erforderlich)", fr = "Scanner tous les registres (connexion requise)", es = "Escanear todos los registros (requiere conexión)", pt = "Escanear todos os registos (requer ligação)", it = "Scansiona tutti i registri (richiede connessione)", nl = "Alle registers scannen (verbinding vereist)", sv = "Skanna alla register (kräver anslutning)", cs = "Skenovat všechny registry (vyžaduje připojení)", sk = "Skenovať všetky registre (vyžaduje pripojenie)")
-                    scanning -> tr("Skanowanie… $scanProgress/256", "Scanning… $scanProgress/256", de = "Scanne… $scanProgress/256", fr = "Analyse… $scanProgress/256", es = "Escaneando… $scanProgress/256", pt = "A escanear… $scanProgress/256", it = "Scansione… $scanProgress/256", nl = "Scannen… $scanProgress/256", sv = "Skannar… $scanProgress/256", cs = "Skenuji… $scanProgress/256", sk = "Skenujem… $scanProgress/256")
-                    else -> tr("Skanuj wszystkie rejestry (0x00-0xFF)", "Scan all registers (0x00-0xFF)", de = "Alle Register scannen (0x00-0xFF)", fr = "Scanner tous les registres (0x00-0xFF)", es = "Escanear todos los registros (0x00-0xFF)", pt = "Escanear todos os registos (0x00-0xFF)", it = "Scansiona tutti i registri (0x00-0xFF)", nl = "Alle registers scannen (0x00-0xFF)", sv = "Skanna alla register (0x00-0xFF)", cs = "Skenovat všechny registry (0x00-0xFF)", sk = "Skenovať všetky registre (0x00-0xFF)")
+                    !connected -> tr("Skanuj wszystkie rejestry (wymaga połączenia)", "Scan all registers (requires connection)", de = "Alle Register scannen (Verbindung erforderlich)", fr = "Scanner tous les registres (connexion requise)", es = "Escanear todos los registros (requiere conexión)", pt = "Escanear todos os registos (requer ligação)", it = "Scansiona tutti i registri (richiede connessione)", nl = "Alle registers scannen (verbinding vereist)", sv = "Skanna alla register (kräver anslutning)", cs = "Skenovat všechny registry (vyžaduje připojení)", sk = "Skenovať všetky registre (vyžaduje pripojenie)", da = "Scan alle registre (kræver forbindelse)", ru = "Сканировать все регистры (требуется подключение)")
+                    scanning -> tr("Skanowanie… $scanProgress/256", "Scanning… $scanProgress/256", de = "Scanne… $scanProgress/256", fr = "Analyse… $scanProgress/256", es = "Escaneando… $scanProgress/256", pt = "A escanear… $scanProgress/256", it = "Scansione… $scanProgress/256", nl = "Scannen… $scanProgress/256", sv = "Skannar… $scanProgress/256", cs = "Skenuji… $scanProgress/256", sk = "Skenujem… $scanProgress/256", da = "Scanner… $scanProgress/256", ru = "Сканирование… $scanProgress/256")
+                    else -> tr("Skanuj wszystkie rejestry (0x00-0xFF)", "Scan all registers (0x00-0xFF)", de = "Alle Register scannen (0x00-0xFF)", fr = "Scanner tous les registres (0x00-0xFF)", es = "Escanear todos los registros (0x00-0xFF)", pt = "Escanear todos os registos (0x00-0xFF)", it = "Scansiona tutti i registri (0x00-0xFF)", nl = "Alle registers scannen (0x00-0xFF)", sv = "Skanna alla register (0x00-0xFF)", cs = "Skenovat všechny registry (0x00-0xFF)", sk = "Skenovať všetky registre (0x00-0xFF)", da = "Scan alle registre (0x00-0xFF)", ru = "Сканировать все регистры (0x00-0xFF)")
                 },
                 fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 14.sp,
                 color = if (connected && !scanning) Tokens.Blue else Tokens.TextTertiary,
@@ -226,14 +240,14 @@ fun DiagnosticsScreen(
                         clipboard.setText(AnnotatedString(buildScanHistoryText(fullScanHistory, lang)))
                         Toast.makeText(
                             context,
-                            tr(lang, "Skopiowano do schowka", "Copied to clipboard", de = "In die Zwischenablage kopiert", fr = "Copié dans le presse-papiers", es = "Copiado al portapapeles", pt = "Copiado para a área de transferência", it = "Copiato negli appunti", nl = "Gekopieerd naar klembord", sv = "Kopierat till urklipp", cs = "Zkopírováno do schránky", sk = "Skopírované do schránky"),
+                            tr(lang, "Skopiowano do schowka", "Copied to clipboard", de = "In die Zwischenablage kopiert", fr = "Copié dans le presse-papiers", es = "Copiado al portapapeles", pt = "Copiado para a área de transferência", it = "Copiato negli appunti", nl = "Gekopieerd naar klembord", sv = "Kopierat till urklipp", cs = "Zkopírováno do schránky", sk = "Skopírované do schránky", da = "Kopieret til udklipsholder", ru = "Скопировано в буфер обмена"),
                             Toast.LENGTH_SHORT,
                         ).show()
                     }
                     .padding(vertical = 12.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(tr("Kopiuj historię skanów", "Copy scan history", de = "Scanverlauf kopieren", fr = "Copier l'historique des scans", es = "Copiar historial de escaneos", pt = "Copiar histórico de verificações", it = "Copia cronologia scansioni", nl = "Scangeschiedenis kopiëren", sv = "Kopiera skanningshistorik", cs = "Kopírovat historii skenování", sk = "Kopírovať históriu skenovania"), fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Tokens.Blue)
+                Text(tr("Kopiuj historię skanów", "Copy scan history", de = "Scanverlauf kopieren", fr = "Copier l'historique des scans", es = "Copiar historial de escaneos", pt = "Copiar histórico de verificações", it = "Copia cronologia scansioni", nl = "Scangeschiedenis kopiëren", sv = "Kopiera skanningshistorik", cs = "Kopírovat historii skenování", sk = "Kopírovať históriu skenovania", da = "Kopiér scanhistorik", ru = "Копировать историю сканирования"), fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Tokens.Blue)
             }
         }
 
@@ -251,6 +265,8 @@ fun DiagnosticsScreen(
                     sv = "Resultat från senaste skanningen - register som svarade (${scanResults.size})",
                     cs = "Výsledky posledního skenu - registry, které odpověděly (${scanResults.size})",
                     sk = "Výsledky posledného skenu - registre, ktoré odpovedali (${scanResults.size})",
+                    da = "Seneste scanresultater - registre der svarede (${scanResults.size})",
+                    ru = "Результаты последнего сканирования - регистры, которые ответили (${scanResults.size})",
                 ),
             )
             TokenCard(borderColor = Tokens.WhiteBorder) {
@@ -279,6 +295,8 @@ fun DiagnosticsScreen(
                 sv = "Tidigare skanningar (den senaste ovan är «Resultat från senaste skanningen») - jämför vilka värden som ändras mellan skanningar.",
                 cs = "Předchozí skeny (nejnovější nahoře je «Výsledky posledního skenu») - porovnej, které hodnoty se mezi skeny mění.",
                 sk = "Predchádzajúce skeny (najnovší hore je «Výsledky posledného skenu») - porovnaj, ktoré hodnoty sa medzi skenmi menia.",
+                da = "Tidligere scan (det nyeste ovenfor er «Seneste scanresultater») - sammenlign hvilke værdier ændrer sig mellem scan.",
+                ru = "Предыдущие сканирования (самое новое выше - «Результаты последнего сканирования») - сравните, какие значения меняются между сканированиями.",
             ))
             fullScanHistory.dropLast(1).reversed().forEach { snap ->
                 MicroLabel(
@@ -294,11 +312,13 @@ fun DiagnosticsScreen(
                         sv = "Skanning ${snap.index} (${snap.results.size} svar)",
                         cs = "Sken ${snap.index} (${snap.results.size} odpovědí)",
                         sk = "Sken ${snap.index} (${snap.results.size} odpovedí)",
+                        da = "Scan ${snap.index} (${snap.results.size} svar)",
+                        ru = "Скан ${snap.index} (${snap.results.size} ответов)",
                     ),
                 )
                 TokenCard(borderColor = Tokens.WhiteBorder) {
                     if (snap.results.isEmpty()) {
-                        DiagRow(tr("brak odpowiedzi", "no response", de = "keine Antwort", fr = "aucune réponse", es = "sin respuesta", pt = "sem resposta", it = "nessuna risposta", nl = "geen reactie", sv = "inget svar", cs = "žádná odpověď", sk = "žiadna odpoveď"), "-", last = true)
+                        DiagRow(tr("brak odpowiedzi", "no response", de = "keine Antwort", fr = "aucune réponse", es = "sin respuesta", pt = "sem resposta", it = "nessuna risposta", nl = "geen reactie", sv = "inget svar", cs = "žádná odpověď", sk = "žiadna odpoveď", da = "intet svar", ru = "нет ответа"), "-", last = true)
                     } else {
                         snap.results.forEachIndexed { i, r ->
                             DiagRow(
@@ -370,7 +390,7 @@ private fun RegisterLegend() {
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text(
-                tr("LEGENDA ZNANYCH REJESTRÓW", "KNOWN REGISTER LEGEND", de = "LEGENDE BEKANNTER REGISTER", fr = "LÉGENDE DES REGISTRES CONNUS", es = "LEYENDA DE REGISTROS CONOCIDOS", pt = "LEGENDA DE REGISTOS CONHECIDOS", it = "LEGENDA REGISTRI NOTI", nl = "LEGENDA BEKENDE REGISTERS", sv = "FÖRKLARING TILL KÄNDA REGISTER", cs = "LEGENDA ZNÁMÝCH REGISTRŮ", sk = "LEGENDA ZNÁMYCH REGISTROV"), fontFamily = Manrope, fontWeight = FontWeight.SemiBold,
+                tr("LEGENDA ZNANYCH REJESTRÓW", "KNOWN REGISTER LEGEND", de = "LEGENDE BEKANNTER REGISTER", fr = "LÉGENDE DES REGISTRES CONNUS", es = "LEYENDA DE REGISTROS CONOCIDOS", pt = "LEGENDA DE REGISTOS CONHECIDOS", it = "LEGENDA REGISTRI NOTI", nl = "LEGENDA BEKENDE REGISTERS", sv = "FÖRKLARING TILL KÄNDA REGISTER", cs = "LEGENDA ZNÁMÝCH REGISTRŮ", sk = "LEGENDA ZNÁMYCH REGISTROV", da = "FORKLARING TIL KENDTE REGISTRE", ru = "ЛЕГЕНДА ИЗВЕСТНЫХ РЕГИСТРОВ"), fontFamily = Manrope, fontWeight = FontWeight.SemiBold,
                 fontSize = 11.sp, letterSpacing = 1.sp, color = Tokens.TextPrimary, modifier = Modifier.weight(1f),
             )
             Text(if (expanded) "▲" else "▼", fontFamily = Manrope, fontSize = 16.sp, color = Tokens.Emerald)
@@ -408,19 +428,25 @@ private fun RegisterLegend() {
                     sk = "Registre displeja známe z oficiálneho zdroja bbs-fw (extcom.c) - odpovedajú BEZ OHĽADU " +
                         "na zvolený firmvér, pretože bbs-fw napodobňuje továrenský protokol displeja kvôli " +
                         "spätnej kompatibilite:",
+                    da = "Displayregistre kendt fra bbs-fw's officielle kilde (extcom.c) - svarer UANSET " +
+                        "den valgte firmware, da bbs-fw efterligner fabrikkens displayprotokol for " +
+                        "bagudkompatibilitet:",
+                    ru = "Регистры дисплея, известные из официального источника bbs-fw (extcom.c) - " +
+                        "отвечают НЕЗАВИСИМО от выбранной прошивки, так как bbs-fw имитирует заводской " +
+                        "протокол дисплея для обратной совместимости:",
                 ),
                 fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
             )
             Spacer(Modifier.height(8.dp))
-            DiagRow("0x08", tr("Status", "Status", de = "Status", fr = "Statut", es = "Estado", pt = "Estado", it = "Stato", nl = "Status", sv = "Status", cs = "Stav", sk = "Stav"))
-            DiagRow("0x0A", tr("Prąd - używany w Kokpicie", "Current - used in the Cockpit", de = "Strom - im Cockpit verwendet", fr = "Courant - utilisé dans le Cockpit", es = "Corriente - usada en el Cockpit", pt = "Corrente - usada no Cockpit", it = "Corrente - usata nel Cockpit", nl = "Stroom - gebruikt in de Cockpit", sv = "Ström - används i Cockpit", cs = "Proud - používaný v Cockpitu", sk = "Prúd - používaný v Cockpite"))
-            DiagRow("0x11", tr("Bateria [%] - używana w Kokpicie", "Battery [%] - used in the Cockpit", de = "Batterie [%] - im Cockpit verwendet", fr = "Batterie [%] - utilisée dans le Cockpit", es = "Batería [%] - usada en el Cockpit", pt = "Bateria [%] - usada no Cockpit", it = "Batteria [%] - usata nel Cockpit", nl = "Batterij [%] - gebruikt in de Cockpit", sv = "Batteri [%] - används i Cockpit", cs = "Baterie [%] - používaná v Cockpitu", sk = "Batéria [%] - používaná v Cockpite"))
-            DiagRow("0x20", tr("Prędkość [rpm] - używana w Kokpicie", "Speed [rpm] - used in the Cockpit", de = "Geschwindigkeit [U/min] - im Cockpit verwendet", fr = "Vitesse [tr/min] - utilisée dans le Cockpit", es = "Velocidad [rpm] - usada en el Cockpit", pt = "Velocidade [rpm] - usada no Cockpit", it = "Velocità [rpm] - usata nel Cockpit", nl = "Snelheid [rpm] - gebruikt in de Cockpit", sv = "Hastighet [rpm] - används i Cockpit", cs = "Rychlost [rpm] - používaná v Cockpitu", sk = "Rýchlosť [rpm] - používaná v Cockpite"))
-            DiagRow("0x21", tr("Nieznany - nawet autor bbs-fw go tak nazwał (Unknown1)", "Unknown - even the bbs-fw author named it that (Unknown1)", de = "Unbekannt - selbst der bbs-fw-Autor hat es so genannt (Unknown1)", fr = "Inconnu - même l'auteur de bbs-fw l'a appelé ainsi (Unknown1)", es = "Desconocido - incluso el autor de bbs-fw lo llamó así (Unknown1)", pt = "Desconhecido - até o autor do bbs-fw lhe chamou isso (Unknown1)", it = "Sconosciuto - persino l'autore di bbs-fw lo ha chiamato così (Unknown1)", nl = "Onbekend - zelfs de bbs-fw-auteur noemde het zo (Unknown1)", sv = "Okänd - även bbs-fw-författaren kallade det så (Unknown1)", cs = "Neznámý - i autor bbs-fw ho tak pojmenoval (Unknown1)", sk = "Neznámy - aj autor bbs-fw ho tak nazval (Unknown1)"))
-            DiagRow("0x22", tr("Zasięg", "Range", de = "Reichweite", fr = "Autonomie", es = "Autonomía", pt = "Autonomia", it = "Autonomia", nl = "Bereik", sv = "Räckvidd", cs = "Dojezd", sk = "Dojazd"))
-            DiagRow("0x24", tr("Kalorie", "Calories", de = "Kalorien", fr = "Calories", es = "Calorías", pt = "Calorias", it = "Calorie", nl = "Calorieën", sv = "Kalorier", cs = "Kalorie", sk = "Kalórie"))
-            DiagRow("0x25", tr("Nieznany - nawet autor bbs-fw go tak nazwał (Unknown3)", "Unknown - even the bbs-fw author named it that (Unknown3)", de = "Unbekannt - selbst der bbs-fw-Autor hat es so genannt (Unknown3)", fr = "Inconnu - même l'auteur de bbs-fw l'a appelé ainsi (Unknown3)", es = "Desconocido - incluso el autor de bbs-fw lo llamó así (Unknown3)", pt = "Desconhecido - até o autor do bbs-fw lhe chamou isso (Unknown3)", it = "Sconosciuto - persino l'autore di bbs-fw lo ha chiamato così (Unknown3)", nl = "Onbekend - zelfs de bbs-fw-auteur noemde het zo (Unknown3)", sv = "Okänd - även bbs-fw-författaren kallade det så (Unknown3)", cs = "Neznámý - i autor bbs-fw ho tak pojmenoval (Unknown3)", sk = "Neznámy - aj autor bbs-fw ho tak nazval (Unknown3)"))
-            DiagRow("0x31", tr("W ruchu (moving)", "Moving", de = "In Bewegung (moving)", fr = "En mouvement (moving)", es = "En movimiento (moving)", pt = "Em movimento (moving)", it = "In movimento (moving)", nl = "In beweging (moving)", sv = "I rörelse (moving)", cs = "V pohybu (moving)", sk = "V pohybe (moving)"), last = true)
+            DiagRow("0x08", tr("Status", "Status", de = "Status", fr = "Statut", es = "Estado", pt = "Estado", it = "Stato", nl = "Status", sv = "Status", cs = "Stav", sk = "Stav", da = "Status", ru = "Статус"))
+            DiagRow("0x0A", tr("Prąd - używany w Kokpicie", "Current - used in the Cockpit", de = "Strom - im Cockpit verwendet", fr = "Courant - utilisé dans le Cockpit", es = "Corriente - usada en el Cockpit", pt = "Corrente - usada no Cockpit", it = "Corrente - usata nel Cockpit", nl = "Stroom - gebruikt in de Cockpit", sv = "Ström - används i Cockpit", cs = "Proud - používaný v Cockpitu", sk = "Prúd - používaný v Cockpite", da = "Strøm - bruges i Cockpit", ru = "Ток - используется в Cockpit"))
+            DiagRow("0x11", tr("Bateria [%] - używana w Kokpicie", "Battery [%] - used in the Cockpit", de = "Batterie [%] - im Cockpit verwendet", fr = "Batterie [%] - utilisée dans le Cockpit", es = "Batería [%] - usada en el Cockpit", pt = "Bateria [%] - usada no Cockpit", it = "Batteria [%] - usata nel Cockpit", nl = "Batterij [%] - gebruikt in de Cockpit", sv = "Batteri [%] - används i Cockpit", cs = "Baterie [%] - používaná v Cockpitu", sk = "Batéria [%] - používaná v Cockpite", da = "Batteri [%] - bruges i Cockpit", ru = "Батарея [%] - используется в Cockpit"))
+            DiagRow("0x20", tr("Prędkość [rpm] - używana w Kokpicie", "Speed [rpm] - used in the Cockpit", de = "Geschwindigkeit [U/min] - im Cockpit verwendet", fr = "Vitesse [tr/min] - utilisée dans le Cockpit", es = "Velocidad [rpm] - usada en el Cockpit", pt = "Velocidade [rpm] - usada no Cockpit", it = "Velocità [rpm] - usata nel Cockpit", nl = "Snelheid [rpm] - gebruikt in de Cockpit", sv = "Hastighet [rpm] - används i Cockpit", cs = "Rychlost [rpm] - používaná v Cockpitu", sk = "Rýchlosť [rpm] - používaná v Cockpite", da = "Hastighed [rpm] - bruges i Cockpit", ru = "Скорость [об/мин] - используется в Cockpit"))
+            DiagRow("0x21", tr("Nieznany - nawet autor bbs-fw go tak nazwał (Unknown1)", "Unknown - even the bbs-fw author named it that (Unknown1)", de = "Unbekannt - selbst der bbs-fw-Autor hat es so genannt (Unknown1)", fr = "Inconnu - même l'auteur de bbs-fw l'a appelé ainsi (Unknown1)", es = "Desconocido - incluso el autor de bbs-fw lo llamó así (Unknown1)", pt = "Desconhecido - até o autor do bbs-fw lhe chamou isso (Unknown1)", it = "Sconosciuto - persino l'autore di bbs-fw lo ha chiamato così (Unknown1)", nl = "Onbekend - zelfs de bbs-fw-auteur noemde het zo (Unknown1)", sv = "Okänd - även bbs-fw-författaren kallade det så (Unknown1)", cs = "Neznámý - i autor bbs-fw ho tak pojmenoval (Unknown1)", sk = "Neznámy - aj autor bbs-fw ho tak nazval (Unknown1)", da = "Ukendt - selv bbs-fw-forfatteren kaldte det det (Unknown1)", ru = "Неизвестно - даже автор bbs-fw назвал это так (Unknown1)"))
+            DiagRow("0x22", tr("Zasięg", "Range", de = "Reichweite", fr = "Autonomie", es = "Autonomía", pt = "Autonomia", it = "Autonomia", nl = "Bereik", sv = "Räckvidd", cs = "Dojezd", sk = "Dojazd", da = "Rækkevidde", ru = "Запас хода"))
+            DiagRow("0x24", tr("Kalorie", "Calories", de = "Kalorien", fr = "Calories", es = "Calorías", pt = "Calorias", it = "Calorie", nl = "Calorieën", sv = "Kalorier", cs = "Kalorie", sk = "Kalórie", da = "Kalorier", ru = "Калории"))
+            DiagRow("0x25", tr("Nieznany - nawet autor bbs-fw go tak nazwał (Unknown3)", "Unknown - even the bbs-fw author named it that (Unknown3)", de = "Unbekannt - selbst der bbs-fw-Autor hat es so genannt (Unknown3)", fr = "Inconnu - même l'auteur de bbs-fw l'a appelé ainsi (Unknown3)", es = "Desconocido - incluso el autor de bbs-fw lo llamó así (Unknown3)", pt = "Desconhecido - até o autor do bbs-fw lhe chamou isso (Unknown3)", it = "Sconosciuto - persino l'autore di bbs-fw lo ha chiamato così (Unknown3)", nl = "Onbekend - zelfs de bbs-fw-auteur noemde het zo (Unknown3)", sv = "Okänd - även bbs-fw-författaren kallade det så (Unknown3)", cs = "Neznámý - i autor bbs-fw ho tak pojmenoval (Unknown3)", sk = "Neznámy - aj autor bbs-fw ho tak nazval (Unknown3)", da = "Ukendt - selv bbs-fw-forfatteren kaldte det det (Unknown3)", ru = "Неизвестно - даже автор bbs-fw назвал это так (Unknown3)"))
+            DiagRow("0x31", tr("W ruchu (moving)", "Moving", de = "In Bewegung (moving)", fr = "En mouvement (moving)", es = "En movimiento (moving)", pt = "Em movimento (moving)", it = "In movimento (moving)", nl = "In beweging (moving)", sv = "I rörelse (moving)", cs = "V pohybu (moving)", sk = "V pohybe (moving)", da = "I bevægelse (moving)", ru = "В движении (moving)"), last = true)
             Spacer(Modifier.height(14.dp))
             Text(
                 tr(
@@ -435,14 +461,16 @@ private fun RegisterLegend() {
                     sv = "Register för Bafang Configuration Tool-protokollet (separat format):",
                     cs = "Registry protokolu Bafang Configuration Tool (samostatný formát):",
                     sk = "Registre protokolu Bafang Configuration Tool (samostatný formát):",
+                    da = "Bafang Configuration Tool-protokolregistre (separat format):",
+                    ru = "Регистры протокола Bafang Configuration Tool (отдельный формат):",
                 ),
                 fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
             )
             Spacer(Modifier.height(8.dp))
-            DiagRow("0x51", tr("GEN - blok informacji ogólnych (producent/model/HW/FW/napięcie/prąd)", "GEN - general info block (manufacturer/model/HW/FW/voltage/current)", de = "GEN - Block mit allgemeinen Informationen (Hersteller/Modell/HW/FW/Spannung/Strom)", fr = "GEN - bloc d'informations générales (fabricant/modèle/HW/FW/tension/courant)", es = "GEN - bloque de información general (fabricante/modelo/HW/FW/voltaje/corriente)", pt = "GEN - bloco de informação geral (fabricante/modelo/HW/FW/tensão/corrente)", it = "GEN - blocco informazioni generali (produttore/modello/HW/FW/tensione/corrente)", nl = "GEN - blok algemene informatie (fabrikant/model/HW/FW/spanning/stroom)", sv = "GEN - block med allmän information (tillverkare/modell/HW/FW/spänning/ström)", cs = "GEN - blok obecných informací (výrobce/model/HW/FW/napětí/proud)", sk = "GEN - blok všeobecných informácií (výrobca/model/HW/FW/napätie/prúd)"))
-            DiagRow("0x52", tr("BAS - blok ustawień Basic", "BAS - Basic settings block", de = "BAS - Block der Basic-Einstellungen", fr = "BAS - bloc des réglages Basic", es = "BAS - bloque de ajustes Basic", pt = "BAS - bloco de definições Basic", it = "BAS - blocco impostazioni Basic", nl = "BAS - blok Basic-instellingen", sv = "BAS - block med Basic-inställningar", cs = "BAS - blok nastavení Basic", sk = "BAS - blok nastavenia Basic"))
-            DiagRow("0x53", tr("PAS - blok ustawień Pedal Assist", "PAS - Pedal Assist settings block", de = "PAS - Block der Pedal-Assist-Einstellungen", fr = "PAS - bloc des réglages Pedal Assist", es = "PAS - bloque de ajustes Pedal Assist", pt = "PAS - bloco de definições Pedal Assist", it = "PAS - blocco impostazioni Pedal Assist", nl = "PAS - blok Pedal Assist-instellingen", sv = "PAS - block med Pedal Assist-inställningar", cs = "PAS - blok nastavení Pedal Assist", sk = "PAS - blok nastavenia Pedal Assist"))
-            DiagRow("0x54", tr("THR - blok ustawień Throttle", "THR - Throttle settings block", de = "THR - Block der Throttle-Einstellungen", fr = "THR - bloc des réglages Throttle", es = "THR - bloque de ajustes Throttle", pt = "THR - bloco de definições Throttle", it = "THR - blocco impostazioni Throttle", nl = "THR - blok Throttle-instellingen", sv = "THR - block med Throttle-inställningar", cs = "THR - blok nastavení Throttle", sk = "THR - blok nastavenia Throttle"), last = true)
+            DiagRow("0x51", tr("GEN - blok informacji ogólnych (producent/model/HW/FW/napięcie/prąd)", "GEN - general info block (manufacturer/model/HW/FW/voltage/current)", de = "GEN - Block mit allgemeinen Informationen (Hersteller/Modell/HW/FW/Spannung/Strom)", fr = "GEN - bloc d'informations générales (fabricant/modèle/HW/FW/tension/courant)", es = "GEN - bloque de información general (fabricante/modelo/HW/FW/voltaje/corriente)", pt = "GEN - bloco de informação geral (fabricante/modelo/HW/FW/tensão/corrente)", it = "GEN - blocco informazioni generali (produttore/modello/HW/FW/tensione/corrente)", nl = "GEN - blok algemene informatie (fabrikant/model/HW/FW/spanning/stroom)", sv = "GEN - block med allmän information (tillverkare/modell/HW/FW/spänning/ström)", cs = "GEN - blok obecných informací (výrobce/model/HW/FW/napětí/proud)", sk = "GEN - blok všeobecných informácií (výrobca/model/HW/FW/napätie/prúd)", da = "GEN - blok med generel information (producent/model/HW/FW/spænding/strøm)", ru = "GEN - блок общей информации (производитель/модель/HW/FW/напряжение/ток)"))
+            DiagRow("0x52", tr("BAS - blok ustawień Basic", "BAS - Basic settings block", de = "BAS - Block der Basic-Einstellungen", fr = "BAS - bloc des réglages Basic", es = "BAS - bloque de ajustes Basic", pt = "BAS - bloco de definições Basic", it = "BAS - blocco impostazioni Basic", nl = "BAS - blok Basic-instellingen", sv = "BAS - block med Basic-inställningar", cs = "BAS - blok nastavení Basic", sk = "BAS - blok nastavenia Basic", da = "BAS - blok med Basic-indstillinger", ru = "BAS - блок настроек Basic"))
+            DiagRow("0x53", tr("PAS - blok ustawień Pedal Assist", "PAS - Pedal Assist settings block", de = "PAS - Block der Pedal-Assist-Einstellungen", fr = "PAS - bloc des réglages Pedal Assist", es = "PAS - bloque de ajustes Pedal Assist", pt = "PAS - bloco de definições Pedal Assist", it = "PAS - blocco impostazioni Pedal Assist", nl = "PAS - blok Pedal Assist-instellingen", sv = "PAS - block med Pedal Assist-inställningar", cs = "PAS - blok nastavení Pedal Assist", sk = "PAS - blok nastavenia Pedal Assist", da = "PAS - blok med Pedal Assist-indstillinger", ru = "PAS - блок настроек Pedal Assist"))
+            DiagRow("0x54", tr("THR - blok ustawień Throttle", "THR - Throttle settings block", de = "THR - Block der Throttle-Einstellungen", fr = "THR - bloc des réglages Throttle", es = "THR - bloque de ajustes Throttle", pt = "THR - bloco de definições Throttle", it = "THR - blocco impostazioni Throttle", nl = "THR - blok Throttle-instellingen", sv = "THR - block med Throttle-inställningar", cs = "THR - blok nastavení Throttle", sk = "THR - blok nastavenia Throttle", da = "THR - blok med Throttle-indstillinger", ru = "THR - блок настроек Throttle"), last = true)
             Spacer(Modifier.height(10.dp))
             Text(
                 tr(
@@ -488,6 +516,14 @@ private fun RegisterLegend() {
                         "registrov displeja (0x08-0x31) - bbs-fw NEIMPLEMENTUJE čítanie 0x51-0x54 vo svojej " +
                         "vrstve kompatibility s displejom (ide o samostatný protokol, obsluhovaný na kartách " +
                         "bbs-fw System/Assist Levels).",
+                    da = "På bbs-fw vil det fulde scan normalt kun få svar fra de 9 displayregistre " +
+                        "ovenfor (0x08-0x31) - bbs-fw implementerer IKKE læsning af 0x51-0x54 i sit " +
+                        "displaykompatibilitetslag (det er en separat protokol, håndteret på bbs-fw's " +
+                        "System/Assist Levels-faner).",
+                    ru = "На bbs-fw полное сканирование обычно получает ответы только от 9 регистров " +
+                        "дисплея выше (0x08-0x31) - bbs-fw НЕ реализует чтение 0x51-0x54 в своём слое " +
+                        "совместимости с дисплеем (это отдельный протокол, обрабатываемый на вкладках " +
+                        "bbs-fw System/Assist Levels).",
                 ),
                 fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextTertiary,
             )
@@ -496,10 +532,10 @@ private fun RegisterLegend() {
 }
 
 private fun buildScanHistoryText(history: List<ScanSnapshot>, lang: AppLanguage): String = buildString {
-    appendLine(tr(lang, "EggSPEED - Diagnostyka (historia skanow 0x00-0xFF)", "EggSPEED - Diagnostics (scan history 0x00-0xFF)", de = "EggSPEED - Diagnose (Scanverlauf 0x00-0xFF)", fr = "EggSPEED - Diagnostic (historique des scans 0x00-0xFF)", es = "EggSPEED - Diagnóstico (historial de escaneos 0x00-0xFF)", pt = "EggSPEED - Diagnóstico (histórico de verificações 0x00-0xFF)", it = "EggSPEED - Diagnostica (cronologia scansioni 0x00-0xFF)", nl = "EggSPEED - Diagnostiek (scangeschiedenis 0x00-0xFF)", sv = "EggSPEED - Diagnostik (skanningshistorik 0x00-0xFF)", cs = "EggSPEED - Diagnostika (historie skenu 0x00-0xFF)", sk = "EggSPEED - Diagnostika (história skenov 0x00-0xFF)"))
+    appendLine(tr(lang, "EggSPEED - Diagnostyka (historia skanow 0x00-0xFF)", "EggSPEED - Diagnostics (scan history 0x00-0xFF)", de = "EggSPEED - Diagnose (Scanverlauf 0x00-0xFF)", fr = "EggSPEED - Diagnostic (historique des scans 0x00-0xFF)", es = "EggSPEED - Diagnóstico (historial de escaneos 0x00-0xFF)", pt = "EggSPEED - Diagnóstico (histórico de verificações 0x00-0xFF)", it = "EggSPEED - Diagnostica (cronologia scansioni 0x00-0xFF)", nl = "EggSPEED - Diagnostiek (scangeschiedenis 0x00-0xFF)", sv = "EggSPEED - Diagnostik (skanningshistorik 0x00-0xFF)", cs = "EggSPEED - Diagnostika (historie skenu 0x00-0xFF)", sk = "EggSPEED - Diagnostika (história skenov 0x00-0xFF)", da = "EggSPEED - Diagnostik (scanhistorik 0x00-0xFF)", ru = "EggSPEED - Диагностика (история сканирований 0x00-0xFF)"))
     appendLine()
     history.forEach { snap ->
-        appendLine("[${tr(lang, "Skan", "Scan", de = "Scan", fr = "Scan", es = "Escaneo", pt = "Verificação", it = "Scansione", nl = "Scan", sv = "Skanning", cs = "Sken", sk = "Sken")} ${snap.index} - ${snap.results.size} ${tr(lang, "odpowiedzi", "responses", de = "Antworten", fr = "réponses", es = "respuestas", pt = "respostas", it = "risposte", nl = "reacties", sv = "svar", cs = "odpovědí", sk = "odpovedí")}]")
+        appendLine("[${tr(lang, "Skan", "Scan", de = "Scan", fr = "Scan", es = "Escaneo", pt = "Verificação", it = "Scansione", nl = "Scan", sv = "Skanning", cs = "Sken", sk = "Sken", da = "Scan", ru = "Скан")} ${snap.index} - ${snap.results.size} ${tr(lang, "odpowiedzi", "responses", de = "Antworten", fr = "réponses", es = "respuestas", pt = "respostas", it = "risposte", nl = "reacties", sv = "svar", cs = "odpovědí", sk = "odpovedí", da = "svar", ru = "ответов")}]")
         snap.results.forEach { r ->
             val opcodeHex = "0x${r.opcode.toString(16).padStart(2, '0').uppercase()}"
             val checksum = if (r.neededChecksum) " (3B)" else " (2B)"

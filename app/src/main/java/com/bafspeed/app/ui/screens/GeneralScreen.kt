@@ -64,7 +64,7 @@ fun GeneralScreen(
         TelemetryPausedNotice(monitoringActive = monitoringActive, aodActive = state.aodEnabled)
 
         ExpandableParamTile(
-            label = tr("Ochrona niskiego napięcia", "Low Battery Protection", de = "Unterspannungsschutz", fr = "Protection contre la décharge", es = "Protección de bajo voltaje", pt = "Proteção de baixa tensão", it = "Protezione bassa tensione", nl = "Onderspanningsbeveiliging", sv = "Underspänningsskydd", cs = "Ochrana proti podpětí", sk = "Ochrana proti podpätiu"),
+            label = tr("Ochrona niskiego napięcia", "Low Battery Protection", de = "Unterspannungsschutz", fr = "Protection contre la décharge", es = "Protección de bajo voltaje", pt = "Proteção de baixa tensão", it = "Protezione bassa tensione", nl = "Onderspanningsbeveiliging", sv = "Underspänningsskydd", cs = "Ochrana proti podpětí", sk = "Ochrana proti podpätiu", da = "Underspændingsbeskyttelse", ru = "Защита от глубокого разряда"),
             valueLabel = "${basic.lowBatteryProtection} V",
             description = tr(
                 "Napięcie, przy którym sterownik zatrzyma silnik, żeby chronić baterię przed nadmiernym " +
@@ -100,6 +100,12 @@ fun GeneralScreen(
                 sk = "Toto je napätie, pri ktorom riadiaca jednotka zastaví motor, aby ochránila batériu pred nadmerným " +
                     "vybitím. Malo by byť správne nastavené výrobcom - bežne ho nie je potrebné meniť. Pri 13S " +
                     "batériových paketoch je predvolená hodnota 41V.",
+                da = "Dette er spændingen, hvorved controlleren stopper motoren for at beskytte batteriet mod " +
+                    "overafladning. Den bør være korrekt indstillet af producenten - normalt behøver du ikke ændre " +
+                    "den. For 13S-batteripakker er 41V standardværdien.",
+                ru = "Это напряжение, при котором контроллер остановит мотор, чтобы защитить батарею от чрезмерного " +
+                    "разряда. Оно должно быть правильно установлено производителем - обычно менять его не нужно. " +
+                    "Для батарей 13S значение по умолчанию - 41В.",
             ),
         ) {
             FlankedSlider(
@@ -111,7 +117,7 @@ fun GeneralScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Limit prądu [A]", "Current Limit [A]", de = "Strombegrenzung [A]", fr = "Limite de courant [A]", es = "Límite de corriente [A]", pt = "Limite de corrente [A]", it = "Limite di corrente [A]", nl = "Stroomlimiet [A]", sv = "Strömgräns [A]", cs = "Omezení proudu [A]", sk = "Obmedzenie prúdu [A]"),
+            label = tr("Limit prądu [A]", "Current Limit [A]", de = "Strombegrenzung [A]", fr = "Limite de courant [A]", es = "Límite de corriente [A]", pt = "Limite de corrente [A]", it = "Limite di corrente [A]", nl = "Stroomlimiet [A]", sv = "Strömgräns [A]", cs = "Omezení proudu [A]", sk = "Obmedzenie prúdu [A]", da = "Strømgrænse [A]", ru = "Ограничение тока [A]"),
             valueLabel = "${basic.currentLimit} A",
             description = tr(
                 "Maksymalny prąd, jaki może płynąć przez silnik. Najwyższa możliwa wartość jest zdefiniowana " +
@@ -180,6 +186,18 @@ fun GeneralScreen(
                     } else {
                         "Na zistenie skutočného maxima je potrebné pripojiť sa k riadiacej jednotke."
                     },
+                da = "Den maksimale strøm, der må løbe gennem motoren. Den højst mulige værdi er defineret af din " +
+                    "controller - du kan ikke indstille den højere end det. " + if (state.general?.maxCurrentA != null && state.general.maxCurrentA > 0) {
+                        "Lige nu er dette maksimum ${state.general.maxCurrentA} A, rapporteret af den tilsluttede controller."
+                    } else {
+                        "Opret forbindelse til din controller for at aflæse dens reelle maksimum."
+                    },
+                ru = "Максимальный ток, который может протекать через мотор. Наибольшее возможное значение " +
+                    "определяется вашим контроллером - выше него установить нельзя. " + if (state.general?.maxCurrentA != null && state.general.maxCurrentA > 0) {
+                        "Сейчас этот максимум составляет ${state.general.maxCurrentA} А, по данным подключённого контроллера."
+                    } else {
+                        "Подключитесь к контроллеру, чтобы узнать его реальный максимум."
+                    },
             ),
         ) {
             FlankedSlider(
@@ -191,7 +209,7 @@ fun GeneralScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Typ czujnika prędkości", "Speed Meter Type", de = "Geschwindigkeitssensor-Typ", fr = "Type de capteur de vitesse", es = "Tipo de sensor de velocidad", pt = "Tipo de sensor de velocidade", it = "Tipo di sensore di velocità", nl = "Type snelheidssensor", sv = "Typ av hastighetssensor", cs = "Typ snímače rychlosti", sk = "Typ snímača rýchlosti"),
+            label = tr("Typ czujnika prędkości", "Speed Meter Type", de = "Geschwindigkeitssensor-Typ", fr = "Type de capteur de vitesse", es = "Tipo de sensor de velocidad", pt = "Tipo de sensor de velocidade", it = "Tipo di sensore di velocità", nl = "Type snelheidssensor", sv = "Typ av hastighetssensor", cs = "Typ snímače rychlosti", sk = "Typ snímača rýchlosti", da = "Hastighedssensor-type", ru = "Тип датчика скорости"),
             valueLabel = SPEED_METER_TYPE_LABELS.getOrElse(basic.speedMeterModel) { "?" },
             description = tr(
                 "Wybiera czujnik prędkości używany na Twoim rowerze. Dla zestawów BBS to External. Ten parametr " +
@@ -218,6 +236,12 @@ fun GeneralScreen(
                     "nastavuje výrobce - pokud sestava není upravená, není třeba jej měnit.",
                 sk = "Určuje, aký snímač rýchlosti sa používa na bicykli. Pri súpravách BBS je to External. Tento " +
                     "parameter nastavuje výrobca - ak zostava nie je upravená, nie je potrebné ho meniť.",
+                da = "Vælger den hastighedssensor, der bruges på din cykel. For BBS-kits er det External. Denne " +
+                    "parameter indstilles af producenten - hvis din opsætning ikke er brugerdefineret, behøver du " +
+                    "ikke at ændre den.",
+                ru = "Выбирает датчик скорости, используемый на вашем велосипеде. Для комплектов BBS это External. " +
+                    "Этот параметр устанавливается производителем - если ваша сборка не нестандартная, менять его " +
+                    "не нужно.",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -228,7 +252,7 @@ fun GeneralScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Sygnały czujnika prędkości", "Speed Meter Signals", de = "Geschwindigkeitssensor-Signale", fr = "Signaux du capteur de vitesse", es = "Señales del sensor de velocidad", pt = "Sinais do sensor de velocidade", it = "Segnali del sensore di velocità", nl = "Snelheidssensor-signalen", sv = "Hastighetssensor-signaler", cs = "Signály snímače rychlosti", sk = "Signály snímača rýchlosti"),
+            label = tr("Sygnały czujnika prędkości", "Speed Meter Signals", de = "Geschwindigkeitssensor-Signale", fr = "Signaux du capteur de vitesse", es = "Señales del sensor de velocidad", pt = "Sinais do sensor de velocidade", it = "Segnali del sensore di velocità", nl = "Snelheidssensor-signalen", sv = "Hastighetssensor-signaler", cs = "Signály snímače rychlosti", sk = "Signály snímača rýchlosti", da = "Hastighedssensor-signaler", ru = "Сигналы датчика скорости"),
             valueLabel = basic.speedMeterSignals.toString(),
             description = tr(
                 "Ustala, ile sygnałów na obrót generuje Twój czujnik prędkości. Zewnętrzny czujnik z magnesem " +
@@ -262,6 +286,12 @@ fun GeneralScreen(
                     "jeden signál na otáčku kola. Nastavuje výrobce - pokud sestava není upravená, není třeba to měnit.",
                 sk = "Určuje, koľko signálov na otáčku generuje snímač rýchlosti. Externý snímač s magnetom generuje " +
                     "jeden signál na otáčku kolesa. Nastavuje výrobca - ak zostava nie je upravená, nie je potrebné to meniť.",
+                da = "Angiver hvor mange signaler pr. omdrejning din hastighedssensor genererer. En ekstern sensor " +
+                    "med magnet genererer ét signal pr. hjulomdrejning. Indstillet af producenten - hvis din " +
+                    "opsætning ikke er brugerdefineret, behøver du ikke at ændre det.",
+                ru = "Задаёт, сколько сигналов на оборот генерирует ваш датчик скорости. Внешний датчик с магнитом " +
+                    "генерирует один сигнал на оборот колеса. Устанавливается производителем - если ваша сборка " +
+                    "не нестандартная, менять это не нужно.",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -272,7 +302,7 @@ fun GeneralScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Średnica koła [cale]", "Wheel Diameter [Inch]", de = "Raddurchmesser [Zoll]", fr = "Diamètre de roue [pouces]", es = "Diámetro de rueda [pulgadas]", pt = "Diâmetro da roda [polegadas]", it = "Diametro ruota [pollici]", nl = "Wieldiameter [inch]", sv = "Hjuldiameter [tum]", cs = "Průměr kola [palce]", sk = "Priemer kolesa [palce]"),
+            label = tr("Średnica koła [cale]", "Wheel Diameter [Inch]", de = "Raddurchmesser [Zoll]", fr = "Diamètre de roue [pouces]", es = "Diámetro de rueda [pulgadas]", pt = "Diâmetro da roda [polegadas]", it = "Diametro ruota [pollici]", nl = "Wieldiameter [inch]", sv = "Hjuldiameter [tum]", cs = "Průměr kola [palce]", sk = "Priemer kolesa [palce]", da = "Hjuldiameter [tommer]", ru = "Диаметр колеса [дюймы]"),
             valueLabel = WHEEL_SIZE_LABELS.getOrElse(basic.wheelDiameterCode) { "?" },
             description = tr(
                 "Średnica koła powinna odpowiadać realnemu rozmiarowi koła napędzanego (rower może mieć dwa koła " +
@@ -308,6 +338,12 @@ fun GeneralScreen(
                 sk = "Priemer kolesa by mal zodpovedať skutočnej veľkosti hnaného kolesa (bicykel môže mať dve kolesá " +
                     "rôznych veľkostí). Nastavenie menšej hodnoty, ako je skutočnosť, zvýši zobrazovanú rýchlosť, ale " +
                     "môže tiež spôsobiť poškodenie motora.",
+                da = "Hjuldiameteren bør svare til den reelle størrelse på dit drivhjul (en cykel kan have to " +
+                    "forskellige hjulstørrelser). Hvis den indstilles mindre end i virkeligheden, øges den viste " +
+                    "hastighed, men det kan også føre til motorskader.",
+                ru = "Диаметр колеса должен соответствовать реальному размеру ведущего колеса (у велосипеда могут " +
+                    "быть два колеса разного размера). Установка меньшего значения, чем в реальности, увеличит " +
+                    "отображаемую скорость, но может также привести к повреждению мотора.",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {

@@ -105,36 +105,44 @@ fun SagScreen(state: UiState, onStart: () -> Unit, onCancel: () -> Unit) {
                     "presné inžinierske meranie odporu - ide o jednoduchú odvodenú hodnotu (SAG / prúd), " +
                     "založenú iba na napätí a prúde, užitočnú na porovnávanie meraní a odhaľovanie " +
                     "degradácie batérie v čase.",
+                da = "SAG er batteriets spændingsfald under belastning i forhold til hvilespændingen. Dette er IKKE " +
+                    "en teknisk præcis modstandsmåling - det er en simpel afledt værdi (SAG / strøm), " +
+                    "udelukkende baseret på spænding og strøm, nyttig til at sammenligne målinger og " +
+                    "opdage forringelse af batteripakken over tid.",
+                ru = "SAG - это падение напряжения батареи под нагрузкой относительно напряжения покоя. Это НЕ " +
+                    "инженерное измерение сопротивления - это простое производное значение (SAG / ток), " +
+                    "основанное только на напряжении и токе, полезное для сравнения измерений и " +
+                    "выявления деградации аккумулятора со временем.",
             ),
         ) {}
 
-        MicroLabel(tr("Jakość baterii wg SAG", "Battery quality by SAG", de = "Batteriequalität nach SAG", fr = "Qualité de la batterie selon le SAG", es = "Calidad de la batería según el SAG", pt = "Qualidade da bateria por SAG", it = "Qualità della batteria in base al SAG", nl = "Batterijkwaliteit volgens SAG", sv = "Batterikvalitet enligt SAG", cs = "Kvalita baterie podle SAG", sk = "Kvalita batérie podľa SAG"))
+        MicroLabel(tr("Jakość baterii wg SAG", "Battery quality by SAG", de = "Batteriequalität nach SAG", fr = "Qualité de la batterie selon le SAG", es = "Calidad de la batería según el SAG", pt = "Qualidade da bateria por SAG", it = "Qualità della batteria in base al SAG", nl = "Batterijkwaliteit volgens SAG", sv = "Batterikvalitet enligt SAG", cs = "Kvalita baterie podle SAG", sk = "Kvalita batérie podľa SAG", da = "Batterikvalitet efter SAG", ru = "Качество батареи по SAG"))
         TokenCard(borderColor = Tokens.WhiteBorder) {
             SagLegendRow(
-                tr("≤ 2,0 V", "≤ 2.0 V", de = "≤ 2,0 V", fr = "≤ 2,0 V", es = "≤ 2,0 V", pt = "≤ 2,0 V", it = "≤ 2,0 V", nl = "≤ 2,0 V", sv = "≤ 2,0 V", cs = "≤ 2,0 V", sk = "≤ 2,0 V"),
-                tr("Doskonała", "Excellent", de = "Ausgezeichnet", fr = "Excellente", es = "Excelente", pt = "Excelente", it = "Eccellente", nl = "Uitstekend", sv = "Utmärkt", cs = "Vynikající", sk = "Vynikajúca"),
+                tr("≤ 2,0 V", "≤ 2.0 V", de = "≤ 2,0 V", fr = "≤ 2,0 V", es = "≤ 2,0 V", pt = "≤ 2,0 V", it = "≤ 2,0 V", nl = "≤ 2,0 V", sv = "≤ 2,0 V", cs = "≤ 2,0 V", sk = "≤ 2,0 V", da = "≤ 2,0 V", ru = "≤ 2,0 В"),
+                tr("Doskonała", "Excellent", de = "Ausgezeichnet", fr = "Excellente", es = "Excelente", pt = "Excelente", it = "Eccellente", nl = "Uitstekend", sv = "Utmärkt", cs = "Vynikající", sk = "Vynikajúca", da = "Fremragende", ru = "Отличное"),
                 Tokens.Emerald,
             )
             SagLegendRow(
-                tr("2,0 - 4,0 V", "2.0 - 4.0 V", de = "2,0 - 4,0 V", fr = "2,0 - 4,0 V", es = "2,0 - 4,0 V", pt = "2,0 - 4,0 V", it = "2,0 - 4,0 V", nl = "2,0 - 4,0 V", sv = "2,0 - 4,0 V", cs = "2,0 - 4,0 V", sk = "2,0 - 4,0 V"),
-                tr("Wystarczająca do Twoich zastosowań", "Sufficient for your use", de = "Ausreichend für deine Anwendung", fr = "Suffisante pour votre usage", es = "Suficiente para tu uso", pt = "Suficiente para o teu uso", it = "Sufficiente per il tuo utilizzo", nl = "Voldoende voor jouw gebruik", sv = "Tillräcklig för din användning", cs = "Dostatečná pro vaše použití", sk = "Dostatočná pre vaše použitie"),
+                tr("2,0 - 4,0 V", "2.0 - 4.0 V", de = "2,0 - 4,0 V", fr = "2,0 - 4,0 V", es = "2,0 - 4,0 V", pt = "2,0 - 4,0 V", it = "2,0 - 4,0 V", nl = "2,0 - 4,0 V", sv = "2,0 - 4,0 V", cs = "2,0 - 4,0 V", sk = "2,0 - 4,0 V", da = "2,0 - 4,0 V", ru = "2,0 - 4,0 В"),
+                tr("Wystarczająca do Twoich zastosowań", "Sufficient for your use", de = "Ausreichend für deine Anwendung", fr = "Suffisante pour votre usage", es = "Suficiente para tu uso", pt = "Suficiente para o teu uso", it = "Sufficiente per il tuo utilizzo", nl = "Voldoende voor jouw gebruik", sv = "Tillräcklig för din användning", cs = "Dostatečná pro vaše použití", sk = "Dostatočná pre vaše použitie", da = "Tilstrækkelig til dit brug", ru = "Достаточно для ваших задач"),
                 Tokens.Emerald,
             )
             SagLegendRow(
-                tr("4,0 - 6,0 V", "4.0 - 6.0 V", de = "4,0 - 6,0 V", fr = "4,0 - 6,0 V", es = "4,0 - 6,0 V", pt = "4,0 - 6,0 V", it = "4,0 - 6,0 V", nl = "4,0 - 6,0 V", sv = "4,0 - 6,0 V", cs = "4,0 - 6,0 V", sk = "4,0 - 6,0 V"),
-                tr("Na pograniczu - warto obserwować", "Borderline - worth watching", de = "Grenzwertig - beobachten lohnt sich", fr = "Limite - à surveiller", es = "Límite - conviene vigilarlo", pt = "No limite - vale a pena monitorizar", it = "Al limite - vale la pena monitorare", nl = "Grensgeval - de moeite waard om te volgen", sv = "Gränsfall - värt att bevaka", cs = "Na hranici - stojí za sledování", sk = "Na hranici - oplatí sa sledovať"),
+                tr("4,0 - 6,0 V", "4.0 - 6.0 V", de = "4,0 - 6,0 V", fr = "4,0 - 6,0 V", es = "4,0 - 6,0 V", pt = "4,0 - 6,0 V", it = "4,0 - 6,0 V", nl = "4,0 - 6,0 V", sv = "4,0 - 6,0 V", cs = "4,0 - 6,0 V", sk = "4,0 - 6,0 V", da = "4,0 - 6,0 V", ru = "4,0 - 6,0 В"),
+                tr("Na pograniczu - warto obserwować", "Borderline - worth watching", de = "Grenzwertig - beobachten lohnt sich", fr = "Limite - à surveiller", es = "Límite - conviene vigilarlo", pt = "No limite - vale a pena monitorizar", it = "Al limite - vale la pena monitorare", nl = "Grensgeval - de moeite waard om te volgen", sv = "Gränsfall - värt att bevaka", cs = "Na hranici - stojí za sledování", sk = "Na hranici - oplatí sa sledovať", da = "På grænsen - værd at holde øje med", ru = "На грани - стоит следить"),
                 Tokens.Amber,
             )
             SagLegendRow(
-                tr("> 6,0 V", "> 6.0 V", de = "> 6,0 V", fr = "> 6,0 V", es = "> 6,0 V", pt = "> 6,0 V", it = "> 6,0 V", nl = "> 6,0 V", sv = "> 6,0 V", cs = "> 6,0 V", sk = "> 6,0 V"),
-                tr("Zbyt niska jakość / uszkodzona", "Too low quality / damaged", de = "Zu geringe Qualität / beschädigt", fr = "Qualité trop faible / endommagée", es = "Calidad demasiado baja / dañada", pt = "Qualidade demasiado baixa / danificada", it = "Qualità troppo bassa / danneggiata", nl = "Kwaliteit te laag / beschadigd", sv = "För låg kvalitet / skadad", cs = "Příliš nízká kvalita / poškozeno", sk = "Príliš nízka kvalita / poškodené"),
+                tr("> 6,0 V", "> 6.0 V", de = "> 6,0 V", fr = "> 6,0 V", es = "> 6,0 V", pt = "> 6,0 V", it = "> 6,0 V", nl = "> 6,0 V", sv = "> 6,0 V", cs = "> 6,0 V", sk = "> 6,0 V", da = "> 6,0 V", ru = "> 6,0 В"),
+                tr("Zbyt niska jakość / uszkodzona", "Too low quality / damaged", de = "Zu geringe Qualität / beschädigt", fr = "Qualité trop faible / endommagée", es = "Calidad demasiado baja / dañada", pt = "Qualidade demasiado baixa / danificada", it = "Qualità troppo bassa / danneggiata", nl = "Kwaliteit te laag / beschadigd", sv = "För låg kvalitet / skadad", cs = "Příliš nízká kvalita / poškozeno", sk = "Príliš nízka kvalita / poškodené", da = "For lav kvalitet / beskadiget", ru = "Слишком низкое качество / повреждена"),
                 Tokens.Red,
                 last = true,
             )
         }
 
         ExpandableParamTile(
-            label = tr("SAG orientacyjny", "Estimated SAG", de = "Geschätzter SAG", fr = "SAG estimé", es = "SAG estimado", pt = "SAG estimado", it = "SAG stimato", nl = "Geschat SAG", sv = "Uppskattad SAG", cs = "Odhadovaný SAG", sk = "Odhadovaný SAG"),
+            label = tr("SAG orientacyjny", "Estimated SAG", de = "Geschätzter SAG", fr = "SAG estimé", es = "SAG estimado", pt = "SAG estimado", it = "SAG stimato", nl = "Geschat SAG", sv = "Uppskattad SAG", cs = "Odhadovaný SAG", sk = "Odhadovaný SAG", da = "Estimeret SAG", ru = "Приблизительный SAG"),
             valueLabel = "",
             descriptionColor = Tokens.TextTertiary,
             description = tr(
@@ -205,13 +213,26 @@ fun SagScreen(state: UiState, onStart: () -> Unit, onCancel: () -> Unit) {
                     "vzoriek a vyhladená, preto reaguje pomaly. Pri nízkom zaťažení motora (pokojná jazda, " +
                     "zriedka nad 60%) bude výsledok vyzerať lepšie (nižší SAG), než by v skutočnosti ukázalo " +
                     "úplné Meranie SAG nižšie.",
+                da = "Beregnes kun, mens du midlertidigt bruger mindst 60% af motorens maksimale effekt, og " +
+                    "kun hvis det holdes uafbrudt i mindst 5 sekunder (kortere strømspidser kasseres som " +
+                    "upålidelige). En omtrentlig værdi, tilpasset DIN kørestil - beregnet ud fra sådanne " +
+                    "prøver og udjævnet, så den reagerer langsomt. Ved lav motorbelastning (rolig kørsel, " +
+                    "sjældent over 60%) vil resultatet se bedre ud (lavere SAG), end en fuld SAG-måling " +
+                    "nedenfor faktisk ville vise.",
+                ru = "Рассчитывается только тогда, когда вы кратковременно используете не менее 60% " +
+                    "максимальной мощности мотора, и только если это удерживается непрерывно не менее " +
+                    "5 секунд (более короткие всплески тока отбрасываются как ненадёжные). Приблизительное " +
+                    "значение, соответствующее ВАШЕМУ стилю езды - рассчитывается по таким образцам и " +
+                    "сглаживается, поэтому реагирует медленно. При низкой нагрузке на мотор (спокойная " +
+                    "езда, редко превышающая 60%) результат будет выглядеть лучше (более низкий SAG), чем " +
+                    "реально показало бы полное Измерение SAG ниже.",
             ),
         ) {
             val sagV = state.everydaySagAtMaxCurrentV
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(
-                        tr("Projekcja przy max prądzie", "Projected at max current", de = "Projektion bei Maximalstrom", fr = "Projection au courant max", es = "Proyección a corriente máxima", pt = "Projeção à corrente máxima", it = "Proiezione alla corrente massima", nl = "Projectie bij max. stroom", sv = "Projektion vid maxström", cs = "Projekce při max. proudu", sk = "Projekcia pri max. prúde"),
+                        tr("Projekcja przy max prądzie", "Projected at max current", de = "Projektion bei Maximalstrom", fr = "Projection au courant max", es = "Proyección a corriente máxima", pt = "Projeção à corrente máxima", it = "Proiezione alla corrente massima", nl = "Projectie bij max. stroom", sv = "Projektion vid maxström", cs = "Projekce při max. proudu", sk = "Projekcia pri max. prúde", da = "Projektion ved maks. strøm", ru = "Прогноз при максимальном токе"),
                         fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
                     )
                     Box(Modifier.height(40.dp), contentAlignment = Alignment.CenterStart) {
@@ -231,7 +252,7 @@ fun SagScreen(state: UiState, onStart: () -> Unit, onCancel: () -> Unit) {
                     )
                     if (!state.maxCurrentAIsKnown) {
                         Text(
-                            tr("nieznany, połącz się", "unknown, connect first", de = "unbekannt, erst verbinden", fr = "inconnu, connectez-vous d'abord", es = "desconocido, conéctate primero", pt = "desconhecido, liga-te primeiro", it = "sconosciuto, connettiti prima", nl = "onbekend, verbind eerst", sv = "okänd, anslut först", cs = "neznámý, nejprve se připojte", sk = "neznámy, najprv sa pripojte"),
+                            tr("nieznany, połącz się", "unknown, connect first", de = "unbekannt, erst verbinden", fr = "inconnu, connectez-vous d'abord", es = "desconocido, conéctate primero", pt = "desconhecido, liga-te primeiro", it = "sconosciuto, connettiti prima", nl = "onbekend, verbind eerst", sv = "okänd, anslut först", cs = "neznámý, nejprve se připojte", sk = "neznámy, najprv sa pripojte", da = "ukendt, opret forbindelse først", ru = "неизвестно, сначала подключитесь"),
                             fontFamily = Manrope, fontSize = 9.sp, color = Tokens.TextTertiary,
                         )
                     }
@@ -240,7 +261,7 @@ fun SagScreen(state: UiState, onStart: () -> Unit, onCancel: () -> Unit) {
             Spacer(Modifier.height(4.dp))
         }
 
-        MicroLabel(tr("Pomiar SAG", "SAG Measurement", de = "SAG-Messung", fr = "Mesure SAG", es = "Medición SAG", pt = "Medição SAG", it = "Misurazione SAG", nl = "SAG-meting", sv = "SAG-mätning", cs = "Měření SAG", sk = "Meranie SAG"))
+        MicroLabel(tr("Pomiar SAG", "SAG Measurement", de = "SAG-Messung", fr = "Mesure SAG", es = "Medición SAG", pt = "Medição SAG", it = "Misurazione SAG", nl = "SAG-meting", sv = "SAG-mätning", cs = "Měření SAG", sk = "Meranie SAG", da = "SAG-måling", ru = "Измерение SAG"))
         TokenCard(borderColor = Tokens.WhiteBorder) {
             Text(
                 tr(
@@ -267,6 +288,11 @@ fun SagScreen(state: UiState, onStart: () -> Unit, onCancel: () -> Unit) {
                         "baterie za kontrolovaných podmínek - nezávisle na tom, jak právě jedete.",
                     sk = "Oveľa presnejšie než odhadovaný SAG, pretože vynucuje maximálne zaťaženie " +
                         "batérie za kontrolovaných podmienok - nezávisle od toho, ako práve idete.",
+                    da = "Meget mere præcis end estimeret SAG, fordi den tvinger maksimal batteribelastning " +
+                        "frem under kontrollerede forhold - uafhængigt af, hvordan du tilfældigvis kører.",
+                    ru = "Гораздо точнее, чем приблизительный SAG, потому что он обеспечивает максимальную " +
+                        "нагрузку на батарею в контролируемых условиях - независимо от того, как именно вы " +
+                        "едете в данный момент.",
                 ),
                 fontFamily = Manrope, fontWeight = FontWeight.SemiBold, fontSize = 12.sp, lineHeight = 16.sp, color = Tokens.TextPrimary,
             )
@@ -280,7 +306,7 @@ fun SagScreen(state: UiState, onStart: () -> Unit, onCancel: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    tr("Jak wykonać pomiar", "How to run the measurement", de = "So führst du die Messung durch", fr = "Comment effectuer la mesure", es = "Cómo realizar la medición", pt = "Como realizar a medição", it = "Come eseguire la misurazione", nl = "Hoe de meting uit te voeren", sv = "Så genomför du mätningen", cs = "Jak provést měření", sk = "Ako vykonať meranie"),
+                    tr("Jak wykonać pomiar", "How to run the measurement", de = "So führst du die Messung durch", fr = "Comment effectuer la mesure", es = "Cómo realizar la medición", pt = "Como realizar a medição", it = "Come eseguire la misurazione", nl = "Hoe de meting uit te voeren", sv = "Så genomför du mätningen", cs = "Jak provést měření", sk = "Ako vykonať meranie", da = "Sådan udfører du målingen", ru = "Как выполнить измерение"),
                     fontFamily = Manrope, fontWeight = FontWeight.SemiBold, fontSize = 12.sp, color = Tokens.TextSecondary,
                     modifier = Modifier.weight(1f),
                 )
@@ -344,6 +370,17 @@ fun SagScreen(state: UiState, onStart: () -> Unit, onCancel: () -> Unit) {
                             "pastorok na maximalizáciu zaťaženia motora. Použite plynovú páčku (ak ju máte) " +
                             "alebo choďte tak, aby ste dosiahli maximálny asistenčný výkon - snažte sa bicykel " +
                             "zaťažiť čo najviac počas celého testu.",
+                        da = "Gør dette med batteriet på 50-100%. Ideelt på en let stigning, ellers på fladt " +
+                            "terræn. Minimer trædning - brug det mindste (tungeste) baggear for at maksimere " +
+                            "motorbelastningen. Brug gashåndtaget (hvis du har et), eller kør så du får " +
+                            "maksimal understøttelseseffekt - prøv at belaste cyklen så hårdt som muligt " +
+                            "under hele testen.",
+                        ru = "Делайте это при заряде батареи 50-100%. В идеале на небольшом подъёме, на " +
+                            "крайний случай - на ровной поверхности. Сведите педалирование к минимуму - " +
+                            "используйте самую маленькую (самую тяжёлую) заднюю звезду, чтобы максимизировать " +
+                            "нагрузку на мотор. Используйте газовую ручку (если она есть) или езжайте так, " +
+                            "чтобы получить максимальную мощность помощи - старайтесь нагружать велосипед как " +
+                            "можно сильнее в течение всего теста.",
                     ),
                     fontFamily = Manrope, fontSize = 12.sp, lineHeight = 17.sp, color = Tokens.TextSecondary,
                 )
@@ -371,6 +408,10 @@ fun SagScreen(state: UiState, onStart: () -> Unit, onCancel: () -> Unit) {
                         "2 min čekání bez jízdy (aplikace vypočítá SAG).",
                     sk = "Postup: 2 min čakania bez jazdy (napätie sa stabilizuje) → 30s plnej záťaže → " +
                         "2 min čakania bez jazdy (aplikácia vypočíta SAG).",
+                    da = "Forløb: 2 min ventetid uden at køre (spændingen stabiliseres) → 30s fuld " +
+                        "belastning → 2 min ventetid uden at køre (appen beregner SAG).",
+                    ru = "Последовательность: 2 мин ожидания без езды (напряжение стабилизируется) → " +
+                        "30с полной нагрузки → 2 мин ожидания без езды (приложение вычисляет SAG).",
                 ),
                 fontFamily = Manrope, fontWeight = FontWeight.SemiBold, fontSize = 12.sp, lineHeight = 17.sp, color = Tokens.Amber,
             )
@@ -397,6 +438,8 @@ fun SagScreen(state: UiState, onStart: () -> Unit, onCancel: () -> Unit) {
                                 sv = "Anslut till kontrollern för att genomföra mätningen.",
                                 cs = "Připojte se k řídicí jednotce pro provedení měření.",
                                 sk = "Pripojte sa k riadiacej jednotke na vykonanie merania.",
+                                da = "Opret forbindelse til controlleren for at udføre målingen.",
+                                ru = "Подключитесь к контроллеру, чтобы выполнить измерение.",
                             ),
                             fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextTertiary,
                         )
@@ -406,7 +449,7 @@ fun SagScreen(state: UiState, onStart: () -> Unit, onCancel: () -> Unit) {
             }
         }
 
-        MicroLabel(tr("Ostatni wynik pomiaru", "Last measurement result", de = "Letztes Messergebnis", fr = "Dernier résultat de mesure", es = "Último resultado de medición", pt = "Último resultado de medição", it = "Ultimo risultato di misurazione", nl = "Laatste meetresultaat", sv = "Senaste mätresultat", cs = "Poslední výsledek měření", sk = "Posledný výsledok merania"))
+        MicroLabel(tr("Ostatni wynik pomiaru", "Last measurement result", de = "Letztes Messergebnis", fr = "Dernier résultat de mesure", es = "Último resultado de medición", pt = "Último resultado de medição", it = "Ultimo risultato di misurazione", nl = "Laatste meetresultaat", sv = "Senaste mätresultat", cs = "Poslední výsledek měření", sk = "Posledný výsledok merania", da = "Seneste måleresultat", ru = "Последний результат измерения"))
         TokenCard(borderColor = Tokens.WhiteBorder) {
             if (state.sagCalibrationResultV == null) {
                 Text(
@@ -422,25 +465,27 @@ fun SagScreen(state: UiState, onStart: () -> Unit, onCancel: () -> Unit) {
                         sv = "Ingen mätning ännu - genomför din första SAG-mätning ovan.",
                         cs = "Zatím žádné měření - proveďte výše první Měření SAG.",
                         sk = "Zatiaľ žiadne meranie - vykonajte vyššie prvé Meranie SAG.",
+                        da = "Ingen måling endnu - udfør din første SAG-måling ovenfor.",
+                        ru = "Пока нет измерений - выполните первое измерение SAG выше.",
                     ),
                     fontFamily = Manrope, fontSize = 12.sp, color = Tokens.TextTertiary,
                 )
             } else {
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    ResultRow(tr("SAG pod obciążeniem", "SAG under load", de = "SAG unter Last", fr = "SAG en charge", es = "SAG bajo carga", pt = "SAG sob carga", it = "SAG sotto carico", nl = "SAG onder belasting", sv = "SAG under belastning", cs = "SAG pod zátěží", sk = "SAG pod záťažou"), "${String.format("%.2f", state.sagCalibrationResultV)} V", modifier = Modifier.weight(1f))
+                    ResultRow(tr("SAG pod obciążeniem", "SAG under load", de = "SAG unter Last", fr = "SAG en charge", es = "SAG bajo carga", pt = "SAG sob carga", it = "SAG sotto carico", nl = "SAG onder belasting", sv = "SAG under belastning", cs = "SAG pod zátěží", sk = "SAG pod záťažou", da = "SAG under belastning", ru = "SAG под нагрузкой"), "${String.format("%.2f", state.sagCalibrationResultV)} V", modifier = Modifier.weight(1f))
                     SagBadge(state.sagCalibrationResultV)
                 }
                 state.sagCalibrationResultResistanceOhm?.let {
-                    ResultRow(tr("Efektywna rezystancja", "Effective resistance", de = "Effektiver Widerstand", fr = "Résistance effective", es = "Resistencia efectiva", pt = "Resistência efetiva", it = "Resistenza effettiva", nl = "Effectieve weerstand", sv = "Effektivt motstånd", cs = "Efektivní odpor", sk = "Efektívny odpor"), "${String.format("%.0f", it * 1000)} mΩ")
+                    ResultRow(tr("Efektywna rezystancja", "Effective resistance", de = "Effektiver Widerstand", fr = "Résistance effective", es = "Resistencia efectiva", pt = "Resistência efetiva", it = "Resistenza effettiva", nl = "Effectieve weerstand", sv = "Effektivt motstånd", cs = "Efektivní odpor", sk = "Efektívny odpor", da = "Effektiv modstand", ru = "Эффективное сопротивление"), "${String.format("%.0f", it * 1000)} mΩ")
                 }
                 state.sagCalibrationResultCurrentA?.let {
-                    ResultRow(tr("Prąd testu", "Test current", de = "Teststrom", fr = "Courant de test", es = "Corriente de prueba", pt = "Corrente de teste", it = "Corrente di prova", nl = "Teststroom", sv = "Testström", cs = "Testovací proud", sk = "Testovací prúd"), "${String.format("%.1f", it)} A")
+                    ResultRow(tr("Prąd testu", "Test current", de = "Teststrom", fr = "Courant de test", es = "Corriente de prueba", pt = "Corrente de teste", it = "Corrente di prova", nl = "Teststroom", sv = "Testström", cs = "Testovací proud", sk = "Testovací prúd", da = "Teststrøm", ru = "Тестовый ток"), "${String.format("%.1f", it)} A")
                 }
                 state.sagCalibrationResultSocPct?.let {
-                    ResultRow(tr("Naładowanie na starcie", "Charge at start", de = "Ladezustand zu Beginn", fr = "Charge au départ", es = "Carga al inicio", pt = "Carga no início", it = "Carica all'inizio", nl = "Lading bij start", sv = "Laddning vid start", cs = "Nabití na začátku", sk = "Nabitie na začiatku"), "$it %")
+                    ResultRow(tr("Naładowanie na starcie", "Charge at start", de = "Ladezustand zu Beginn", fr = "Charge au départ", es = "Carga al inicio", pt = "Carga no início", it = "Carica all'inizio", nl = "Lading bij start", sv = "Laddning vid start", cs = "Nabití na začátku", sk = "Nabitie na začiatku", da = "Opladning ved start", ru = "Заряд в начале"), "$it %")
                 }
                 state.sagCalibrationResultTimestampMs?.let {
-                    ResultRow(tr("Kiedy", "When", de = "Wann", fr = "Quand", es = "Cuándo", pt = "Quando", it = "Quando", nl = "Wanneer", sv = "När", cs = "Kdy", sk = "Kedy"), formatAgo(it))
+                    ResultRow(tr("Kiedy", "When", de = "Wann", fr = "Quand", es = "Cuándo", pt = "Quando", it = "Quando", nl = "Wanneer", sv = "När", cs = "Kdy", sk = "Kedy", da = "Hvornår", ru = "Когда"), formatAgo(it))
                 }
             }
         }
@@ -485,10 +530,10 @@ private fun SagBadge(sagV: Double) {
     ) {
         Text(
             when {
-                sagV <= 2.0 -> tr("Doskonała", "Excellent", de = "Ausgezeichnet", fr = "Excellente", es = "Excelente", pt = "Excelente", it = "Eccellente", nl = "Uitstekend", sv = "Utmärkt", cs = "Vynikající", sk = "Vynikajúca")
-                sagV <= 4.0 -> tr("Wystarczająca", "Sufficient", de = "Ausreichend", fr = "Suffisante", es = "Suficiente", pt = "Suficiente", it = "Sufficiente", nl = "Voldoende", sv = "Tillräcklig", cs = "Dostatečná", sk = "Dostatočná")
-                sagV <= 6.0 -> tr("Na pograniczu", "Borderline", de = "Grenzwertig", fr = "Limite", es = "Límite", pt = "No limite", it = "Al limite", nl = "Grensgeval", sv = "Gränsfall", cs = "Na hranici", sk = "Na hranici")
-                else -> tr("Zbyt niska", "Too low", de = "Zu niedrig", fr = "Trop faible", es = "Demasiado baja", pt = "Demasiado baixa", it = "Troppo bassa", nl = "Te laag", sv = "För låg", cs = "Příliš nízká", sk = "Príliš nízka")
+                sagV <= 2.0 -> tr("Doskonała", "Excellent", de = "Ausgezeichnet", fr = "Excellente", es = "Excelente", pt = "Excelente", it = "Eccellente", nl = "Uitstekend", sv = "Utmärkt", cs = "Vynikající", sk = "Vynikajúca", da = "Fremragende", ru = "Отличное")
+                sagV <= 4.0 -> tr("Wystarczająca", "Sufficient", de = "Ausreichend", fr = "Suffisante", es = "Suficiente", pt = "Suficiente", it = "Sufficiente", nl = "Voldoende", sv = "Tillräcklig", cs = "Dostatečná", sk = "Dostatočná", da = "Tilstrækkelig", ru = "Достаточно")
+                sagV <= 6.0 -> tr("Na pograniczu", "Borderline", de = "Grenzwertig", fr = "Limite", es = "Límite", pt = "No limite", it = "Al limite", nl = "Grensgeval", sv = "Gränsfall", cs = "Na hranici", sk = "Na hranici", da = "På grænsen", ru = "На грани")
+                else -> tr("Zbyt niska", "Too low", de = "Zu niedrig", fr = "Trop faible", es = "Demasiado baja", pt = "Demasiado baixa", it = "Troppo bassa", nl = "Te laag", sv = "För låg", cs = "Příliš nízká", sk = "Príliš nízka", da = "For lav", ru = "Слишком низкое")
             },
             fontFamily = Manrope, fontWeight = FontWeight.Bold, fontSize = 11.sp, color = color,
         )
@@ -506,7 +551,7 @@ private fun MeasureStartButton(enabled: Boolean, onClick: () -> Unit) {
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            tr("Rozpocznij pomiar", "Start measurement", de = "Messung starten", fr = "Démarrer la mesure", es = "Iniciar medición", pt = "Iniciar medição", it = "Avvia misurazione", nl = "Meting starten", sv = "Starta mätning", cs = "Zahájit měření", sk = "Spustiť meranie"),
+            tr("Rozpocznij pomiar", "Start measurement", de = "Messung starten", fr = "Démarrer la mesure", es = "Iniciar medición", pt = "Iniciar medição", it = "Avvia misurazione", nl = "Meting starten", sv = "Starta mätning", cs = "Zahájit měření", sk = "Spustiť meranie", da = "Start måling", ru = "Начать измерение"),
             fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 15.sp,
             color = if (enabled) Tokens.OnAccent else Tokens.TextTertiary,
         )
@@ -516,9 +561,9 @@ private fun MeasureStartButton(enabled: Boolean, onClick: () -> Unit) {
 @Composable
 private fun MeasureProgress(phase: SagCalibrationPhase, remainingS: Int, onCancel: () -> Unit) {
     val label = when (phase) {
-        SagCalibrationPhase.PRE_WAIT -> tr("Odczekaj - nie jedź, napięcie się stabilizuje", "Wait - don't ride, voltage is stabilizing", de = "Warten - nicht fahren, Spannung stabilisiert sich", fr = "Attendez - ne roulez pas, la tension se stabilise", es = "Espera - no conduzcas, el voltaje se está estabilizando", pt = "Espera - não andes, a tensão está a estabilizar", it = "Attendi - non pedalare, la tensione si sta stabilizzando", nl = "Wacht - niet rijden, spanning stabiliseert", sv = "Vänta - kör inte, spänningen stabiliseras", cs = "Počkejte - nejeďte, napětí se stabilizuje", sk = "Počkajte - nejazdite, napätie sa stabilizuje")
-        SagCalibrationPhase.LOADING -> tr("TERAZ! Obciąż rower maksymalnie", "NOW! Load the bike as hard as possible", de = "JETZT! Belaste das Fahrrad maximal", fr = "MAINTENANT ! Chargez le vélo au maximum", es = "¡AHORA! Carga la bicicleta al máximo", pt = "AGORA! Carrega a bicicleta ao máximo", it = "ORA! Carica la bici il più possibile", nl = "NU! Belast de fiets zo hard mogelijk", sv = "NU! Belasta cykeln maximalt", cs = "TEĎ! Zatěžte kolo maximálně", sk = "TERAZ! Zaťažte bicykel maximálne")
-        SagCalibrationPhase.POST_WAIT -> tr("Zatrzymaj rower i odczekaj - trwa liczenie", "Stop the bike and wait - calculating", de = "Fahrrad anhalten und warten - Berechnung läuft", fr = "Arrêtez le vélo et attendez - calcul en cours", es = "Detén la bicicleta y espera - calculando", pt = "Para a bicicleta e espera - a calcular", it = "Ferma la bici e attendi - calcolo in corso", nl = "Stop de fiets en wacht - berekenen", sv = "Stanna cykeln och vänta - beräknar", cs = "Zastavte kolo a počkejte - probíhá výpočet", sk = "Zastavte bicykel a počkajte - prebieha výpočet")
+        SagCalibrationPhase.PRE_WAIT -> tr("Odczekaj - nie jedź, napięcie się stabilizuje", "Wait - don't ride, voltage is stabilizing", de = "Warten - nicht fahren, Spannung stabilisiert sich", fr = "Attendez - ne roulez pas, la tension se stabilise", es = "Espera - no conduzcas, el voltaje se está estabilizando", pt = "Espera - não andes, a tensão está a estabilizar", it = "Attendi - non pedalare, la tensione si sta stabilizzando", nl = "Wacht - niet rijden, spanning stabiliseert", sv = "Vänta - kör inte, spänningen stabiliseras", cs = "Počkejte - nejeďte, napětí se stabilizuje", sk = "Počkajte - nejazdite, napätie sa stabilizuje", da = "Vent - kør ikke, spændingen stabiliseres", ru = "Подождите - не едьте, напряжение стабилизируется")
+        SagCalibrationPhase.LOADING -> tr("TERAZ! Obciąż rower maksymalnie", "NOW! Load the bike as hard as possible", de = "JETZT! Belaste das Fahrrad maximal", fr = "MAINTENANT ! Chargez le vélo au maximum", es = "¡AHORA! Carga la bicicleta al máximo", pt = "AGORA! Carrega a bicicleta ao máximo", it = "ORA! Carica la bici il più possibile", nl = "NU! Belast de fiets zo hard mogelijk", sv = "NU! Belasta cykeln maximalt", cs = "TEĎ! Zatěžte kolo maximálně", sk = "TERAZ! Zaťažte bicykel maximálne", da = "NU! Belast cyklen maksimalt", ru = "СЕЙЧАС! Максимально нагрузите велосипед")
+        SagCalibrationPhase.POST_WAIT -> tr("Zatrzymaj rower i odczekaj - trwa liczenie", "Stop the bike and wait - calculating", de = "Fahrrad anhalten und warten - Berechnung läuft", fr = "Arrêtez le vélo et attendez - calcul en cours", es = "Detén la bicicleta y espera - calculando", pt = "Para a bicicleta e espera - a calcular", it = "Ferma la bici e attendi - calcolo in corso", nl = "Stop de fiets en wacht - berekenen", sv = "Stanna cykeln och vänta - beräknar", cs = "Zastavte kolo a počkejte - probíhá výpočet", sk = "Zastavte bicykel a počkajte - prebieha výpočet", da = "Stop cyklen og vent - beregner", ru = "Остановите велосипед и подождите - идёт расчёт")
         SagCalibrationPhase.IDLE -> ""
     }
     val accent = if (phase == SagCalibrationPhase.LOADING) Tokens.Amber else Tokens.Blue
@@ -532,7 +577,7 @@ private fun MeasureProgress(phase: SagCalibrationPhase, remainingS: Int, onCance
         Text(label, fontFamily = Manrope, fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = Tokens.TextPrimary)
         Spacer(Modifier.height(10.dp))
         Text(
-            tr("Anuluj", "Cancel", de = "Abbrechen", fr = "Annuler", es = "Cancelar", pt = "Cancelar", it = "Annulla", nl = "Annuleren", sv = "Avbryt", cs = "Zrušit", sk = "Zrušiť"),
+            tr("Anuluj", "Cancel", de = "Abbrechen", fr = "Annuler", es = "Cancelar", pt = "Cancelar", it = "Annulla", nl = "Annuleren", sv = "Avbryt", cs = "Zrušit", sk = "Zrušiť", da = "Annuller", ru = "Отмена"),
             fontFamily = Manrope, fontWeight = FontWeight.SemiBold, fontSize = 12.sp, color = Tokens.Red,
             modifier = Modifier
                 .clickable { onCancel() }
@@ -559,8 +604,8 @@ private fun formatAgo(timestampMs: Long): String {
     val diffMs = System.currentTimeMillis() - timestampMs
     val hours = TimeUnit.MILLISECONDS.toHours(diffMs)
     return when {
-        hours < 1 -> tr("mniej niż godzinę temu", "less than an hour ago", de = "vor weniger als einer Stunde", fr = "il y a moins d'une heure", es = "hace menos de una hora", pt = "há menos de uma hora", it = "meno di un'ora fa", nl = "minder dan een uur geleden", sv = "mindre än en timme sedan", cs = "před méně než hodinou", sk = "pred menej ako hodinou")
-        hours < 24 -> tr("$hours godz. temu", "$hours h ago", de = "vor $hours Std.", fr = "il y a $hours h", es = "hace $hours h", pt = "há $hours h", it = "$hours h fa", nl = "$hours u geleden", sv = "för $hours h sedan", cs = "před $hours h", sk = "pred $hours h")
-        else -> tr("${hours / 24} dni temu", "${hours / 24} days ago", de = "vor ${hours / 24} Tagen", fr = "il y a ${hours / 24} jours", es = "hace ${hours / 24} días", pt = "há ${hours / 24} dias", it = "${hours / 24} giorni fa", nl = "${hours / 24} dagen geleden", sv = "för ${hours / 24} dagar sedan", cs = "před ${hours / 24} dny", sk = "pred ${hours / 24} dňami")
+        hours < 1 -> tr("mniej niż godzinę temu", "less than an hour ago", de = "vor weniger als einer Stunde", fr = "il y a moins d'une heure", es = "hace menos de una hora", pt = "há menos de uma hora", it = "meno di un'ora fa", nl = "minder dan een uur geleden", sv = "mindre än en timme sedan", cs = "před méně než hodinou", sk = "pred menej ako hodinou", da = "mindre end en time siden", ru = "менее часа назад")
+        hours < 24 -> tr("$hours godz. temu", "$hours h ago", de = "vor $hours Std.", fr = "il y a $hours h", es = "hace $hours h", pt = "há $hours h", it = "$hours h fa", nl = "$hours u geleden", sv = "för $hours h sedan", cs = "před $hours h", sk = "pred $hours h", da = "for $hours t. siden", ru = "$hours ч. назад")
+        else -> tr("${hours / 24} dni temu", "${hours / 24} days ago", de = "vor ${hours / 24} Tagen", fr = "il y a ${hours / 24} jours", es = "hace ${hours / 24} días", pt = "há ${hours / 24} dias", it = "${hours / 24} giorni fa", nl = "${hours / 24} dagen geleden", sv = "för ${hours / 24} dagar sedan", cs = "před ${hours / 24} dny", sk = "pred ${hours / 24} dňami", da = "for ${hours / 24} dage siden", ru = "${hours / 24} дн. назад")
     }
 }

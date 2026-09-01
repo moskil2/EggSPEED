@@ -57,11 +57,11 @@ fun DisplayScreen(
     ) {
         TokenCard(borderColor = Tokens.WhiteBorder) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(tr("Motyw", "Theme", de = "Design", fr = "Thème", es = "Tema", pt = "Tema", it = "Tema", nl = "Thema", sv = "Tema", cs = "Motiv", sk = "Motív"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary, modifier = Modifier.weight(1f))
+                Text(tr("Motyw", "Theme", de = "Design", fr = "Thème", es = "Tema", pt = "Tema", it = "Tema", nl = "Thema", sv = "Tema", cs = "Motiv", sk = "Motív", da = "Tema", ru = "Тема"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary, modifier = Modifier.weight(1f))
                 SegmentedControl(
                     options = listOf(
-                        tr("Ciemny", "Dark", de = "Dunkel", fr = "Sombre", es = "Oscuro", pt = "Escuro", it = "Scuro", nl = "Donker", sv = "Mörkt", cs = "Tmavý", sk = "Tmavý"),
-                        tr("Jasny", "Light", de = "Hell", fr = "Clair", es = "Claro", pt = "Claro", it = "Chiaro", nl = "Licht", sv = "Ljust", cs = "Světlý", sk = "Svetlý"),
+                        tr("Ciemny", "Dark", de = "Dunkel", fr = "Sombre", es = "Oscuro", pt = "Escuro", it = "Scuro", nl = "Donker", sv = "Mörkt", cs = "Tmavý", sk = "Tmavý", da = "Mørk", ru = "Тёмный"),
+                        tr("Jasny", "Light", de = "Hell", fr = "Clair", es = "Claro", pt = "Claro", it = "Chiaro", nl = "Licht", sv = "Ljust", cs = "Světlý", sk = "Svetlý", da = "Lys", ru = "Светлый"),
                     ),
                     selectedIndex = if (state.lightMode) 1 else 0,
                     onSelect = { onLightModeChange(it == 1) },
@@ -70,7 +70,7 @@ fun DisplayScreen(
             }
             HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
             ToggleRow(
-                label = tr("Wysoki kontrast", "High contrast", de = "Hoher Kontrast", fr = "Contraste élevé", es = "Alto contraste", pt = "Alto contraste", it = "Alto contrasto", nl = "Hoog contrast", sv = "Hög kontrast", cs = "Vysoký kontrast", sk = "Vysoký kontrast"),
+                label = tr("Wysoki kontrast", "High contrast", de = "Hoher Kontrast", fr = "Contraste élevé", es = "Alto contraste", pt = "Alto contraste", it = "Alto contrasto", nl = "Hoog contrast", sv = "Hög kontrast", cs = "Vysoký kontrast", sk = "Vysoký kontrast", da = "Høj kontrast", ru = "Высокая контрастность"),
                 checked = state.highContrast,
                 onCheckedChange = onHighContrastChange,
                 accent = Tokens.Blue,
@@ -86,11 +86,13 @@ fun DisplayScreen(
                     sv = "Ljusar upp blekt grå text i menyer och på Cockpit till nästan helvit - användbart vid körning i starkt solljus. Fungerar i båda temana (mörkt och ljust).",
                     cs = "Zesvětlí vybledlý šedý text v nabídkách a v Cockpitu na téměř plnou bílou - užitečné při jízdě na plném slunci. Funguje v obou motivech (tmavý i světlý).",
                     sk = "Zosvetlí vyblednutý sivý text v ponukách a v Cockpite na takmer plnú bielu - užitočné pri jazde na plnom slnku. Funguje v oboch motívoch (tmavý aj svetlý).",
+                    da = "Gør falmet grå tekst i menuer og på Cockpit næsten helt hvid - nyttigt ved kørsel i stærkt sollys. Virker i begge temaer (mørkt og lyst).",
+                    ru = "Делает выцветший серый текст в меню и на Кокпите почти полностью белым - полезно при езде в яркое солнце. Работает в обеих темах (тёмной и светлой).",
                 ),
             )
             HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
             ToggleRow(
-                label = tr("Powiększone cyfry na Kokpicie", "Large Cockpit digits", de = "Größere Zahlen im Cockpit", fr = "Chiffres agrandis (Cockpit)", es = "Cifras grandes en el Cockpit", pt = "Números grandes no Cockpit", it = "Numeri grandi nel Cockpit", nl = "Grote cijfers in Cockpit", sv = "Stora siffror i Cockpit", cs = "Velká čísla v Cockpitu", sk = "Veľké čísla v Cockpite"),
+                label = tr("Powiększone cyfry na Kokpicie", "Large Cockpit digits", de = "Größere Zahlen im Cockpit", fr = "Chiffres agrandis (Cockpit)", es = "Cifras grandes en el Cockpit", pt = "Números grandes no Cockpit", it = "Numeri grandi nel Cockpit", nl = "Grote cijfers in Cockpit", sv = "Stora siffror i Cockpit", cs = "Velká čísla v Cockpitu", sk = "Veľké čísla v Cockpite", da = "Store tal i Cockpit", ru = "Крупные цифры в Кокпите"),
                 checked = state.largeCockpitDigits,
                 onCheckedChange = onLargeCockpitDigitsChange,
                 accent = Tokens.Blue,
@@ -106,14 +108,16 @@ fun DisplayScreen(
                     sv = "Förstorar ENDAST de numeriska värdena i Cockpit (hastighet, effekt, rutorna Distance/Trip/Current/etc., assistansnivåer, -/+ knappar, Light/Brake) - etiketter, enheter och ruteplaceringar förblir oförändrade.",
                     cs = "Zvětšuje POUZE číselné hodnoty v Cockpitu (rychlost, výkon, dlaždice Distance/Trip/Current/atd., úrovně asistence, tlačítka -/+, Light/Brake) - popisky, jednotky a pozice dlaždic zůstávají beze změny.",
                     sk = "Zväčšuje IBA číselné hodnoty v Cockpite (rýchlosť, výkon, dlaždice Distance/Trip/Current/atď., úrovne asistencie, tlačidlá -/+, Light/Brake) - popisky, jednotky a pozície dlaždíc zostávajú bez zmeny.",
+                    da = "Forstørrer KUN de numeriske værdier i Cockpit (hastighed, effekt, felterne Distance/Trip/Current/osv., assistanceniveauer, -/+ knapper, Light/Brake) - etiketter, enheder og feltpositioner forbliver uændrede.",
+                    ru = "Увеличивает ТОЛЬКО числовые значения в Кокпите (скорость, мощность, плитки Distance/Trip/Current/и т.д., уровни ассистирования, кнопки -/+, Light/Brake) - подписи, единицы измерения и положение плиток остаются без изменений.",
                 ),
             )
         }
 
-        MicroLabel(tr("Ekran blokady / AOD", "Lock screen / AOD", de = "Sperrbildschirm / AOD", fr = "Écran verrouillé / AOD", es = "Pantalla de bloqueo / AOD", pt = "Ecrã de bloqueio / AOD", it = "Schermata di blocco / AOD", nl = "Vergrendelscherm / AOD", sv = "Låsskärm / AOD", cs = "Zamykací obrazovka / AOD", sk = "Zamykacia obrazovka / AOD"))
+        MicroLabel(tr("Ekran blokady / AOD", "Lock screen / AOD", de = "Sperrbildschirm / AOD", fr = "Écran verrouillé / AOD", es = "Pantalla de bloqueo / AOD", pt = "Ecrã de bloqueio / AOD", it = "Schermata di blocco / AOD", nl = "Vergrendelscherm / AOD", sv = "Låsskärm / AOD", cs = "Zamykací obrazovka / AOD", sk = "Zamykacia obrazovka / AOD", da = "Låseskærm / AOD", ru = "Экран блокировки / AOD"))
         TokenCard(borderColor = Tokens.WhiteBorder) {
             ToggleRow(
-                label = tr("Pokaż Kokpit na ekranie blokady/AOD", "Show Cockpit on lock screen/AOD", de = "Cockpit auf Sperrbildschirm/AOD zeigen", fr = "Afficher le Cockpit sur écran verrouillé/AOD", es = "Mostrar Cockpit en pantalla de bloqueo/AOD", pt = "Mostrar Cockpit no ecrã de bloqueio/AOD", it = "Mostra Cockpit nella schermata di blocco/AOD", nl = "Cockpit tonen op vergrendelscherm/AOD", sv = "Visa Cockpit på låsskärm/AOD", cs = "Zobrazit Cockpit na zamykací obrazovce/AOD", sk = "Zobraziť Cockpit na zamykacej obrazovke/AOD"),
+                label = tr("Pokaż Kokpit na ekranie blokady/AOD", "Show Cockpit on lock screen/AOD", de = "Cockpit auf Sperrbildschirm/AOD zeigen", fr = "Afficher le Cockpit sur écran verrouillé/AOD", es = "Mostrar Cockpit en pantalla de bloqueo/AOD", pt = "Mostrar Cockpit no ecrã de bloqueio/AOD", it = "Mostra Cockpit nella schermata di blocco/AOD", nl = "Cockpit tonen op vergrendelscherm/AOD", sv = "Visa Cockpit på låsskärm/AOD", cs = "Zobrazit Cockpit na zamykací obrazovce/AOD", sk = "Zobraziť Cockpit na zamykacej obrazovke/AOD", da = "Vis Cockpit på låseskærm/AOD", ru = "Показывать Кокпит на экране блокировки/AOD"),
                 checked = state.aodEnabled,
                 onCheckedChange = { enabled ->
                     if (enabled &&
@@ -137,13 +141,15 @@ fun DisplayScreen(
                     sv = "Visar under körningen hastighet/effekt/assistans på låsskärmen och AOD så att telefonen faktiskt kan somna istället för att hålla skärmen tänd hela tiden - en verklig batteribesparing, till skillnad från en vanlig upplyst skärm. Fungerar som \"spelas nu\" (låtsas vara en musikspelare) - den enda offentliga Android-mekanismen som uppnår detta, så det ser ut som musik, inte en dedikerad cockpit. Kräver aviseringsbehörighet - utan den visas ingenting. Inte alla telefoner visar nu-spelande media på sin AOD.",
                     cs = "Během jízdy zobrazuje rychlost/výkon/asistenci na zamykací obrazovce a AOD, aby telefon mohl skutečně usnout místo neustálého svícení obrazovky - reálná úspora baterie, na rozdíl od obyčejné svítící obrazovky. Funguje jako \"právě se přehrává\" (předstírá hudební přehrávač) - jediný veřejný mechanismus Androidu, který tohoto efektu dosahuje, takže to vypadá jako hudba, ne jako vyhrazený kokpit. Vyžaduje oprávnění k oznámením - bez něj se nic nezobrazí. Ne každý telefon zobrazuje právě přehrávaná média na AOD.",
                     sk = "Počas jazdy zobrazuje rýchlosť/výkon/asistenciu na zamykacej obrazovke a AOD, aby telefón mohol skutočne zaspať namiesto neustáleho svietenia obrazovky - reálna úspora batérie, na rozdiel od obyčajnej svietiacej obrazovky. Funguje ako \"práve sa prehráva\" (predstiera hudobný prehrávač) - jediný verejný mechanizmus Androidu, ktorý dosahuje tento efekt, takže to vyzerá ako hudba, nie ako vyhradený kokpit. Vyžaduje povolenie na oznámenia - bez neho sa nič nezobrazí. Nie každý telefón zobrazuje práve prehrávané médiá na AOD.",
+                    da = "Under kørslen vises hastighed/effekt/assistance på låseskærmen og AOD, så telefonen faktisk kan gå i dvale i stedet for at holde skærmen tændt hele tiden - en reel batteribesparelse, i modsætning til en almindelig oplyst skærm. Det fungerer som \"afspiller nu\" (udgiver sig for at være en musikafspiller) - den eneste offentlige Android-mekanisme, der opnår denne effekt, så det ligner musik, ikke et dedikeret cockpit. Kræver notifikationstilladelse - uden den vises intet. Ikke alle telefoner viser afspillede medier på deres AOD.",
+                    ru = "Во время езды показывает скорость/мощность/ассистирование на экране блокировки и AOD, чтобы телефон мог по-настоящему уснуть, а не держать экран включённым всё время - реальная экономия батареи, в отличие от обычного яркого экрана. Работает как «сейчас играет» (притворяясь музыкальным плеером) - единственный публичный механизм Android, позволяющий добиться такого эффекта, поэтому это выглядит как музыка, а не как отдельный кокпит. Требует разрешения на уведомления - без него ничего не отобразится. Не каждый телефон показывает воспроизводимые медиа на своём AOD.",
                 ),
             )
             // Widoczne zawsze (niezależnie od stanu przełącznika wyżej), nie tylko gdy AOD włączone -
             // na wyraźne życzenie użytkownika, żeby opcja była widoczna/konfigurowalna z wyprzedzeniem.
             HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
             ToggleRow(
-                label = tr("Sterowanie +/- na ekranie blokady", "+/- controls on lock screen", de = "+/- Steuerung auf dem Sperrbildschirm", fr = "Contrôles +/- sur écran verrouillé", es = "Controles +/- en pantalla de bloqueo", pt = "Controlos +/- no ecrã de bloqueio", it = "Controlli +/- sulla schermata di blocco", nl = "+/- bediening op vergrendelscherm", sv = "+/- reglage på låsskärmen", cs = "Ovládání +/- na zamykací obrazovce", sk = "Ovládanie +/- na zamykacej obrazovke"),
+                label = tr("Sterowanie +/- na ekranie blokady", "+/- controls on lock screen", de = "+/- Steuerung auf dem Sperrbildschirm", fr = "Contrôles +/- sur écran verrouillé", es = "Controles +/- en pantalla de bloqueo", pt = "Controlos +/- no ecrã de bloqueio", it = "Controlli +/- sulla schermata di blocco", nl = "+/- bediening op vergrendelscherm", sv = "+/- reglage på låsskärmen", cs = "Ovládání +/- na zamykací obrazovce", sk = "Ovládanie +/- na zamykacej obrazovke", da = "+/- betjening på låseskærmen", ru = "Управление +/- на экране блокировки"),
                 checked = state.aodAssistControlsEnabled,
                 onCheckedChange = onAodAssistControlsChange,
                 accent = Tokens.Blue,
@@ -159,6 +165,8 @@ fun DisplayScreen(
                     sv = "Lägger till föregående/nästa-knappar (som +/-) för att ändra assistansnivå direkt från låsskärmen. Obs: telefonen anmäler sig då som aktivt spelande media, vilket kan krocka med riktig musik (Bluetooth-hörlurar, medieknappar).",
                     cs = "Přidává tlačítka předchozí/další (jako +/-) pro změnu úrovně asistence přímo ze zamykací obrazovky. Poznámka: telefon se pak hlásí jako aktivně přehrávající médium, což může kolidovat se skutečnou hudbou (Bluetooth sluchátka, mediální tlačítka).",
                     sk = "Pridáva tlačidlá predchádzajúce/ďalšie (ako +/-) na zmenu úrovne asistencie priamo zo zamykacej obrazovky. Poznámka: telefón sa potom hlási ako aktívne prehrávajúce médium, čo môže kolidovať so skutočnou hudbou (Bluetooth slúchadlá, mediálne tlačidlá).",
+                    da = "Tilføjer forrige/næste-knapper (som +/-) til at ændre assistanceniveau direkte fra låseskærmen. Bemærk: telefonen melder sig derefter som aktivt afspillende medier, hvilket kan give konflikt med rigtig musik (Bluetooth-hovedtelefoner, medieknapper).",
+                    ru = "Добавляет кнопки предыдущий/следующий (как +/-) для изменения уровня ассистирования прямо с экрана блокировки. Примечание: телефон при этом сообщает, что активно воспроизводит медиа, что может конфликтовать с реальной музыкой (Bluetooth-наушники, медиакнопки).",
                 ),
             )
         }

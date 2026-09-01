@@ -68,7 +68,7 @@ fun AboutScreen() {
             EggSpeedWordmark(fontSize = 20.sp, letterSpacing = 0.sp)
             Spacer(Modifier.height(4.dp))
             Text(
-                tr("Stworzone przez Tomasza Pieczarę", "Created by Tomasz Pieczara", de = "Erstellt von Tomasz Pieczara", fr = "Créé par Tomasz Pieczara", es = "Creado por Tomasz Pieczara", pt = "Criado por Tomasz Pieczara", it = "Creato da Tomasz Pieczara", nl = "Gemaakt door Tomasz Pieczara", sv = "Skapad av Tomasz Pieczara", cs = "Vytvořil Tomasz Pieczara", sk = "Vytvoril Tomasz Pieczara"),
+                tr("Stworzone przez Tomasza Pieczarę", "Created by Tomasz Pieczara", de = "Erstellt von Tomasz Pieczara", fr = "Créé par Tomasz Pieczara", es = "Creado por Tomasz Pieczara", pt = "Criado por Tomasz Pieczara", it = "Creato da Tomasz Pieczara", nl = "Gemaakt door Tomasz Pieczara", sv = "Skapad av Tomasz Pieczara", cs = "Vytvořil Tomasz Pieczara", sk = "Vytvoril Tomasz Pieczara", da = "Skabt af Tomasz Pieczara", ru = "Создано Томашем Печарой"),
                 fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary,
             )
         }
@@ -76,26 +76,26 @@ fun AboutScreen() {
         TokenCard(borderColor = Tokens.WhiteBorder) {
             ActionRow(
                 icon = "⭐",
-                label = tr("Oceń aplikację w Google Play", "Rate the app on Google Play", de = "App bei Google Play bewerten", fr = "Noter l'application sur Google Play", es = "Valorar la app en Google Play", pt = "Avaliar a app na Google Play", it = "Valuta l'app su Google Play", nl = "Beoordeel de app op Google Play", sv = "Betygsätt appen på Google Play", cs = "Ohodnotit aplikaci na Google Play", sk = "Ohodnotiť aplikáciu na Google Play"),
+                label = tr("Oceń aplikację w Google Play", "Rate the app on Google Play", de = "App bei Google Play bewerten", fr = "Noter l'application sur Google Play", es = "Valorar la app en Google Play", pt = "Avaliar a app na Google Play", it = "Valuta l'app su Google Play", nl = "Beoordeel de app op Google Play", sv = "Betygsätt appen på Google Play", cs = "Ohodnotit aplikaci na Google Play", sk = "Ohodnotiť aplikáciu na Google Play", da = "Bedøm appen på Google Play", ru = "Оцените приложение в Google Play"),
                 onClick = { openPlayStoreListing(context) },
             )
             HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
             ActionRow(
                 icon = "⬆️",
-                label = tr("Sprawdź aktualizacje", "Check for updates", de = "Nach Updates suchen", fr = "Vérifier les mises à jour", es = "Buscar actualizaciones", pt = "Verificar atualizações", it = "Controlla aggiornamenti", nl = "Controleren op updates", sv = "Sök efter uppdateringar", cs = "Zkontrolovat aktualizace", sk = "Skontrolovať aktualizácie"),
+                label = tr("Sprawdź aktualizacje", "Check for updates", de = "Nach Updates suchen", fr = "Vérifier les mises à jour", es = "Buscar actualizaciones", pt = "Verificar atualizações", it = "Controlla aggiornamenti", nl = "Controleren op updates", sv = "Sök efter uppdateringar", cs = "Zkontrolovat aktualizace", sk = "Skontrolovať aktualizácie", da = "Søg efter opdateringer", ru = "Проверить обновления"),
                 onClick = { openPlayStoreListing(context) },
             )
         }
 
         TokenCard(borderColor = Tokens.WhiteBorder) {
-            InfoRow(tr("Wersja", "Version", de = "Version", fr = "Version", es = "Versión", pt = "Versão", it = "Versione", nl = "Versie", sv = "Version", cs = "Verze", sk = "Verzia"), APP_VERSION)
+            InfoRow(tr("Wersja", "Version", de = "Version", fr = "Version", es = "Versión", pt = "Versão", it = "Versione", nl = "Versie", sv = "Version", cs = "Verze", sk = "Verzia", da = "Version", ru = "Версия"), APP_VERSION)
             HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
             InfoRow("Build", BUILD_STAMP)
         }
 
         TokenCard(borderColor = Tokens.WhiteBorder) {
             InfoRow(
-                tr("Kontakt", "Contact", de = "Kontakt", fr = "Contact", es = "Contacto", pt = "Contacto", it = "Contatto", nl = "Contact", sv = "Kontakt", cs = "Kontakt", sk = "Kontakt"),
+                tr("Kontakt", "Contact", de = "Kontakt", fr = "Contact", es = "Contacto", pt = "Contacto", it = "Contatto", nl = "Contact", sv = "Kontakt", cs = "Kontakt", sk = "Kontakt", da = "Kontakt", ru = "Контакт"),
                 CONTACT_EMAIL,
                 onClick = {
                     val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$CONTACT_EMAIL"))
@@ -104,7 +104,7 @@ fun AboutScreen() {
             )
             HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
             InfoRow(
-                tr("Strona", "Website", de = "Webseite", fr = "Site web", es = "Sitio web", pt = "Site", it = "Sito web", nl = "Website", sv = "Webbplats", cs = "Web", sk = "Web"),
+                tr("Strona", "Website", de = "Webseite", fr = "Site web", es = "Sitio web", pt = "Site", it = "Sito web", nl = "Website", sv = "Webbplats", cs = "Web", sk = "Web", da = "Websted", ru = "Веб-сайт"),
                 WEBSITE,
                 onClick = {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://$WEBSITE"))
@@ -123,7 +123,7 @@ fun AboutScreen() {
         }
 
         ExpandableParamTile(
-            label = tr("Polityka prywatności", "Privacy policy", de = "Datenschutzrichtlinie", fr = "Politique de confidentialité", es = "Política de privacidad", pt = "Política de privacidade", it = "Informativa sulla privacy", nl = "Privacybeleid", sv = "Integritetspolicy", cs = "Zásady ochrany osobních údajů", sk = "Zásady ochrany osobných údajov"),
+            label = tr("Polityka prywatności", "Privacy policy", de = "Datenschutzrichtlinie", fr = "Politique de confidentialité", es = "Política de privacidad", pt = "Política de privacidade", it = "Informativa sulla privacy", nl = "Privacybeleid", sv = "Integritetspolicy", cs = "Zásady ochrany osobních údajů", sk = "Zásady ochrany osobných údajov", da = "Privatlivspolitik", ru = "Политика конфиденциальности"),
             valueLabel = "",
             descriptionColor = Tokens.TextPrimary,
             description = tr(
@@ -171,11 +171,19 @@ fun AboutScreen() {
                     "tvojho telefónu. Komunikácia prebieha výlučne lokálne cez USB kábel medzi telefónom " +
                     "a riadiacou jednotkou Bafang - žiadny internet, žiadna analytika, žiadne sledovanie. Konfiguračné profily " +
                     "ukladáš iba ty, ako súbory .ini vo vlastnom zariadení.",
+                da = "EggSPEED indsamler, sender eller gemmer ingen personoplysninger uden for " +
+                    "din telefon. Kommunikationen foregår udelukkende lokalt via et USB-kabel mellem telefonen " +
+                    "og Bafang-controlleren - ingen internetforbindelse, ingen analyse, ingen sporing. Konfigurationsprofiler " +
+                    "gemmes kun af dig selv, som .ini-filer på din egen enhed.",
+                ru = "EggSPEED не собирает, не отправляет и не хранит никаких персональных данных за пределами " +
+                    "вашего телефона. Обмен данными происходит исключительно локально по USB-кабелю между телефоном " +
+                    "и контроллером Bafang - без интернета, без аналитики, без отслеживания. Профили конфигурации " +
+                    "сохраняете только вы сами, в виде файлов .ini на своём устройстве.",
             ),
         ) {}
 
         ExpandableParamTile(
-            label = tr("Warunki korzystania", "Terms of service", de = "Nutzungsbedingungen", fr = "Conditions d'utilisation", es = "Términos de uso", pt = "Termos de utilização", it = "Termini di servizio", nl = "Gebruiksvoorwaarden", sv = "Användarvillkor", cs = "Podmínky používání", sk = "Podmienky používania"),
+            label = tr("Warunki korzystania", "Terms of service", de = "Nutzungsbedingungen", fr = "Conditions d'utilisation", es = "Términos de uso", pt = "Termos de utilização", it = "Termini di servizio", nl = "Gebruiksvoorwaarden", sv = "Användarvillkor", cs = "Podmínky používání", sk = "Podmienky používania", da = "Servicevilkår", ru = "Условия использования"),
             valueLabel = "",
             descriptionColor = Tokens.Red,
             description = tr(
@@ -263,11 +271,27 @@ fun AboutScreen() {
                     "svojho elektrobicykla, vrátane súladu s miestnymi predpismi. Aplikácia sa poskytuje \"tak, ako je\", " +
                     "bez akejkoľvek záruky neprerušovanej alebo bezchybnej prevádzky. Vývojár nenesie žiadnu " +
                     "zodpovednosť za škody vzniknuté používaním aplikácie - používaš ju na vlastné riziko.",
+                da = "EggSPEED er et hobbyprogram bygget til informerede entusiaster, der ved, hvordan man " +
+                    "programmerer deres Bafang-controller - det er udelukkende beregnet til at læse konfigurationen af " +
+                    "og sikkert styre (understøttelsesniveau, lys) en Bafang BBS01/BBS02/BBSHD-controller via et " +
+                    "USB-kabel. Ved at bruge appen er du fuldt ansvarlig for, hvordan du bruger den, samt for " +
+                    "konfigurationen og den lovlige brug af din el-cykel, herunder overholdelse af lokale regler. Appen " +
+                    "leveres \"som den er\", uden nogen garanti for uafbrudt eller fejlfri drift. Udvikleren påtager sig " +
+                    "intet ansvar for skader som følge af brug af appen - du bruger den på eget ansvar.",
+                ru = "EggSPEED - это любительская программа, созданная для осведомлённых энтузиастов, умеющих " +
+                    "программировать свой контроллер Bafang - она предназначена исключительно для чтения " +
+                    "конфигурации и безопасного управления (уровень помощи, свет) контроллером Bafang " +
+                    "BBS01/BBS02/BBSHD через USB-кабель. Используя приложение, вы несёте полную ответственность за " +
+                    "то, как вы его используете, а также за конфигурацию и законность использования вашего " +
+                    "электровелосипеда, включая соответствие местным нормам. Приложение предоставляется \"как есть\", " +
+                    "без каких-либо гарантий бесперебойной или безошибочной работы. Разработчик не несёт никакой " +
+                    "ответственности за ущерб, возникший в результате использования приложения - вы используете его " +
+                    "на свой страх и риск.",
             ),
         ) {}
 
         ContactExpandableTile(
-            label = tr("Kontakt / Zgłoś błąd / Propozycja funkcji", "Contact / Report bug / Feature request", de = "Kontakt / Fehler melden / Funktionswunsch", fr = "Contact / Signaler un bug / Proposer une fonctionnalité", es = "Contacto / Reportar error / Sugerir función", pt = "Contacto / Reportar erro / Sugerir função", it = "Contatto / Segnala bug / Richiedi funzione", nl = "Contact / Bug melden / Functieverzoek", sv = "Kontakt / Rapportera bugg / Funktionsförslag", cs = "Kontakt / Nahlásit chybu / Návrh funkce", sk = "Kontakt / Nahlásiť chybu / Návrh funkcie"),
+            label = tr("Kontakt / Zgłoś błąd / Propozycja funkcji", "Contact / Report bug / Feature request", de = "Kontakt / Fehler melden / Funktionswunsch", fr = "Contact / Signaler un bug / Proposer une fonctionnalité", es = "Contacto / Reportar error / Sugerir función", pt = "Contacto / Reportar erro / Sugerir função", it = "Contatto / Segnala bug / Richiedi funzione", nl = "Contact / Bug melden / Functieverzoek", sv = "Kontakt / Rapportera bugg / Funktionsförslag", cs = "Kontakt / Nahlásit chybu / Návrh funkce", sk = "Kontakt / Nahlásiť chybu / Návrh funkcie", da = "Kontakt / Rapportér fejl / Funktionsforslag", ru = "Контакты / Сообщить об ошибке / Предложить функцию"),
             body = tr(
                 "Znalazłeś błąd? Masz pomysł na nową funkcję? Chcesz się po prostu przywitać? Wypełnij krótki " +
                     "formularz - każda wiadomość jest czytana osobiście.",
@@ -291,12 +315,16 @@ fun AboutScreen() {
                     "formulář - každá zpráva je čtena osobně.",
                 sk = "Našiel si chybu alebo máš nápad na novú funkciu? Chceš sa jednoducho pozdraviť? Vyplň krátky " +
                     "formulár - každá správa je čítaná osobne.",
+                da = "Fundet en fejl eller har du en idé til en ny funktion? Vil du bare sige hej? Udfyld en kort " +
+                    "formular - hver besked bliver læst personligt.",
+                ru = "Нашли ошибку или есть идея новой функции? Просто хотите поздороваться? Заполните короткую " +
+                    "форму - каждое сообщение читается лично.",
             ),
             linkLabel = tr(
                 "Otwórz formularz zgłoszeniowy →", "Open support form →",
                 de = "Formular öffnen →", fr = "Ouvrir le formulaire →", es = "Abrir el formulario →",
                 pt = "Abrir formulário de contacto →", it = "Apri modulo di supporto →", nl = "Contactformulier openen →",
-                sv = "Öppna supportformulär →", cs = "Otevřít formulář podpory →", sk = "Otvoriť formulár podpory →",
+                sv = "Öppna supportformulär →", cs = "Otevřít formulář podpory →", sk = "Otvoriť formulár podpory →", da = "Åbn supportformular →", ru = "Открыть форму поддержки →",
             ),
             onLinkClick = {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(SUPPORT_FORM_URL))

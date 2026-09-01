@@ -96,7 +96,7 @@ fun BbsFwAssistLevelsScreen(
         TelemetryPausedNotice(monitoringActive = monitoringActive, aodActive = state.aodEnabled)
 
         // --- Operation Mode Page ---
-        Text(tr("Strona trybu pracy", "Operation Mode Page", de = "Betriebsmodus-Seite", fr = "Page de mode de fonctionnement", es = "Página de modo de funcionamiento", pt = "Página de modo de funcionamento", it = "Pagina modalità di funzionamento", nl = "Werkmoduspagina", sv = "Sida för driftläge", cs = "Stránka provozního režimu", sk = "Stránka prevádzkového režimu"), fontFamily = Manrope, fontWeight = FontWeight.SemiBold, fontSize = 12.sp, color = Tokens.TextPrimary)
+        Text(tr("Strona trybu pracy", "Operation Mode Page", de = "Betriebsmodus-Seite", fr = "Page de mode de fonctionnement", es = "Página de modo de funcionamiento", pt = "Página de modo de funcionamento", it = "Pagina modalità di funzionamento", nl = "Werkmoduspagina", sv = "Sida för driftläge", cs = "Stránka provozního režimu", sk = "Stránka prevádzkového režimu", da = "Driftstilstand-side", ru = "Страница режима работы"), fontFamily = Manrope, fontWeight = FontWeight.SemiBold, fontSize = 12.sp, color = Tokens.TextPrimary)
         SegmentedControl(
             options = listOf("Standard", "Sport"),
             selectedIndex = profile,
@@ -122,10 +122,10 @@ fun BbsFwAssistLevelsScreen(
 
         // --- Level N: Type ---
         TokenCard(borderColor = Tokens.WhiteBorder) {
-            Text("${tr("Poziom", "Level", de = "Stufe", fr = "Niveau", es = "Nivel", pt = "Nível", it = "Livello", nl = "Niveau", sv = "Nivå", cs = "Úroveň", sk = "Úroveň")} $selected", fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Tokens.TextPrimary)
+            Text("${tr("Poziom", "Level", de = "Stufe", fr = "Niveau", es = "Nivel", pt = "Nível", it = "Livello", nl = "Niveau", sv = "Nivå", cs = "Úroveň", sk = "Úroveň", da = "Niveau", ru = "Уровень")} $selected", fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Tokens.TextPrimary)
             Spacer(Modifier.height(10.dp))
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(tr("Typ:", "Type:", de = "Typ:", fr = "Type :", es = "Tipo:", pt = "Tipo:", it = "Tipo:", nl = "Type:", sv = "Typ:", cs = "Typ:", sk = "Typ:"), fontFamily = Manrope, fontSize = 13.sp, color = Tokens.TextSecondary, modifier = Modifier.weight(1f))
+                Text(tr("Typ:", "Type:", de = "Typ:", fr = "Type :", es = "Tipo:", pt = "Tipo:", it = "Tipo:", nl = "Type:", sv = "Typ:", cs = "Typ:", sk = "Typ:", da = "Type:", ru = "Тип:"), fontFamily = Manrope, fontSize = 13.sp, color = Tokens.TextSecondary, modifier = Modifier.weight(1f))
                 StepBtn("-", true) { onBaseType(profile, selected, (baseType - 1).coerceIn(0, 3)) }
                 Spacer(Modifier.padding(4.dp))
                 Text(baseTypeLabel(baseType), fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Tokens.TextPrimary)
@@ -137,43 +137,43 @@ fun BbsFwAssistLevelsScreen(
         when (baseType) {
             BbsFwAssistBaseType.PAS -> {
                 TokenCard(borderColor = Tokens.WhiteBorder) {
-                    LabeledStepRow(tr("Wariant:", "Variant:", de = "Variante:", fr = "Variante :", es = "Variante:", pt = "Variante:", it = "Variante:", nl = "Variant:", sv = "Variant:", cs = "Varianta:", sk = "Variant:"), pasVariantLabel(pasVariant), { onPasVariant(profile, selected, (pasVariant - 1).coerceIn(0, 2)) }, { onPasVariant(profile, selected, (pasVariant + 1).coerceIn(0, 2)) })
+                    LabeledStepRow(tr("Wariant:", "Variant:", de = "Variante:", fr = "Variante :", es = "Variante:", pt = "Variante:", it = "Variante:", nl = "Variant:", sv = "Variant:", cs = "Varianta:", sk = "Variant:", da = "Variant:", ru = "Вариант:"), pasVariantLabel(pasVariant), { onPasVariant(profile, selected, (pasVariant - 1).coerceIn(0, 2)) }, { onPasVariant(profile, selected, (pasVariant + 1).coerceIn(0, 2)) })
 
                     if (pasVariant == BbsFwAssistPasVariant.TORQUE) {
                         HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
                         LabeledStepRow(
-                            tr("Wzmocnienie momentu:", "Torque Amplification:", de = "Drehmomentverstärkung:", fr = "Amplification du couple :", es = "Amplificación de par:", pt = "Amplificação de torque:", it = "Amplificazione della coppia:", nl = "Koppelversterking:", sv = "Momentförstärkning:", cs = "Zesílení momentu:", sk = "Zosilnenie momentu:"), "${level.torqueAmplificationFactorX10 / 10.0}×",
+                            tr("Wzmocnienie momentu:", "Torque Amplification:", de = "Drehmomentverstärkung:", fr = "Amplification du couple :", es = "Amplificación de par:", pt = "Amplificação de torque:", it = "Amplificazione della coppia:", nl = "Koppelversterking:", sv = "Momentförstärkning:", cs = "Zesílení momentu:", sk = "Zosilnenie momentu:", da = "Momentforstærkning:", ru = "Усиление момента:"), "${level.torqueAmplificationFactorX10 / 10.0}×",
                             { onTorqueFactor(profile, selected, level.torqueAmplificationFactorX10 - 1) },
                             { onTorqueFactor(profile, selected, level.torqueAmplificationFactorX10 + 1) },
                         )
                     }
 
                     HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
-                    LabeledSliderRow(tr("Maks. prąd (%)", "Max Current (%)", de = "Max. Strom (%)", fr = "Courant max (%)", es = "Corriente máx. (%)", pt = "Corrente máx. (%)", it = "Corrente max (%)", nl = "Max. stroom (%)", sv = "Max ström (%)", cs = "Max. proud (%)", sk = "Max. prúd (%)"), level.targetCurrentPercent, Tokens.Amber) { onTargetCurrent(profile, selected, it) }
+                    LabeledSliderRow(tr("Maks. prąd (%)", "Max Current (%)", de = "Max. Strom (%)", fr = "Courant max (%)", es = "Corriente máx. (%)", pt = "Corrente máx. (%)", it = "Corrente max (%)", nl = "Max. stroom (%)", sv = "Max ström (%)", cs = "Max. proud (%)", sk = "Max. prúd (%)", da = "Maks. strøm (%)", ru = "Макс. ток (%)"), level.targetCurrentPercent, Tokens.Amber) { onTargetCurrent(profile, selected, it) }
                     HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
-                    LabeledSliderRow(tr("Maks. kadencja (%)", "Max Cadence (%)", de = "Max. Kadenz (%)", fr = "Cadence max (%)", es = "Cadencia máx. (%)", pt = "Cadência máx. (%)", it = "Cadenza max (%)", nl = "Max. cadans (%)", sv = "Max kadens (%)", cs = "Max. kadence (%)", sk = "Max. kadencia (%)"), level.maxCadencePercent, Tokens.Emerald) { onMaxCadence(profile, selected, it) }
+                    LabeledSliderRow(tr("Maks. kadencja (%)", "Max Cadence (%)", de = "Max. Kadenz (%)", fr = "Cadence max (%)", es = "Cadencia máx. (%)", pt = "Cadência máx. (%)", it = "Cadenza max (%)", nl = "Max. cadans (%)", sv = "Max kadens (%)", cs = "Max. kadence (%)", sk = "Max. kadencia (%)", da = "Maks. kadence (%)", ru = "Макс. каденс (%)"), level.maxCadencePercent, Tokens.Emerald) { onMaxCadence(profile, selected, it) }
                     HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
-                    LabeledSliderRow(tr("Maks. prędkość (%)", "Max Speed (%)", de = "Max. Geschwindigkeit (%)", fr = "Vitesse max (%)", es = "Velocidad máx. (%)", pt = "Velocidade máx. (%)", it = "Velocità max (%)", nl = "Max. snelheid (%)", sv = "Max hastighet (%)", cs = "Max. rychlost (%)", sk = "Max. rýchlosť (%)"), level.maxSpeedPercent, Tokens.Emerald) { onMaxSpeed(profile, selected, it) }
+                    LabeledSliderRow(tr("Maks. prędkość (%)", "Max Speed (%)", de = "Max. Geschwindigkeit (%)", fr = "Vitesse max (%)", es = "Velocidad máx. (%)", pt = "Velocidade máx. (%)", it = "Velocità max (%)", nl = "Max. snelheid (%)", sv = "Max hastighet (%)", cs = "Max. rychlost (%)", sk = "Max. rýchlosť (%)", da = "Maks. hastighed (%)", ru = "Макс. скорость (%)"), level.maxSpeedPercent, Tokens.Emerald) { onMaxSpeed(profile, selected, it) }
 
                     if (pasVariant != BbsFwAssistPasVariant.VARIABLE) {
                         val throttleEnabled = level.hasFlag(BbsFwAssistFlags.THROTTLE)
                         HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
-                        ToggleRow(tr("Włącz manetkę:", "Enable Throttle:", de = "Gasgriff aktivieren:", fr = "Activer l'accélérateur :", es = "Activar acelerador:", pt = "Ativar acelerador:", it = "Abilita acceleratore:", nl = "Gasgreep inschakelen:", sv = "Aktivera gasreglage:", cs = "Povolit plynovou páčku:", sk = "Povoliť plynovú páčku:"), throttleEnabled, { onFlag(profile, selected, BbsFwAssistFlags.THROTTLE, it) })
+                        ToggleRow(tr("Włącz manetkę:", "Enable Throttle:", de = "Gasgriff aktivieren:", fr = "Activer l'accélérateur :", es = "Activar acelerador:", pt = "Ativar acelerador:", it = "Abilita acceleratore:", nl = "Gasgreep inschakelen:", sv = "Aktivera gasreglage:", cs = "Povolit plynovou páčku:", sk = "Povoliť plynovú páčku:", da = "Aktivér gashåndtag:", ru = "Включить газ:"), throttleEnabled, { onFlag(profile, selected, BbsFwAssistFlags.THROTTLE, it) })
                         HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
                         Column(Modifier.padding(vertical = 4.dp)) {
-                            Text(tr("Nadpisania manetki:", "Throttle Overrides:", de = "Gasgriff-Überschreibungen:", fr = "Substitutions de l'accélérateur :", es = "Anulaciones del acelerador:", pt = "Substituições do acelerador:", it = "Sovrascritture acceleratore:", nl = "Gasgreep-overschrijvingen:", sv = "Åsidosättningar för gasreglage:", cs = "Přepsání plynové páčky:", sk = "Prepísania plynovej páčky:"), fontFamily = Manrope, fontSize = 13.sp, color = Tokens.TextSecondary)
+                            Text(tr("Nadpisania manetki:", "Throttle Overrides:", de = "Gasgriff-Überschreibungen:", fr = "Substitutions de l'accélérateur :", es = "Anulaciones del acelerador:", pt = "Substituições do acelerador:", it = "Sovrascritture acceleratore:", nl = "Gasgreep-overschrijvingen:", sv = "Åsidosättningar för gasreglage:", cs = "Přepsání plynové páčky:", sk = "Prepísania plynovej páčky:", da = "Gashåndtag-tilsidesættelser:", ru = "Переопределения газа:"), fontFamily = Manrope, fontSize = 13.sp, color = Tokens.TextSecondary)
                             Spacer(Modifier.height(6.dp))
                             Row {
                                 Box(Modifier.weight(1f)) {
                                     ToggleRow(
-                                        tr("Kadencja", "Cadence", de = "Kadenz", fr = "Cadence", es = "Cadencia", pt = "Cadência", it = "Cadenza", nl = "Cadans", sv = "Kadens", cs = "Kadence", sk = "Kadencia"), level.hasFlag(BbsFwAssistFlags.OVERRIDE_CADENCE),
+                                        tr("Kadencja", "Cadence", de = "Kadenz", fr = "Cadence", es = "Cadencia", pt = "Cadência", it = "Cadenza", nl = "Cadans", sv = "Kadens", cs = "Kadence", sk = "Kadencia", da = "Kadence", ru = "Каденс"), level.hasFlag(BbsFwAssistFlags.OVERRIDE_CADENCE),
                                         { onFlag(profile, selected, BbsFwAssistFlags.OVERRIDE_CADENCE, it) },
                                         enabled = throttleEnabled,
                                     )
                                 }
                                 Box(Modifier.weight(1f)) {
                                     ToggleRow(
-                                        tr("Prędkość", "Speed", de = "Geschwindigkeit", fr = "Vitesse", es = "Velocidad", pt = "Velocidade", it = "Velocità", nl = "Snelheid", sv = "Hastighet", cs = "Rychlost", sk = "Rýchlosť"), level.hasFlag(BbsFwAssistFlags.OVERRIDE_SPEED),
+                                        tr("Prędkość", "Speed", de = "Geschwindigkeit", fr = "Vitesse", es = "Velocidad", pt = "Velocidade", it = "Velocità", nl = "Snelheid", sv = "Hastighet", cs = "Rychlost", sk = "Rýchlosť", da = "Hastighed", ru = "Скорость"), level.hasFlag(BbsFwAssistFlags.OVERRIDE_SPEED),
                                         { onFlag(profile, selected, BbsFwAssistFlags.OVERRIDE_SPEED, it) },
                                         enabled = throttleEnabled,
                                     )
@@ -181,17 +181,17 @@ fun BbsFwAssistLevelsScreen(
                             }
                         }
                         HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
-                        LabeledSliderRow(tr("Maks. prąd manetki (%)", "Max Throttle Current (%)", de = "Max. Gasgriff-Strom (%)", fr = "Courant max accélérateur (%)", es = "Corriente máx. acelerador (%)", pt = "Corrente máx. acelerador (%)", it = "Corrente max acceleratore (%)", nl = "Max. gasgreepstroom (%)", sv = "Max gasreglageström (%)", cs = "Max. proud plynové páčky (%)", sk = "Max. prúd plynovej páčky (%)"), level.maxThrottleCurrentPercent, Tokens.Amber, enabled = throttleEnabled) { onMaxThrottleCurrent(profile, selected, it) }
+                        LabeledSliderRow(tr("Maks. prąd manetki (%)", "Max Throttle Current (%)", de = "Max. Gasgriff-Strom (%)", fr = "Courant max accélérateur (%)", es = "Corriente máx. acelerador (%)", pt = "Corrente máx. acelerador (%)", it = "Corrente max acceleratore (%)", nl = "Max. gasgreepstroom (%)", sv = "Max gasreglageström (%)", cs = "Max. proud plynové páčky (%)", sk = "Max. prúd plynovej páčky (%)", da = "Maks. gashåndtagsstrøm (%)", ru = "Макс. ток газа (%)"), level.maxThrottleCurrentPercent, Tokens.Amber, enabled = throttleEnabled) { onMaxThrottleCurrent(profile, selected, it) }
                     }
                 }
             }
             BbsFwAssistBaseType.THROTTLE -> {
                 TokenCard(borderColor = Tokens.WhiteBorder) {
-                    LabeledSliderRow(tr("Maks. prąd (%)", "Max Current (%)", de = "Max. Strom (%)", fr = "Courant max (%)", es = "Corriente máx. (%)", pt = "Corrente máx. (%)", it = "Corrente max (%)", nl = "Max. stroom (%)", sv = "Max ström (%)", cs = "Max. proud (%)", sk = "Max. prúd (%)"), level.maxThrottleCurrentPercent, Tokens.Amber) { onMaxThrottleCurrent(profile, selected, it) }
+                    LabeledSliderRow(tr("Maks. prąd (%)", "Max Current (%)", de = "Max. Strom (%)", fr = "Courant max (%)", es = "Corriente máx. (%)", pt = "Corrente máx. (%)", it = "Corrente max (%)", nl = "Max. stroom (%)", sv = "Max ström (%)", cs = "Max. proud (%)", sk = "Max. prúd (%)", da = "Maks. strøm (%)", ru = "Макс. ток (%)"), level.maxThrottleCurrentPercent, Tokens.Amber) { onMaxThrottleCurrent(profile, selected, it) }
                     HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
-                    LabeledSliderRow(tr("Maks. kadencja (%)", "Max Cadence (%)", de = "Max. Kadenz (%)", fr = "Cadence max (%)", es = "Cadencia máx. (%)", pt = "Cadência máx. (%)", it = "Cadenza max (%)", nl = "Max. cadans (%)", sv = "Max kadens (%)", cs = "Max. kadence (%)", sk = "Max. kadencia (%)"), level.maxCadencePercent, Tokens.Emerald) { onMaxCadence(profile, selected, it) }
+                    LabeledSliderRow(tr("Maks. kadencja (%)", "Max Cadence (%)", de = "Max. Kadenz (%)", fr = "Cadence max (%)", es = "Cadencia máx. (%)", pt = "Cadência máx. (%)", it = "Cadenza max (%)", nl = "Max. cadans (%)", sv = "Max kadens (%)", cs = "Max. kadence (%)", sk = "Max. kadencia (%)", da = "Maks. kadence (%)", ru = "Макс. каденс (%)"), level.maxCadencePercent, Tokens.Emerald) { onMaxCadence(profile, selected, it) }
                     HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
-                    LabeledSliderRow(tr("Maks. prędkość (%)", "Max Speed (%)", de = "Max. Geschwindigkeit (%)", fr = "Vitesse max (%)", es = "Velocidad máx. (%)", pt = "Velocidade máx. (%)", it = "Velocità max (%)", nl = "Max. snelheid (%)", sv = "Max hastighet (%)", cs = "Max. rychlost (%)", sk = "Max. rýchlosť (%)"), level.maxSpeedPercent, Tokens.Emerald) { onMaxSpeed(profile, selected, it) }
+                    LabeledSliderRow(tr("Maks. prędkość (%)", "Max Speed (%)", de = "Max. Geschwindigkeit (%)", fr = "Vitesse max (%)", es = "Velocidad máx. (%)", pt = "Velocidade máx. (%)", it = "Velocità max (%)", nl = "Max. snelheid (%)", sv = "Max hastighet (%)", cs = "Max. rychlost (%)", sk = "Max. rýchlosť (%)", da = "Maks. hastighed (%)", ru = "Макс. скорость (%)"), level.maxSpeedPercent, Tokens.Emerald) { onMaxSpeed(profile, selected, it) }
                 }
             }
             BbsFwAssistBaseType.CRUISE -> {
@@ -207,13 +207,15 @@ fun BbsFwAssistLevelsScreen(
                     sv = "Varning: farthållare (Cruise) - aktiveras genom att trampa + gasreglage, kopplas ur genom att trampa bakåt, röra gasreglaget eller bromsa. Använd med försiktighet!",
                     cs = "Pozor: tempomat (Cruise) - zapíná se šlapáním + plynovou páčkou, vypíná se zpětným šlapáním, dotykem plynové páčky nebo brzděním. Používej opatrně!",
                     sk = "Pozor: tempomat (Cruise) - zapína sa šliapaním + plynovou páčkou, vypína sa spätným šliapaním, dotykom plynovej páčky alebo brzdením. Používaj opatrne!",
+                    da = "Advarsel: fartpilot (Cruise) - aktiveres ved trædning + gashåndtag, deaktiveres ved baglæns trædning, berøring af gashåndtaget eller bremsning. Brug med forsigtighed!",
+                    ru = "Внимание: круиз-контроль (Cruise) - включается педалированием + газом, выключается обратным педалированием, касанием газа или торможением. Используйте с осторожностью!",
                 ))
                 TokenCard(borderColor = Tokens.WhiteBorder) {
-                    LabeledSliderRow(tr("Maks. prąd (%)", "Max Current (%)", de = "Max. Strom (%)", fr = "Courant max (%)", es = "Corriente máx. (%)", pt = "Corrente máx. (%)", it = "Corrente max (%)", nl = "Max. stroom (%)", sv = "Max ström (%)", cs = "Max. proud (%)", sk = "Max. prúd (%)"), level.targetCurrentPercent, Tokens.Amber) { onTargetCurrent(profile, selected, it) }
+                    LabeledSliderRow(tr("Maks. prąd (%)", "Max Current (%)", de = "Max. Strom (%)", fr = "Courant max (%)", es = "Corriente máx. (%)", pt = "Corrente máx. (%)", it = "Corrente max (%)", nl = "Max. stroom (%)", sv = "Max ström (%)", cs = "Max. proud (%)", sk = "Max. prúd (%)", da = "Maks. strøm (%)", ru = "Макс. ток (%)"), level.targetCurrentPercent, Tokens.Amber) { onTargetCurrent(profile, selected, it) }
                     HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
-                    LabeledSliderRow(tr("Maks. kadencja (%)", "Max Cadence (%)", de = "Max. Kadenz (%)", fr = "Cadence max (%)", es = "Cadencia máx. (%)", pt = "Cadência máx. (%)", it = "Cadenza max (%)", nl = "Max. cadans (%)", sv = "Max kadens (%)", cs = "Max. kadence (%)", sk = "Max. kadencia (%)"), level.maxCadencePercent, Tokens.Emerald) { onMaxCadence(profile, selected, it) }
+                    LabeledSliderRow(tr("Maks. kadencja (%)", "Max Cadence (%)", de = "Max. Kadenz (%)", fr = "Cadence max (%)", es = "Cadencia máx. (%)", pt = "Cadência máx. (%)", it = "Cadenza max (%)", nl = "Max. cadans (%)", sv = "Max kadens (%)", cs = "Max. kadence (%)", sk = "Max. kadencia (%)", da = "Maks. kadence (%)", ru = "Макс. каденс (%)"), level.maxCadencePercent, Tokens.Emerald) { onMaxCadence(profile, selected, it) }
                     HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
-                    LabeledSliderRow(tr("Maks. prędkość (%)", "Max Speed (%)", de = "Max. Geschwindigkeit (%)", fr = "Vitesse max (%)", es = "Velocidad máx. (%)", pt = "Velocidade máx. (%)", it = "Velocità max (%)", nl = "Max. snelheid (%)", sv = "Max hastighet (%)", cs = "Max. rychlost (%)", sk = "Max. rýchlosť (%)"), level.maxSpeedPercent, Tokens.Emerald) { onMaxSpeed(profile, selected, it) }
+                    LabeledSliderRow(tr("Maks. prędkość (%)", "Max Speed (%)", de = "Max. Geschwindigkeit (%)", fr = "Vitesse max (%)", es = "Velocidad máx. (%)", pt = "Velocidade máx. (%)", it = "Velocità max (%)", nl = "Max. snelheid (%)", sv = "Max hastighet (%)", cs = "Max. rychlost (%)", sk = "Max. rýchlosť (%)", da = "Maks. hastighed (%)", ru = "Макс. скорость (%)"), level.maxSpeedPercent, Tokens.Emerald) { onMaxSpeed(profile, selected, it) }
                 }
             }
             else -> {
@@ -231,6 +233,8 @@ fun BbsFwAssistLevelsScreen(
                             sv = "Motorn avstängd på denna nivå - gasreglage och trampning ger ingen assistans.",
                             cs = "Motor na této úrovni vypnutý - plynová páčka a šlapání neposkytují asistenci.",
                             sk = "Motor na tejto úrovni vypnutý - plynová páčka a šliapanie neposkytujú asistenciu.",
+                            da = "Motoren er deaktiveret på dette niveau - gashåndtag og trædning giver ingen assistance.",
+                            ru = "Двигатель отключён на этом уровне - газ и педалирование не дают помощи.",
                         ),
                         fontFamily = Manrope, fontSize = 12.sp, color = Tokens.TextSecondary,
                     )
@@ -245,13 +249,13 @@ fun BbsFwAssistLevelsScreen(
         // --- Operation Mode Toggle / Startup Assist Level (globalne, nie per-profil) ---
         TokenCard(borderColor = Tokens.WhiteBorder) {
             LabeledStepRow(
-                tr("Przełącznik trybu pracy:", "Operation Mode Toggle:", de = "Betriebsmodus-Schalter:", fr = "Commutateur de mode de fonctionnement :", es = "Interruptor de modo de funcionamiento:", pt = "Interruptor de modo de funcionamento:", it = "Interruttore modalità di funzionamento:", nl = "Werkmodusschakelaar:", sv = "Omkopplare för driftläge:", cs = "Přepínač provozního režimu:", sk = "Prepínač prevádzkového režimu:"), assistModeSelectLabel(cfg.assistModeSelect),
+                tr("Przełącznik trybu pracy:", "Operation Mode Toggle:", de = "Betriebsmodus-Schalter:", fr = "Commutateur de mode de fonctionnement :", es = "Interruptor de modo de funcionamiento:", pt = "Interruptor de modo de funcionamento:", it = "Interruttore modalità di funzionamento:", nl = "Werkmodusschakelaar:", sv = "Omkopplare för driftläge:", cs = "Přepínač provozního režimu:", sk = "Prepínač prevádzkového režimu:", da = "Driftstilstand-kontakt:", ru = "Переключатель режима работы:"), assistModeSelectLabel(cfg.assistModeSelect),
                 { onAssistModeSelect(stepInOrder(ASSIST_MODE_SELECT_DISPLAY_ORDER, cfg.assistModeSelect, -1)) },
                 { onAssistModeSelect(stepInOrder(ASSIST_MODE_SELECT_DISPLAY_ORDER, cfg.assistModeSelect, 1)) },
             )
             HorizontalDivider(color = Tokens.Border, thickness = 1.dp)
             LabeledStepRow(
-                tr("Poziom wspomagania przy starcie:", "Startup Assist Level:", de = "Unterstützungsstufe beim Start:", fr = "Niveau d'assistance au démarrage :", es = "Nivel de asistencia al arrancar:", pt = "Nível de assistência ao arrancar:", it = "Livello di assistenza all'avvio:", nl = "Ondersteuningsniveau bij opstarten:", sv = "Assistansnivå vid start:", cs = "Úroveň asistence při startu:", sk = "Úroveň asistencie pri štarte:"), cfg.assistStartupLevel.toString(),
+                tr("Poziom wspomagania przy starcie:", "Startup Assist Level:", de = "Unterstützungsstufe beim Start:", fr = "Niveau d'assistance au démarrage :", es = "Nivel de asistencia al arrancar:", pt = "Nível de assistência ao arrancar:", it = "Livello di assistenza all'avvio:", nl = "Ondersteuningsniveau bij opstarten:", sv = "Assistansnivå vid start:", cs = "Úroveň asistence při startu:", sk = "Úroveň asistencie pri štarte:", da = "Assistanceniveau ved start:", ru = "Уровень ассистента при старте:"), cfg.assistStartupLevel.toString(),
                 { onAssistStartupLevel(cfg.assistStartupLevel - 1) },
                 { onAssistStartupLevel(cfg.assistStartupLevel + 1) },
             )
@@ -296,6 +300,14 @@ fun BbsFwAssistLevelsScreen(
                     "vyhradené tlačidlo (v tejto aplikácii: prepínač „Sport“ v Cockpite), „Lights Button“ využíva " +
                     "tlačidlo svetiel (pozri varovanie v Cockpite). Startup Assist Level: úroveň asistencie profilu " +
                     "Standard, s ktorou riadiaca jednotka štartuje bez pripojeného displeja.",
+                da = "Operation Mode Toggle: hvordan der fysisk skiftes mellem Standard/Sport - „Sport Button“ " +
+                    "er en dedikeret knap (i denne app: „Sport“-kontakten i Cockpit), „Lights Button“ genbruger " +
+                    "lysknappen (se advarslen i Cockpit). Startup Assist Level: assistanceniveauet for Standard-" +
+                    "profilen, som controlleren starter i uden tilsluttet display.",
+                ru = "Operation Mode Toggle: как физически переключается Standard/Sport - «Sport Button» - " +
+                    "это отдельная кнопка (в этом приложении: переключатель «Sport» в Кокпите), «Lights Button» " +
+                    "использует кнопку света (см. предупреждение в Кокпите). Startup Assist Level: уровень " +
+                    "ассистента профиля Standard, с которым контроллер запускается без подключённого дисплея.",
             ),
             fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
         )

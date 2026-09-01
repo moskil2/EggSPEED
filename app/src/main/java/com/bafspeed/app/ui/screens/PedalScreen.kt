@@ -68,7 +68,7 @@ fun PedalScreen(
         TelemetryPausedNotice(monitoringActive = monitoringActive, aodActive = state.aodEnabled)
 
         ExpandableParamTile(
-            label = tr("Typ czujnika pedałowania", "Pedal Sensor Type", de = "Pedalsensor-Typ", fr = "Type de capteur de pédalage", es = "Tipo de sensor de pedaleo", pt = "Tipo de sensor de pedalada", it = "Tipo di sensore di pedalata", nl = "Type trapsensor", sv = "Typ av trampsensor", cs = "Typ snímače šlapání", sk = "Typ snímača šliapania"),
+            label = tr("Typ czujnika pedałowania", "Pedal Sensor Type", de = "Pedalsensor-Typ", fr = "Type de capteur de pédalage", es = "Tipo de sensor de pedaleo", pt = "Tipo de sensor de pedalada", it = "Tipo di sensore di pedalata", nl = "Type trapsensor", sv = "Typ av trampsensor", cs = "Typ snímače šlapání", sk = "Typ snímača šliapania", da = "Pedalsensortype", ru = "Тип датчика педалирования"),
             valueLabel = PEDAL_SENSOR_TYPE_LABELS.getOrElse(pas.pedalType) { "?" },
             description = tr(
                 "Ten parametr wybiera typ czujnika obrotu pedałów. Jest ustawiany przez producenta i nie " +
@@ -93,6 +93,10 @@ fun PedalScreen(
                     "neměl by se měnit.",
                 sk = "Tento parameter vyberá typ snímača otáčania pedálov. Nastavuje ho výrobca a " +
                     "nemal by sa meniť.",
+                da = "Denne parameter vælger typen af pedalrotationssensor. Den indstilles af producenten og " +
+                    "bør ikke ændres.",
+                ru = "Этот параметр выбирает тип датчика вращения педалей. Он устанавливается производителем и " +
+                    "не должен изменяться.",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -103,7 +107,7 @@ fun PedalScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Wskazany poziom wspomagania", "Designated Assist Level", de = "Festgelegte Unterstützungsstufe", fr = "Niveau d'assistance désigné", es = "Nivel de asistencia designado", pt = "Nível de assistência designado", it = "Livello di assistenza designato", nl = "Aangewezen ondersteuningsniveau", sv = "Angiven assistansnivå", cs = "Určená úroveň asistence", sk = "Určená úroveň asistencie"),
+            label = tr("Wskazany poziom wspomagania", "Designated Assist Level", de = "Festgelegte Unterstützungsstufe", fr = "Niveau d'assistance désigné", es = "Nivel de asistencia designado", pt = "Nível de assistência designado", it = "Livello di assistenza designato", nl = "Aangewezen ondersteuningsniveau", sv = "Angiven assistansnivå", cs = "Určená úroveň asistence", sk = "Určená úroveň asistencie", da = "Angivet assistanceniveau", ru = "Заданный уровень помощи"),
             valueLabel = designatedAssistLabel(pas.designatedAssist),
             description = tr(
                 "Masz dwa tryby działania. \"By Display's Command\" oznacza, że poziom wspomagania (ten z " +
@@ -142,6 +146,13 @@ fun PedalScreen(
                 sk = "Máš dva režimy prevádzky. „By Display's Command“ znamená, že úroveň asistencie " +
                     "(tá z karty General) bude vyberaná z tvojho LCD. Druhou možnosťou je zvoliť konkrétnu " +
                     "úroveň asistencie (0-9), ktorá zostane pevná a nepôjde ju zmeniť z LCD.",
+                da = "Der er to driftstyper. „By Display's Command“ betyder, at assistanceniveauet " +
+                    "(det fra fanen General) vælges fra dit LCD-display. Den anden mulighed er at vælge et " +
+                    "bestemt assistanceniveau (0-9), som er fast, og du vil ikke kunne ændre det fra LCD'et.",
+                ru = "Есть два режима работы. «By Display's Command» означает, что уровень поддержки " +
+                    "(тот же, что на вкладке General) будет выбираться с вашего LCD. Второй вариант - " +
+                    "выбрать конкретный уровень поддержки (0-9), который будет фиксированным, и изменить его " +
+                    "с LCD будет нельзя.",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -152,7 +163,7 @@ fun PedalScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Limit prędkości", "Speed Limit", de = "Geschwindigkeitslimit", fr = "Limite de vitesse", es = "Límite de velocidad", pt = "Limite de velocidade", it = "Limite di velocità", nl = "Snelheidslimiet", sv = "Hastighetsgräns", cs = "Omezení rychlosti", sk = "Obmedzenie rýchlosti"),
+            label = tr("Limit prędkości", "Speed Limit", de = "Geschwindigkeitslimit", fr = "Limite de vitesse", es = "Límite de velocidad", pt = "Limite de velocidade", it = "Limite di velocità", nl = "Snelheidslimiet", sv = "Hastighetsgräns", cs = "Omezení rychlosti", sk = "Obmedzenie rýchlosti", da = "Hastighedsgrænse", ru = "Ограничение скорости"),
             valueLabel = speedLimitLabel(pas.speedLimit),
             description = tr(
                 "To jest maksymalna prędkość, przy której silnik będzie zapewniał dodatkowe przyspieszenie. Po " +
@@ -197,6 +208,14 @@ fun PedalScreen(
                     "dosiahnutí už len udržiava túto rýchlosť, bez ďalšieho zrýchľovania. „By Display's Command“ " +
                     "umožňuje nastaviť rýchlosť z tvojho LCD. Toto nastavenie platí pre všetky úrovne asistencie " +
                     "na karte General.",
+                da = "Dette er den maksimale hastighed, hvor motoren yder ekstra acceleration. Når den er " +
+                    "nået, vil den kun holde den hastighed og ikke accelerere yderligere. „By Display's Command“ " +
+                    "lader dig indstille hastigheden fra dit LCD. Denne indstilling gælder for alle " +
+                    "assistanceniveauer på fanen General.",
+                ru = "Это максимальная скорость, при которой мотор обеспечивает дополнительное ускорение. По " +
+                    "её достижении он будет только поддерживать эту скорость, не ускоряясь дальше. «By Display's " +
+                    "Command» позволяет задать скорость с вашего LCD. Эта настройка применяется ко всем " +
+                    "уровням поддержки на вкладке General.",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -207,7 +226,7 @@ fun PedalScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Prąd startowy [%]", "Start Current [%]", de = "Startstrom [%]", fr = "Courant de démarrage [%]", es = "Corriente de arranque [%]", pt = "Corrente de arranque [%]", it = "Corrente di avvio [%]", nl = "Startstroom [%]", sv = "Startström [%]", cs = "Počáteční proud [%]", sk = "Počiatočný prúd [%]"),
+            label = tr("Prąd startowy [%]", "Start Current [%]", de = "Startstrom [%]", fr = "Courant de démarrage [%]", es = "Corriente de arranque [%]", pt = "Corrente de arranque [%]", it = "Corrente di avvio [%]", nl = "Startstroom [%]", sv = "Startström [%]", cs = "Počáteční proud [%]", sk = "Počiatočný prúd [%]", da = "Startstrøm [%]", ru = "Пусковой ток [%]"),
             valueLabel = "${pas.startCurrentPct}%",
             description = tr(
                 "To jest prąd startowy, gdy zaczynasz obracać pedałami. Ustaw go na co najmniej 10%, żeby rower " +
@@ -250,6 +269,14 @@ fun PedalScreen(
                 sk = "Toto je počiatočný prúd, keď začneš šliapať. Nastav ho na aspoň 10%, aby sa " +
                     "bicykel rozbehol bez zablokovania motora. Príliš vysoká hodnota spôsobuje veľmi rýchle " +
                     "zrýchlenie pri štarte, čo môže poškodiť vnútorné prevody a motor. Odporúčaný rozsah: 10-30%.",
+                da = "Dette er startstrømmen, når du begynder at træde i pedalerne. Indstil den til mindst " +
+                    "10%, så cyklen begynder at bevæge sig uden at blokere motoren. En for høj værdi forårsager " +
+                    "meget hurtig acceleration ved start, hvilket kan beskadige de interne gear og motoren. " +
+                    "Anbefalet område: 10-30%.",
+                ru = "Это пусковой ток, когда вы начинаете крутить педали. Установите его не менее 10%, " +
+                    "чтобы велосипед начал двигаться без остановки мотора. Слишком высокое значение вызывает " +
+                    "очень быстрое ускорение при старте, что может повредить внутренние передачи и мотор. " +
+                    "Рекомендуемый диапазон: 10-30%.",
             ),
         ) {
             FlankedSlider(
@@ -261,7 +288,7 @@ fun PedalScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Tryb wolnego startu (1-8)", "Slow-start Mode (1-8)", de = "Sanftanlauf-Modus (1-8)", fr = "Mode démarrage progressif (1-8)", es = "Modo de arranque suave (1-8)", pt = "Modo de arranque suave (1-8)", it = "Modalità avvio lento (1-8)", nl = "Zachte-startmodus (1-8)", sv = "Läge för mjukstart (1-8)", cs = "Režim pomalého startu (1-8)", sk = "Režim pomalého štartu (1-8)"),
+            label = tr("Tryb wolnego startu (1-8)", "Slow-start Mode (1-8)", de = "Sanftanlauf-Modus (1-8)", fr = "Mode démarrage progressif (1-8)", es = "Modo de arranque suave (1-8)", pt = "Modo de arranque suave (1-8)", it = "Modalità avvio lento (1-8)", nl = "Zachte-startmodus (1-8)", sv = "Läge för mjukstart (1-8)", cs = "Režim pomalého startu (1-8)", sk = "Režim pomalého štartu (1-8)", da = "Blød start-tilstand (1-8)", ru = "Режим плавного старта (1-8)"),
             valueLabel = (pas.slowStartMode + 1).toString(),
             description = tr(
                 "Kontroluje, jak szybko osiągany jest prąd startowy. Wartość ok. 4 zwykle działa dobrze dla " +
@@ -298,6 +325,12 @@ fun PedalScreen(
                 sk = "Určuje, ako rýchlo sa dosiahne počiatočný prúd. Hodnota okolo 4 zvyčajne funguje dobre " +
                     "pre bežnú jazdu. Nižšie hodnoty zrýchľujú štart, čo môže byť užitočné v teréne, ale " +
                     "hrozí preťažením radiča a motora.",
+                da = "Styrer, hvor hurtigt startstrømmen nås. En værdi omkring 4 fungerer normalt godt til " +
+                    "almindelig cykling. Lavere værdier gør accelerationen hurtigere, hvilket kan være nyttigt " +
+                    "uden for vej, men risikerer at overbelaste styreenheden og motoren.",
+                ru = "Определяет, как быстро достигается пусковой ток. Значение около 4 обычно хорошо " +
+                    "подходит для обычной езды. Более низкие значения делают ускорение быстрее, что может " +
+                    "быть полезно вне дорог, но рискует перегрузить контроллер и мотор.",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -308,7 +341,7 @@ fun PedalScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Stopień startu (nr sygnału)", "Start Degree (Signal No.)", de = "Startgrad (Signal-Nr.)", fr = "Degré de démarrage (n° signal)", es = "Grado de arranque (n.º señal)", pt = "Grau de arranque (n.º sinal)", it = "Grado di avvio (n. segnale)", nl = "Startgraad (signaalnr.)", sv = "Startgrad (signalnr.)", cs = "Stupeň startu (č. signálu)", sk = "Stupeň štartu (č. signálu)"),
+            label = tr("Stopień startu (nr sygnału)", "Start Degree (Signal No.)", de = "Startgrad (Signal-Nr.)", fr = "Degré de démarrage (n° signal)", es = "Grado de arranque (n.º señal)", pt = "Grau de arranque (n.º sinal)", it = "Grado di avvio (n. segnale)", nl = "Startgraad (signaalnr.)", sv = "Startgrad (signalnr.)", cs = "Stupeň startu (č. signálu)", sk = "Stupeň štartu (č. signálu)", da = "Startgrad (signalnr.)", ru = "Степень старта (номер сигнала)"),
             valueLabel = pas.startDegree.toString(),
             description = tr(
                 "Ustala, ile impulsów z czujnika pedałowania jest potrzebnych, zanim silnik się uruchomi. Pełny " +
@@ -345,6 +378,12 @@ fun PedalScreen(
                 sk = "Určuje, koľko impulzov zo snímača šliapania je potrebných, kým sa motor spustí. Plná " +
                     "otáčka pedálov pri sadách BBS generuje 24 impulzov. 0 alebo 1 nebude fungovať. Hodnota okolo 4 funguje " +
                     "dobre: nie príliš nervózna, nie príliš veľká vyžadovaná rotácia.",
+                da = "Angiver, hvor mange impulser fra pedalsensoren der kræves, før motoren starter. En fuld " +
+                    "pedalomdrejning på BBS-kits genererer 24 impulser. 0 eller 1 vil ikke virke. En værdi omkring " +
+                    "4 fungerer godt: ikke for nervøs, ikke for meget rotation krævet.",
+                ru = "Задаёт, сколько импульсов от датчика педалей требуется до запуска мотора. Полный оборот " +
+                    "педалей в комплектах BBS создаёт 24 импульса. 0 или 1 не будут работать. Значение около 4 " +
+                    "работает хорошо: не слишком резко, не требует слишком большого вращения.",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -355,9 +394,9 @@ fun PedalScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Tryb pracy", "Work Mode", de = "Arbeitsmodus", fr = "Mode de fonctionnement", es = "Modo de trabajo", pt = "Modo de funcionamento", it = "Modalità di lavoro", nl = "Werkmodus", sv = "Arbetsläge", cs = "Pracovní režim", sk = "Pracovný režim"),
+            label = tr("Tryb pracy", "Work Mode", de = "Arbeitsmodus", fr = "Mode de fonctionnement", es = "Modo de trabajo", pt = "Modo de funcionamento", it = "Modalità di lavoro", nl = "Werkmodus", sv = "Arbetsläge", cs = "Pracovní režim", sk = "Pracovný režim", da = "Arbejdstilstand", ru = "Рабочий режим"),
             valueLabel = if (pas.workMode == 0) {
-                tr("Nieokreślony", "Undetermined", de = "Unbestimmt", fr = "Indéterminé", es = "Indeterminado", pt = "Indeterminado", it = "Indeterminato", nl = "Onbepaald", sv = "Obestämd", cs = "Neurčeno", sk = "Neurčené")
+                tr("Nieokreślony", "Undetermined", de = "Unbestimmt", fr = "Indéterminé", es = "Indeterminado", pt = "Indeterminado", it = "Indeterminato", nl = "Onbepaald", sv = "Obestämd", cs = "Neurčeno", sk = "Neurčené", da = "Ubestemt", ru = "Не определено")
             } else {
                 pas.workMode.toString()
             },
@@ -395,6 +434,12 @@ fun PedalScreen(
                 sk = "Presný účel tohto parametra nie je dobre zdokumentovaný - pravdepodobne riadi " +
                     "výkon podľa rýchlosti otáčania pedálov. Predvolená hodnota výrobcu funguje " +
                     "dobre, takže ju zvyčajne nepotrebuješ meniť.",
+                da = "Denne parameters nøjagtige formål er ikke godt dokumenteret - den skal formentlig styre " +
+                    "effekten ud fra pedalrotationshastigheden. Producentens standardværdi fungerer fint, så du " +
+                    "behøver normalt ikke ændre den.",
+                ru = "Точное назначение этого параметра плохо задокументировано - предположительно он " +
+                    "управляет мощностью в зависимости от скорости вращения педалей. Значение по умолчанию от " +
+                    "производителя работает хорошо, поэтому обычно менять его не нужно.",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -405,7 +450,7 @@ fun PedalScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Opóźnienie zatrzymania", "Stop Delay", de = "Stoppverzögerung", fr = "Délai d'arrêt", es = "Retardo de parada", pt = "Atraso de paragem", it = "Ritardo di arresto", nl = "Stopvertraging", sv = "Stoppfördröjning", cs = "Zpoždění zastavení", sk = "Oneskorenie zastavenia"),
+            label = tr("Opóźnienie zatrzymania", "Stop Delay", de = "Stoppverzögerung", fr = "Délai d'arrêt", es = "Retardo de parada", pt = "Atraso de paragem", it = "Ritardo di arresto", nl = "Stopvertraging", sv = "Stoppfördröjning", cs = "Zpoždění zastavení", sk = "Oneskorenie zastavenia", da = "Stopforsinkelse", ru = "Задержка остановки"),
             valueLabel = "${pas.timeOfStop * 10} ms",
             description = tr(
                 "Opóźnienie po zatrzymaniu pedałowania, przed zatrzymaniem silnika. Sterownik przyjmuje to tylko " +
@@ -438,6 +483,12 @@ fun PedalScreen(
                 sk = "Oneskorenie po zastavení šliapania, kým sa motor zastaví. Radič " +
                     "to prijíma iba v krokoch po 10ms, takže každé ťuknutie -/+ posunie hodnotu o 10ms. " +
                     "250ms funguje dobre.",
+                da = "Forsinkelsen efter du stopper med at træde, før motoren stopper. Styreenheden " +
+                    "accepterer kun dette i trin på 10ms, så hvert -/+ tryk flytter værdien med 10ms. " +
+                    "250ms fungerer godt.",
+                ru = "Задержка после того, как вы перестаёте крутить педали, перед остановкой мотора. " +
+                    "Контроллер принимает это только шагами по 10ms, поэтому каждое нажатие -/+ сдвигает " +
+                    "значение на 10ms. 250ms работает хорошо.",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -448,7 +499,7 @@ fun PedalScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Zanik prądu (1-8)", "Current Decay (1-8)", de = "Stromabfall (1-8)", fr = "Décroissance du courant (1-8)", es = "Caída de corriente (1-8)", pt = "Decaimento de corrente (1-8)", it = "Decadimento corrente (1-8)", nl = "Stroomafname (1-8)", sv = "Strömavklingning (1-8)", cs = "Pokles proudu (1-8)", sk = "Pokles prúdu (1-8)"),
+            label = tr("Zanik prądu (1-8)", "Current Decay (1-8)", de = "Stromabfall (1-8)", fr = "Décroissance du courant (1-8)", es = "Caída de corriente (1-8)", pt = "Decaimento de corrente (1-8)", it = "Decadimento corrente (1-8)", nl = "Stroomafname (1-8)", sv = "Strömavklingning (1-8)", cs = "Pokles proudu (1-8)", sk = "Pokles prúdu (1-8)", da = "Strømaftagning (1-8)", ru = "Спад тока (1-8)"),
             valueLabel = pas.currentDecay.toString(),
             description = tr(
                 "Ustala, jak szybko spada prąd, gdy pedałujesz szybciej i osiągasz maksymalną prędkość na wybranym " +
@@ -483,6 +534,12 @@ fun PedalScreen(
                 sk = "Určuje, ako rýchlo prúd klesá, keď šliapeš rýchlejšie a dosahuješ maximálnu " +
                     "rýchlosť zvolenej úrovne asistencie. Nižšia hodnota znamená, že prúd " +
                     "začína klesať pri nižšej rýchlosti.",
+                da = "Indstiller, hvor hurtigt strømmen falder, når du træder hurtigere og når den " +
+                    "maksimale hastighed for det valgte assistanceniveau. En lavere værdi betyder, at " +
+                    "strømmen begynder at falde ved en lavere hastighed.",
+                ru = "Задаёт, как быстро падает ток, когда вы крутите педали быстрее и достигаете " +
+                    "максимальной скорости на выбранном уровне поддержки. Более низкое значение означает, " +
+                    "что ток начинает падать при более низкой скорости.",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -493,7 +550,7 @@ fun PedalScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Zanik zatrzymania", "Stop Decay", de = "Stoppabfall", fr = "Décroissance à l'arrêt", es = "Caída al detenerse", pt = "Decaimento de paragem", it = "Decadimento arresto", nl = "Stopafname", sv = "Stoppavklingning", cs = "Pokles při zastavení", sk = "Pokles pri zastavení"),
+            label = tr("Zanik zatrzymania", "Stop Decay", de = "Stoppabfall", fr = "Décroissance à l'arrêt", es = "Caída al detenerse", pt = "Decaimento de paragem", it = "Decadimento arresto", nl = "Stopafname", sv = "Stoppavklingning", cs = "Pokles při zastavení", sk = "Pokles pri zastavení", da = "Stopaftagning", ru = "Спад при остановке"),
             valueLabel = "${pas.stopDecay * 10} ms",
             description = tr(
                 "Czas potrzebny silnikowi na zatrzymanie się. Kroki po 10ms na dotknięcie -/+.",
@@ -507,6 +564,8 @@ fun PedalScreen(
                 sv = "Tiden det tar för motorn att stanna. Steg om 10ms per -/+ tryck.",
                 cs = "Doba, kterou motor potřebuje k zastavení. Kroky po 10ms na ťuknutí -/+.",
                 sk = "Doba, ktorú motor potrebuje na zastavenie. Kroky po 10ms na ťuknutie -/+.",
+                da = "Den tid det tager motoren at stoppe. Trin på 10ms pr. -/+ tryk.",
+                ru = "Время, необходимое мотору для остановки. Шаг 10ms на каждое нажатие -/+.",
             ),
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -517,7 +576,7 @@ fun PedalScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Podtrzymanie prądu [%]", "Keep Current [%]", de = "Stromhaltung [%]", fr = "Maintien du courant [%]", es = "Mantenimiento de corriente [%]", pt = "Manutenção de corrente [%]", it = "Mantenimento corrente [%]", nl = "Stroom vasthouden [%]", sv = "Bibehållen ström [%]", cs = "Udržení proudu [%]", sk = "Udržanie prúdu [%]"),
+            label = tr("Podtrzymanie prądu [%]", "Keep Current [%]", de = "Stromhaltung [%]", fr = "Maintien du courant [%]", es = "Mantenimiento de corriente [%]", pt = "Manutenção de corrente [%]", it = "Mantenimento corrente [%]", nl = "Stroom vasthouden [%]", sv = "Bibehållen ström [%]", cs = "Udržení proudu [%]", sk = "Udržanie prúdu [%]", da = "Fasthold strøm [%]", ru = "Удержание тока [%]"),
             valueLabel = "${pas.keepCurrentPct}%",
             description = tr(
                 "Procent maksymalnego prądu dla wybranego poziomu wspomagania, który dalej płynie przez silnik po " +
@@ -573,6 +632,16 @@ fun PedalScreen(
                     "Current Limit 25A dáva PAS5 pri 50% prúdu max. 12,5A pre túto úroveň; s Keep " +
                     "Current na 50% je prúd po dosiahnutí maximálnej rýchlosti udržiavaný na " +
                     "6,25A - plynulý prechod namiesto náhleho poklesu.",
+                da = "Procentdel af den maksimale strøm for det valgte assistanceniveau, som fortsætter med " +
+                    "at flyde gennem motoren, når du når den maksimale hastighed og fortsætter med at træde. " +
+                    "F.eks. med en Current Limit på 25A giver PAS5 ved 50% strøm maks. 12,5A for det niveau; " +
+                    "med Keep Current på 50% holdes strømmen på 6,25A, når maks. hastighed er nået - en jævn " +
+                    "overgang i stedet for et pludseligt fald.",
+                ru = "Процент от максимального тока для выбранного уровня поддержки, который продолжает " +
+                    "течь через мотор после достижения максимальной скорости при продолжении педалирования. " +
+                    "Например, при Current Limit 25A, PAS5 при 50% тока даёт макс. 12,5A для этого уровня; при " +
+                    "Keep Current на 50% ток удерживается на уровне 6,25A по достижении макс. скорости - " +
+                    "плавный переход вместо резкого падения.",
             ),
         ) {
             FlankedSlider(

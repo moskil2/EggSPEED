@@ -16,6 +16,8 @@ enum class AppLanguage(val flag: String, val displayName: String) {
     SV("🇸🇪", "Svenska"),
     CS("🇨🇿", "Čeština"),
     SK("🇸🇰", "Slovenčina"),
+    DA("🇩🇰", "Dansk"),
+    RU("🇷🇺", "Русский"),
 }
 
 /** Bieżący język UI - dostarczany z poziomu MainActivity na podstawie UiState.language. */
@@ -26,7 +28,7 @@ val LocalAppLanguage = compositionLocalOf { AppLanguage.EN }
  * dla użytkownika napis dostaje od razu swój odpowiednik w drugim języku, prosto przy literale
  * który zastępuje. Wersja bez CompositionLocal - do użycia poza Compose (np. w AppViewModel).
  *
- * [de]/[fr]/[es]/[pt]/[it]/[nl]/[sv]/[cs]/[sk] są opcjonalne i domyślnie spadają na [en] - pozwala
+ * [de]/[fr]/[es]/[pt]/[it]/[nl]/[sv]/[cs]/[sk]/[da]/[ru] są opcjonalne i domyślnie spadają na [en] - pozwala
  * to dodawać języki stopniowo, ekran po ekranie, bez ryzyka pustego/zepsutego tekstu w miejscach
  * jeszcze nieprzetłumaczonych.
  */
@@ -43,6 +45,8 @@ fun tr(
     sv: String? = null,
     cs: String? = null,
     sk: String? = null,
+    da: String? = null,
+    ru: String? = null,
 ): String = when (lang) {
     AppLanguage.PL -> pl
     AppLanguage.EN -> en
@@ -55,6 +59,8 @@ fun tr(
     AppLanguage.SV -> sv ?: en
     AppLanguage.CS -> cs ?: en
     AppLanguage.SK -> sk ?: en
+    AppLanguage.DA -> da ?: en
+    AppLanguage.RU -> ru ?: en
 }
 
 /** Wersja @Composable - czyta bieżący język z [LocalAppLanguage] automatycznie. */
@@ -71,4 +77,6 @@ fun tr(
     sv: String? = null,
     cs: String? = null,
     sk: String? = null,
-): String = tr(LocalAppLanguage.current, pl, en, de, fr, es, pt, it, nl, sv, cs, sk)
+    da: String? = null,
+    ru: String? = null,
+): String = tr(LocalAppLanguage.current, pl, en, de, fr, es, pt, it, nl, sv, cs, sk, da, ru)

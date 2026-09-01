@@ -139,33 +139,33 @@ private val CONFIG_SCREENS = setOf(Screen.ASSIST, Screen.MOTOR, Screen.PEDAL, Sc
  */
 @Composable
 private fun Screen.title(firmwareType: FirmwareType): String = when (this) {
-    Screen.CONNECT -> tr("Połączenie", "Connect", de = "Verbindung", fr = "Connexion", es = "Conexión", pt = "Ligação", it = "Connessione", nl = "Verbinding", sv = "Anslutning", cs = "Připojení", sk = "Pripojenie")
-    Screen.DASHBOARD -> tr("Kokpit", "Cockpit", de = "Cockpit", fr = "Cockpit", es = "Cockpit", pt = "Cockpit", it = "Cockpit", nl = "Cockpit", sv = "Cockpit", cs = "Kokpit", sk = "Kokpit")
-    Screen.BAFANG_TYPE -> tr("Bafang - Typ silnika", "Bafang Motor Type", de = "Bafang - Motortyp", fr = "Bafang - Type de moteur", es = "Bafang - Tipo de motor", pt = "Bafang - Tipo de motor", it = "Bafang - Tipo di motore", nl = "Bafang - Motortype", sv = "Bafang - Motortyp", cs = "Bafang - Typ motoru", sk = "Bafang - Typ motora")
-    Screen.MOTOR -> tr("Bafang - Ustawienia podstawowe", "Bafang Basic", de = "Bafang - Grundeinstellungen", fr = "Bafang - Réglages de base", es = "Bafang - Ajustes básicos", pt = "Bafang - Definições básicas", it = "Bafang - Impostazioni di base", nl = "Bafang - Basisinstellingen", sv = "Bafang - Grundinställningar", cs = "Bafang - Základní nastavení", sk = "Bafang - Základné nastavenia")
-    Screen.PEDAL -> tr("Bafang - Pedałowanie (PAS)", "Bafang Pedal (PAS)", de = "Bafang - Pedalunterstützung (PAS)", fr = "Bafang - Pédalage (PAS)", es = "Bafang - Pedaleo (PAS)", pt = "Bafang - Pedalada (PAS)", it = "Bafang - Pedalata (PAS)", nl = "Bafang - Trappen (PAS)", sv = "Bafang - Trampning (PAS)", cs = "Bafang - Šlapání (PAS)", sk = "Bafang - Šliapanie (PAS)")
-    Screen.THROTTLE -> tr("Bafang - Manetka", "Bafang Throttle", de = "Bafang - Gasgriff", fr = "Bafang - Accélérateur", es = "Bafang - Acelerador", pt = "Bafang - Acelerador", it = "Bafang - Acceleratore", nl = "Bafang - Gasgreep", sv = "Bafang - Gasreglage", cs = "Bafang - Plynová páčka", sk = "Bafang - Plynová páčka")
-    Screen.ASSIST -> tr("Bafang - Poziomy wspomagania", "Bafang Assist levels", de = "Bafang - Unterstützungsstufen", fr = "Bafang - Niveaux d'assistance", es = "Bafang - Niveles de asistencia", pt = "Bafang - Níveis de assistência", it = "Bafang - Livelli di assistenza", nl = "Bafang - Ondersteuningsniveaus", sv = "Bafang - Assistansnivåer", cs = "Bafang - Úrovně asistence", sk = "Bafang - Úrovne asistencie")
+    Screen.CONNECT -> tr("Połączenie", "Connect", de = "Verbindung", fr = "Connexion", es = "Conexión", pt = "Ligação", it = "Connessione", nl = "Verbinding", sv = "Anslutning", cs = "Připojení", sk = "Pripojenie", da = "Forbindelse", ru = "Подключение")
+    Screen.DASHBOARD -> tr("Kokpit", "Cockpit", de = "Cockpit", fr = "Cockpit", es = "Cockpit", pt = "Cockpit", it = "Cockpit", nl = "Cockpit", sv = "Cockpit", cs = "Kokpit", sk = "Kokpit", da = "Cockpit", ru = "Кокпит")
+    Screen.BAFANG_TYPE -> tr("Bafang - Typ silnika", "Bafang Motor Type", de = "Bafang - Motortyp", fr = "Bafang - Type de moteur", es = "Bafang - Tipo de motor", pt = "Bafang - Tipo de motor", it = "Bafang - Tipo di motore", nl = "Bafang - Motortype", sv = "Bafang - Motortyp", cs = "Bafang - Typ motoru", sk = "Bafang - Typ motora", da = "Bafang - Motortype", ru = "Bafang - Тип двигателя")
+    Screen.MOTOR -> tr("Bafang - Ustawienia podstawowe", "Bafang Basic", de = "Bafang - Grundeinstellungen", fr = "Bafang - Réglages de base", es = "Bafang - Ajustes básicos", pt = "Bafang - Definições básicas", it = "Bafang - Impostazioni di base", nl = "Bafang - Basisinstellingen", sv = "Bafang - Grundinställningar", cs = "Bafang - Základní nastavení", sk = "Bafang - Základné nastavenia", da = "Bafang - Grundindstillinger", ru = "Bafang - Основные настройки")
+    Screen.PEDAL -> tr("Bafang - Pedałowanie (PAS)", "Bafang Pedal (PAS)", de = "Bafang - Pedalunterstützung (PAS)", fr = "Bafang - Pédalage (PAS)", es = "Bafang - Pedaleo (PAS)", pt = "Bafang - Pedalada (PAS)", it = "Bafang - Pedalata (PAS)", nl = "Bafang - Trappen (PAS)", sv = "Bafang - Trampning (PAS)", cs = "Bafang - Šlapání (PAS)", sk = "Bafang - Šliapanie (PAS)", da = "Bafang - Pedalering (PAS)", ru = "Bafang - Педалирование (PAS)")
+    Screen.THROTTLE -> tr("Bafang - Manetka", "Bafang Throttle", de = "Bafang - Gasgriff", fr = "Bafang - Accélérateur", es = "Bafang - Acelerador", pt = "Bafang - Acelerador", it = "Bafang - Acceleratore", nl = "Bafang - Gasgreep", sv = "Bafang - Gasreglage", cs = "Bafang - Plynová páčka", sk = "Bafang - Plynová páčka", da = "Bafang - Gashåndtag", ru = "Bafang - Ручка газа")
+    Screen.ASSIST -> tr("Bafang - Poziomy wspomagania", "Bafang Assist levels", de = "Bafang - Unterstützungsstufen", fr = "Bafang - Niveaux d'assistance", es = "Bafang - Niveles de asistencia", pt = "Bafang - Níveis de assistência", it = "Bafang - Livelli di assistenza", nl = "Bafang - Ondersteuningsniveaus", sv = "Bafang - Assistansnivåer", cs = "Bafang - Úrovně asistence", sk = "Bafang - Úrovne asistencie", da = "Bafang - Assistanceniveauer", ru = "Bafang - Уровни ассистента")
     Screen.BBSFW_INFO -> "BBS-FW Version"
     Screen.BBSFW_SYSTEM -> "BBS-FW System"
     Screen.BBSFW_ASSIST -> "BBS-FW Assist Levels"
-    Screen.BATTERY -> tr("Bateria", "Battery", de = "Batterie", fr = "Batterie", es = "Batería", pt = "Bateria", it = "Batteria", nl = "Batterij", sv = "Batteri", cs = "Baterie", sk = "Batéria")
-    Screen.SAG -> tr("Pomiar SAG baterii", "Battery SAG Measurement", de = "SAG-Messung der Batterie", fr = "Mesure SAG de la batterie", es = "Medición SAG de la batería", pt = "Medição SAG da bateria", it = "Misurazione SAG della batteria", nl = "SAG-meting van batterij", sv = "SAG-mätning av batteri", cs = "Měření SAG baterie", sk = "Meranie SAG batérie")
-    Screen.MONITORING -> tr("Monitoring", "Monitoring", de = "Monitoring", fr = "Monitoring", es = "Monitoring", pt = "Monitoring", it = "Monitoring", nl = "Monitoring", sv = "Monitoring", cs = "Monitoring", sk = "Monitoring")
-    Screen.TEMPERATURE_CONTROL -> tr("Kontrola temperatury", "Temperature control", de = "Temperaturkontrolle", fr = "Contrôle de température", es = "Control de temperatura", pt = "Controlo de temperatura", it = "Controllo temperatura", nl = "Temperatuurregeling", sv = "Temperaturkontroll", cs = "Kontrola teploty", sk = "Kontrola teploty")
-    Screen.SETTINGS -> tr("Ustawienia", "Settings", de = "Einstellungen", fr = "Réglages", es = "Ajustes", pt = "Definições", it = "Impostazioni", nl = "Instellingen", sv = "Inställningar", cs = "Nastavení", sk = "Nastavenia")
-    Screen.DISPLAY -> tr("Ekran", "Screen", de = "Bildschirm", fr = "Écran", es = "Pantalla", pt = "Ecrã", it = "Schermo", nl = "Scherm", sv = "Skärm", cs = "Obrazovka", sk = "Obrazovka")
+    Screen.BATTERY -> tr("Bateria", "Battery", de = "Batterie", fr = "Batterie", es = "Batería", pt = "Bateria", it = "Batteria", nl = "Batterij", sv = "Batteri", cs = "Baterie", sk = "Batéria", da = "Batteri", ru = "Батарея")
+    Screen.SAG -> tr("Pomiar SAG baterii", "Battery SAG Measurement", de = "SAG-Messung der Batterie", fr = "Mesure SAG de la batterie", es = "Medición SAG de la batería", pt = "Medição SAG da bateria", it = "Misurazione SAG della batteria", nl = "SAG-meting van batterij", sv = "SAG-mätning av batteri", cs = "Měření SAG baterie", sk = "Meranie SAG batérie", da = "SAG-måling af batteri", ru = "Измерение SAG батареи")
+    Screen.MONITORING -> tr("Monitoring", "Monitoring", de = "Monitoring", fr = "Monitoring", es = "Monitoring", pt = "Monitoring", it = "Monitoring", nl = "Monitoring", sv = "Monitoring", cs = "Monitoring", sk = "Monitoring", da = "Monitoring", ru = "Monitoring")
+    Screen.TEMPERATURE_CONTROL -> tr("Kontrola temperatury", "Temperature control", de = "Temperaturkontrolle", fr = "Contrôle de température", es = "Control de temperatura", pt = "Controlo de temperatura", it = "Controllo temperatura", nl = "Temperatuurregeling", sv = "Temperaturkontroll", cs = "Kontrola teploty", sk = "Kontrola teploty", da = "Temperaturkontrol", ru = "Контроль температуры")
+    Screen.SETTINGS -> tr("Ustawienia", "Settings", de = "Einstellungen", fr = "Réglages", es = "Ajustes", pt = "Definições", it = "Impostazioni", nl = "Instellingen", sv = "Inställningar", cs = "Nastavení", sk = "Nastavenia", da = "Indstillinger", ru = "Настройки")
+    Screen.DISPLAY -> tr("Ekran", "Screen", de = "Bildschirm", fr = "Écran", es = "Pantalla", pt = "Ecrã", it = "Schermo", nl = "Scherm", sv = "Skärm", cs = "Obrazovka", sk = "Obrazovka", da = "Skærm", ru = "Экран")
     Screen.SERVICE -> "PROTECT"
-    Screen.CALIBRATION -> tr("Kalibracja", "Calibration", de = "Kalibrierung", fr = "Étalonnage", es = "Calibración", pt = "Calibração", it = "Calibrazione", nl = "Kalibratie", sv = "Kalibrering", cs = "Kalibrace", sk = "Kalibrácia")
+    Screen.CALIBRATION -> tr("Kalibracja", "Calibration", de = "Kalibrierung", fr = "Étalonnage", es = "Calibración", pt = "Calibração", it = "Calibrazione", nl = "Kalibratie", sv = "Kalibrering", cs = "Kalibrace", sk = "Kalibrácia", da = "Kalibrering", ru = "Калибровка")
     Screen.DIAGNOSTICS -> if (firmwareType == FirmwareType.BBS_FW) {
-        tr("BBS-FW - Widok wszystkiego", "BBS-FW All in View", de = "BBS-FW - Alles im Blick", fr = "BBS-FW - Tout en un coup d'œil", es = "BBS-FW - Todo en una vista", pt = "BBS-FW - Tudo numa vista", it = "BBS-FW - Tutto in un colpo d'occhio", nl = "BBS-FW - Alles in beeld", sv = "BBS-FW - Allt i vy", cs = "BBS-FW - Vše v jednom pohledu", sk = "BBS-FW - Všetko v jednom pohľade")
+        tr("BBS-FW - Widok wszystkiego", "BBS-FW All in View", de = "BBS-FW - Alles im Blick", fr = "BBS-FW - Tout en un coup d'œil", es = "BBS-FW - Todo en una vista", pt = "BBS-FW - Tudo numa vista", it = "BBS-FW - Tutto in un colpo d'occhio", nl = "BBS-FW - Alles in beeld", sv = "BBS-FW - Allt i vy", cs = "BBS-FW - Vše v jednom pohledu", sk = "BBS-FW - Všetko v jednom pohľade", da = "BBS-FW - Alt på ét blik", ru = "BBS-FW - Всё в одном взгляде")
     } else {
-        tr("Bafang - Widok wszystkiego", "Bafang All in View", de = "Bafang - Alles im Blick", fr = "Bafang - Tout en un coup d'œil", es = "Bafang - Todo en una vista", pt = "Bafang - Tudo numa vista", it = "Bafang - Tutto in un colpo d'occhio", nl = "Bafang - Alles in beeld", sv = "Bafang - Allt i vy", cs = "Bafang - Vše v jednom pohledu", sk = "Bafang - Všetko v jednom pohľade")
+        tr("Bafang - Widok wszystkiego", "Bafang All in View", de = "Bafang - Alles im Blick", fr = "Bafang - Tout en un coup d'œil", es = "Bafang - Todo en una vista", pt = "Bafang - Tudo numa vista", it = "Bafang - Tutto in un colpo d'occhio", nl = "Bafang - Alles in beeld", sv = "Bafang - Allt i vy", cs = "Bafang - Vše v jednom pohledu", sk = "Bafang - Všetko v jednom pohľade", da = "Bafang - Alt på ét blik", ru = "Bafang - Всё в одном взгляде")
     }
-    Screen.PROFILES -> tr("Profile", "Profiles", de = "Profile", fr = "Profils", es = "Perfiles", pt = "Perfis", it = "Profili", nl = "Profielen", sv = "Profiler", cs = "Profily", sk = "Profily")
-    Screen.REGISTER_DIAGNOSTICS -> tr("Diagnostyka", "Diagnostics", de = "Diagnose", fr = "Diagnostic", es = "Diagnóstico", pt = "Diagnóstico", it = "Diagnostica", nl = "Diagnostiek", sv = "Diagnostik", cs = "Diagnostika", sk = "Diagnostika")
-    Screen.LANGUAGE -> tr("Język", "Language", de = "Sprache", fr = "Langue", es = "Idioma", pt = "Idioma", it = "Lingua", nl = "Taal", sv = "Språk", cs = "Jazyk", sk = "Jazyk")
-    Screen.ABOUT -> tr("Menu", "Menu", de = "Menü", fr = "Menu", es = "Menú", pt = "Menu", it = "Menu", nl = "Menu", sv = "Meny", cs = "Menu", sk = "Menu")
+    Screen.PROFILES -> tr("Profile", "Profiles", de = "Profile", fr = "Profils", es = "Perfiles", pt = "Perfis", it = "Profili", nl = "Profielen", sv = "Profiler", cs = "Profily", sk = "Profily", da = "Profiler", ru = "Профили")
+    Screen.REGISTER_DIAGNOSTICS -> tr("Diagnostyka", "Diagnostics", de = "Diagnose", fr = "Diagnostic", es = "Diagnóstico", pt = "Diagnóstico", it = "Diagnostica", nl = "Diagnostiek", sv = "Diagnostik", cs = "Diagnostika", sk = "Diagnostika", da = "Diagnostik", ru = "Диагностика")
+    Screen.LANGUAGE -> tr("Język", "Language", de = "Sprache", fr = "Langue", es = "Idioma", pt = "Idioma", it = "Lingua", nl = "Taal", sv = "Språk", cs = "Jazyk", sk = "Jazyk", da = "Sprog", ru = "Язык")
+    Screen.ABOUT -> tr("Menu", "Menu", de = "Menü", fr = "Menu", es = "Menú", pt = "Menu", it = "Menu", nl = "Menu", sv = "Meny", cs = "Menu", sk = "Menu", da = "Menu", ru = "Меню")
 }
 
 class MainActivity : ComponentActivity() {
@@ -206,8 +206,8 @@ private fun App(vm: AppViewModel) {
             val lang = state.language
             runCatching {
                 context.contentResolver.openOutputStream(uri)?.bufferedWriter()?.use { it.write(vm.exportIni()) }
-            }.onSuccess { Toast.makeText(context, tr(lang, "Zapisano profil", "Profile saved", de = "Profil gespeichert", fr = "Profil enregistré", es = "Perfil guardado", pt = "Perfil guardado", it = "Profilo salvato", nl = "Profiel opgeslagen", sv = "Profil sparad", cs = "Profil uložen", sk = "Profil uložený"), Toast.LENGTH_SHORT).show() }
-                .onFailure { Toast.makeText(context, tr(lang, "Błąd zapisu: ${it.message}", "Save error: ${it.message}", de = "Fehler beim Speichern: ${it.message}", fr = "Erreur d'enregistrement : ${it.message}", es = "Error al guardar: ${it.message}", pt = "Erro ao guardar: ${it.message}", it = "Errore di salvataggio: ${it.message}", nl = "Opslagfout: ${it.message}", sv = "Sparfel: ${it.message}", cs = "Chyba při ukládání: ${it.message}", sk = "Chyba pri ukladaní: ${it.message}"), Toast.LENGTH_LONG).show() }
+            }.onSuccess { Toast.makeText(context, tr(lang, "Zapisano profil", "Profile saved", de = "Profil gespeichert", fr = "Profil enregistré", es = "Perfil guardado", pt = "Perfil guardado", it = "Profilo salvato", nl = "Profiel opgeslagen", sv = "Profil sparad", cs = "Profil uložen", sk = "Profil uložený", da = "Profil gemt", ru = "Профиль сохранён"), Toast.LENGTH_SHORT).show() }
+                .onFailure { Toast.makeText(context, tr(lang, "Błąd zapisu: ${it.message}", "Save error: ${it.message}", de = "Fehler beim Speichern: ${it.message}", fr = "Erreur d'enregistrement : ${it.message}", es = "Error al guardar: ${it.message}", pt = "Erro ao guardar: ${it.message}", it = "Errore di salvataggio: ${it.message}", nl = "Opslagfout: ${it.message}", sv = "Sparfel: ${it.message}", cs = "Chyba při ukládání: ${it.message}", sk = "Chyba pri ukladaní: ${it.message}", da = "Fejl ved gemning: ${it.message}", ru = "Ошибка сохранения: ${it.message}"), Toast.LENGTH_LONG).show() }
         }
     }
 
@@ -218,7 +218,7 @@ private fun App(vm: AppViewModel) {
     ) { granted: Boolean ->
         vm.setGpsSpeedEnabled(granted)
         if (!granted) {
-            Toast.makeText(context, tr(state.language, "Brak zgody na dostęp do lokalizacji", "Location permission denied", de = "Standortzugriff verweigert", fr = "Autorisation de localisation refusée", es = "Permiso de ubicación denegado", pt = "Permissão de localização negada", it = "Permesso di posizione negato", nl = "Locatietoestemming geweigerd", sv = "Platsbehörighet nekad", cs = "Přístup k poloze odepřen", sk = "Prístup k polohe zamietnutý"), Toast.LENGTH_LONG).show()
+            Toast.makeText(context, tr(state.language, "Brak zgody na dostęp do lokalizacji", "Location permission denied", de = "Standortzugriff verweigert", fr = "Autorisation de localisation refusée", es = "Permiso de ubicación denegado", pt = "Permissão de localização negada", it = "Permesso di posizione negato", nl = "Locatietoestemming geweigerd", sv = "Platsbehörighet nekad", cs = "Přístup k poloze odepřen", sk = "Prístup k polohe zamietnutý", da = "Placeringstilladelse nægtet", ru = "Доступ к местоположению запрещён"), Toast.LENGTH_LONG).show()
         }
     }
     val onGpsSpeedChange: (Boolean) -> Unit = { enabled ->
@@ -241,11 +241,11 @@ private fun App(vm: AppViewModel) {
                 context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
             }.getOrNull()
             if (text == null) {
-                Toast.makeText(context, tr(lang, "Nie udało się odczytać pliku", "Failed to read the file", de = "Datei konnte nicht gelesen werden", fr = "Échec de la lecture du fichier", es = "No se pudo leer el archivo", pt = "Não foi possível ler o ficheiro", it = "Impossibile leggere il file", nl = "Kan bestand niet lezen", sv = "Det gick inte att läsa filen", cs = "Soubor se nepodařilo přečíst", sk = "Súbor sa nepodarilo prečítať"), Toast.LENGTH_LONG).show()
+                Toast.makeText(context, tr(lang, "Nie udało się odczytać pliku", "Failed to read the file", de = "Datei konnte nicht gelesen werden", fr = "Échec de la lecture du fichier", es = "No se pudo leer el archivo", pt = "Não foi possível ler o ficheiro", it = "Impossibile leggere il file", nl = "Kan bestand niet lezen", sv = "Det gick inte att läsa filen", cs = "Soubor se nepodařilo přečíst", sk = "Súbor sa nepodarilo prečítať", da = "Filen kunne ikke læses", ru = "Не удалось прочитать файл"), Toast.LENGTH_LONG).show()
             } else {
                 vm.importIni(text)
-                    .onSuccess { Toast.makeText(context, tr(lang, "Wczytano profil (podgląd)", "Profile loaded (preview)", de = "Profil geladen (Vorschau)", fr = "Profil chargé (aperçu)", es = "Perfil cargado (vista previa)", pt = "Perfil carregado (pré-visualização)", it = "Profilo caricato (anteprima)", nl = "Profiel geladen (voorbeeld)", sv = "Profil laddad (förhandsvisning)", cs = "Profil načten (náhled)", sk = "Profil načítaný (náhľad)"), Toast.LENGTH_SHORT).show() }
-                    .onFailure { Toast.makeText(context, tr(lang, "Błędny plik: ${it.message}", "Invalid file: ${it.message}", de = "Ungültige Datei: ${it.message}", fr = "Fichier invalide : ${it.message}", es = "Archivo inválido: ${it.message}", pt = "Ficheiro inválido: ${it.message}", it = "File non valido: ${it.message}", nl = "Ongeldig bestand: ${it.message}", sv = "Ogiltig fil: ${it.message}", cs = "Neplatný soubor: ${it.message}", sk = "Neplatný súbor: ${it.message}"), Toast.LENGTH_LONG).show() }
+                    .onSuccess { Toast.makeText(context, tr(lang, "Wczytano profil (podgląd)", "Profile loaded (preview)", de = "Profil geladen (Vorschau)", fr = "Profil chargé (aperçu)", es = "Perfil cargado (vista previa)", pt = "Perfil carregado (pré-visualização)", it = "Profilo caricato (anteprima)", nl = "Profiel geladen (voorbeeld)", sv = "Profil laddad (förhandsvisning)", cs = "Profil načten (náhled)", sk = "Profil načítaný (náhľad)", da = "Profil indlæst (forhåndsvisning)", ru = "Профиль загружен (предпросмотр)"), Toast.LENGTH_SHORT).show() }
+                    .onFailure { Toast.makeText(context, tr(lang, "Błędny plik: ${it.message}", "Invalid file: ${it.message}", de = "Ungültige Datei: ${it.message}", fr = "Fichier invalide : ${it.message}", es = "Archivo inválido: ${it.message}", pt = "Ficheiro inválido: ${it.message}", it = "File non valido: ${it.message}", nl = "Ongeldig bestand: ${it.message}", sv = "Ogiltig fil: ${it.message}", cs = "Neplatný soubor: ${it.message}", sk = "Neplatný súbor: ${it.message}", da = "Ugyldig fil: ${it.message}", ru = "Недопустимый файл: ${it.message}"), Toast.LENGTH_LONG).show() }
             }
         }
     }
@@ -520,6 +520,8 @@ private fun App(vm: AppViewModel) {
                                             sv = "Fel vid inläsning av profil: ${it.message}",
                                             cs = "Chyba při načítání profilu: ${it.message}",
                                             sk = "Chyba pri načítaní profilu: ${it.message}",
+                                            da = "Fejl ved indlæsning af profil: ${it.message}",
+                                            ru = "Ошибка загрузки профиля: ${it.message}",
                                         ),
                                         Toast.LENGTH_LONG,
                                     ).show()
@@ -652,7 +654,7 @@ private fun DrawerContent(
             .padding(horizontal = 14.dp, vertical = 16.dp),
     ) {
         EggSpeedWordmark(fontSize = 15.sp, letterSpacing = 3.sp)
-        Text(tr("konfigurator Bafang", "Bafang configurator", de = "Bafang-Konfigurator", fr = "configurateur Bafang", es = "configurador Bafang", pt = "configurador Bafang", it = "configuratore Bafang", nl = "Bafang-configurator", sv = "Bafang-konfigurator", cs = "Konfigurátor Bafang", sk = "Konfigurátor Bafang"), fontFamily = Manrope, fontSize = 12.sp, color = Tokens.TextTertiary)
+        Text(tr("konfigurator Bafang", "Bafang configurator", de = "Bafang-Konfigurator", fr = "configurateur Bafang", es = "configurador Bafang", pt = "configurador Bafang", it = "configuratore Bafang", nl = "Bafang-configurator", sv = "Bafang-konfigurator", cs = "Konfigurátor Bafang", sk = "Konfigurátor Bafang", da = "Bafang-konfigurator", ru = "Конфигуратор Bafang"), fontFamily = Manrope, fontSize = 12.sp, color = Tokens.TextTertiary)
         Spacer(Modifier.height(18.dp))
 
         // "Menu" (About) na samej górze (ocena w Google Play, kontakt, itd. są w środku) - zwykły

@@ -83,14 +83,14 @@ fun ServiceScreen(
                     nl = "PROTECT is een veiligheidsfunctie waarmee je de fiets snel en onopvallend kunt vergrendelen wanneer nodig. Door op de PROTECT-knop op de Cockpit te drukken, schakelt de fiets naar modus 0, terwijl het scherm blijft doen alsof je nog steeds het ondersteuningsniveau kunt wijzigen. Om de fiets te ontgrendelen moet je het PROTECT-tabblad openen en op de ontgrendelknop drukken. Het SAFE-pictogram op de Cockpit geeft aan dat de vergrendeling van de fiets actief is.",
                     sv = "PROTECT är en säkerhetsfunktion som gör att du snabbt och diskret kan låsa cykeln när du behöver det. Att trycka på PROTECT-knappen på Cockpit växlar cykeln till läge 0, medan skärmen fortsätter låtsas att du fortfarande kan ändra assistansnivån. Att låsa upp cykeln kräver att du öppnar fliken PROTECT och trycker på upplåsningsknappen. SAFE-ikonen på Cockpit visar att cykelns lås är aktivt.",
                     cs = "PROTECT je bezpečnostní funkce, která ti umožní kolo rychle a nenápadně zablokovat, kdykoli to potřebuješ. Stisknutím tlačítka PROTECT v Cockpitu se kolo přepne do režimu 0, zatímco obrazovka nadále předstírá, že stále můžeš měnit úroveň asistence. Odemknutí kola vyžaduje otevření karty PROTECT a stisknutí tlačítka odemknutí. Ikona SAFE v Cockpitu signalizuje, že je zablokování kola aktivní.",
-                    sk = "PROTECT je bezpečnostná funkcia, ktorá ti umožní bicykel rýchlo a nenápadne zablokovať, kedykoľvek to potrebuješ. Stlačením tlačidla PROTECT v Cockpite sa bicykel prepne do režimu 0, pričom obrazovka naďalej predstiera, že stále môžeš meniť úroveň asistencie. Odomknutie bicykla vyžaduje otvorenie karty PROTECT a stlačenie tlačidla odomknutia. Ikona SAFE v Cockpite signalizuje, že je zablokovanie bicykla aktívne.",
+                    sk = "PROTECT je bezpečnostná funkcia, ktorá ti umožní bicykel rýchlo a nenápadne zablokovať, kedykoľvek to potrebuješ. Stlačením tlačidla PROTECT v Cockpite sa bicykel prepne do režimu 0, pričom obrazovka naďalej predstiera, že stále môžeš meniť úroveň asistencie. Odomknutie bicykla vyžaduje otvorenie karty PROTECT a stlačenie tlačidla odomknutia. Ikona SAFE v Cockpite signalizuje, že je zablokovanie bicykla aktívne.", da = "PROTECT er en sikkerhedsfunktion, der lader dig låse cyklen hurtigt og diskret, når som helst du har brug for det. Når du trykker på PROTECT-knappen på Cockpit, skifter cyklen til tilstand 0, mens skærmen fortsat lader som om du stadig kan ændre understøttelsesniveauet. For at låse cyklen op skal du åbne fanen PROTECT og trykke på oplåsningsknappen. SAFE-ikonet på Cockpit viser, at cyklens lås er aktiv.", ru = "PROTECT - это функция безопасности, позволяющая быстро и незаметно заблокировать велосипед, когда это нужно. При нажатии кнопки PROTECT на Кокпите велосипед переключается в режим 0, при этом экран продолжает делать вид, что уровень помощи можно изменить. Для разблокировки велосипеда нужно открыть вкладку PROTECT и нажать кнопку разблокировки. Значок SAFE на Кокпите сигнализирует, что блокировка велосипеда активна.",
                 ),
             )
 
             MicroLabel(tr("PROTECT", "PROTECT"))
             TokenCard(borderColor = Tokens.WhiteBorder) {
                 ToggleRow(
-                    label = tr("Funkcja PROTECT", "PROTECT feature", de = "PROTECT-Funktion", fr = "Fonction PROTECT", es = "Función PROTECT", pt = "Função PROTECT", it = "Funzione PROTECT", nl = "PROTECT-functie", sv = "PROTECT-funktion", cs = "Funkce PROTECT", sk = "Funkcia PROTECT"),
+                    label = tr("Funkcja PROTECT", "PROTECT feature", de = "PROTECT-Funktion", fr = "Fonction PROTECT", es = "Función PROTECT", pt = "Função PROTECT", it = "Funzione PROTECT", nl = "PROTECT-functie", sv = "PROTECT-funktion", cs = "Funkce PROTECT", sk = "Funkcia PROTECT", da = "PROTECT-funktion", ru = "Функция PROTECT"),
                     checked = state.protectFeatureEnabled,
                     onCheckedChange = onProtectFeatureEnabledChange,
                     accent = Tokens.Blue,
@@ -105,7 +105,7 @@ fun ServiceScreen(
                         nl = "Wanneer ingeschakeld, verschijnt er een extra knop op de Cockpit waarmee je de PROTECT-functie kunt gebruiken wanneer nodig.",
                         sv = "När aktiverad visas en extra knapp på Cockpit som låter dig använda PROTECT-funktionen när det behövs.",
                         cs = "Když je zapnutá, v Cockpitu se objeví další tlačítko, které ti umožní použít funkci PROTECT, kdykoli je potřeba.",
-                        sk = "Keď je zapnutá, v Cockpite sa objaví ďalšie tlačidlo, ktoré ti umožní použiť funkciu PROTECT, kedykoľvek je to potrebné.",
+                        sk = "Keď je zapnutá, v Cockpite sa objaví ďalšie tlačidlo, ktoré ti umožní použiť funkciu PROTECT, kedykoľvek je to potrebné.", da = "Når aktiveret, vises der en ekstra knap på Cockpit, som lader dig bruge PROTECT-funktionen, når det er nødvendigt.", ru = "Когда включено, на Кокпите появляется дополнительная кнопка, позволяющая использовать функцию PROTECT при необходимости.",
                     ),
                 )
             }
@@ -114,9 +114,9 @@ fun ServiceScreen(
             TokenCard(borderColor = if (state.protectActive) Color(0x6634C759) else Color(0x66FF3B30)) {
                 Text(
                     if (state.protectActive) {
-                        tr("PROTECT jest WŁĄCZONY", "PROTECT is ON", de = "PROTECT ist AN", fr = "PROTECT est ACTIVÉ", es = "PROTECT está ACTIVADO", pt = "PROTECT está ATIVADO", it = "PROTECT è ATTIVO", nl = "PROTECT is AAN", sv = "PROTECT är PÅ", cs = "PROTECT je ZAPNUTÝ", sk = "PROTECT je ZAPNUTÝ")
+                        tr("PROTECT jest WŁĄCZONY", "PROTECT is ON", de = "PROTECT ist AN", fr = "PROTECT est ACTIVÉ", es = "PROTECT está ACTIVADO", pt = "PROTECT está ATIVADO", it = "PROTECT è ATTIVO", nl = "PROTECT is AAN", sv = "PROTECT är PÅ", cs = "PROTECT je ZAPNUTÝ", sk = "PROTECT je ZAPNUTÝ", da = "PROTECT er TIL", ru = "PROTECT ВКЛЮЧЁН")
                     } else {
-                        tr("PROTECT jest WYŁĄCZONY", "PROTECT is OFF", de = "PROTECT ist AUS", fr = "PROTECT est DÉSACTIVÉ", es = "PROTECT está DESACTIVADO", pt = "PROTECT está DESATIVADO", it = "PROTECT è DISATTIVO", nl = "PROTECT is UIT", sv = "PROTECT är AV", cs = "PROTECT je VYPNUTÝ", sk = "PROTECT je VYPNUTÝ")
+                        tr("PROTECT jest WYŁĄCZONY", "PROTECT is OFF", de = "PROTECT ist AUS", fr = "PROTECT est DÉSACTIVÉ", es = "PROTECT está DESACTIVADO", pt = "PROTECT está DESATIVADO", it = "PROTECT è DISATTIVO", nl = "PROTECT is UIT", sv = "PROTECT är AV", cs = "PROTECT je VYPNUTÝ", sk = "PROTECT je VYPNUTÝ", da = "PROTECT er FRA", ru = "PROTECT ВЫКЛЮЧЕН")
                     },
                     fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 14.sp,
                     color = if (state.protectActive) Tokens.Emerald else Tokens.Red,
@@ -131,7 +131,7 @@ fun ServiceScreen(
                             .padding(vertical = 12.dp),
                     ) {
                         Text(
-                            tr("Odblokuj (wyłącz PROTECT)", "Unlock (turn PROTECT off)", de = "Entsperren (PROTECT ausschalten)", fr = "Déverrouiller (désactiver PROTECT)", es = "Desbloquear (desactivar PROTECT)", pt = "Desbloquear (desativar PROTECT)", it = "Sblocca (disattiva PROTECT)", nl = "Ontgrendelen (PROTECT uitschakelen)", sv = "Lås upp (stäng av PROTECT)", cs = "Odemknout (vypnout PROTECT)", sk = "Odomknúť (vypnúť PROTECT)"),
+                            tr("Odblokuj (wyłącz PROTECT)", "Unlock (turn PROTECT off)", de = "Entsperren (PROTECT ausschalten)", fr = "Déverrouiller (désactiver PROTECT)", es = "Desbloquear (desactivar PROTECT)", pt = "Desbloquear (desativar PROTECT)", it = "Sblocca (disattiva PROTECT)", nl = "Ontgrendelen (PROTECT uitschakelen)", sv = "Lås upp (stäng av PROTECT)", cs = "Odemknout (vypnout PROTECT)", sk = "Odomknúť (vypnúť PROTECT)", da = "Lås op (sluk PROTECT)", ru = "Разблокировать (выключить PROTECT)"),
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center,
                             fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Tokens.OnAccent,
@@ -140,7 +140,7 @@ fun ServiceScreen(
                 }
             }
 
-            MicroLabel(tr("PIN PROTECT", "PROTECT PIN", de = "PROTECT-PIN", fr = "PIN PROTECT", es = "PIN de PROTECT", pt = "PIN do PROTECT", it = "PIN PROTECT", nl = "PROTECT-pincode", sv = "PROTECT-PIN", cs = "PIN PROTECT", sk = "PIN PROTECT"))
+            MicroLabel(tr("PIN PROTECT", "PROTECT PIN", de = "PROTECT-PIN", fr = "PIN PROTECT", es = "PIN de PROTECT", pt = "PIN do PROTECT", it = "PIN PROTECT", nl = "PROTECT-pincode", sv = "PROTECT-PIN", cs = "PIN PROTECT", sk = "PIN PROTECT", da = "PROTECT-PIN", ru = "PIN PROTECT"))
             TokenCard(borderColor = Tokens.WhiteBorder) {
                 Text(
                     tr(
@@ -154,7 +154,7 @@ fun ServiceScreen(
                         nl = "Een ingestelde pincode blokkeert de toegang tot dit tabblad - PROTECT openen vereist dan het invoeren ervan.",
                         sv = "En inställd PIN-kod låser åtkomsten till denna flik - att öppna PROTECT kräver då att den anges.",
                         cs = "Nastavený PIN uzamyká přístup na tuto kartu - vstup do PROTECT pak vyžaduje jeho zadání.",
-                        sk = "Nastavený PIN uzamyká prístup na túto kartu - vstup do PROTECT potom vyžaduje jeho zadanie.",
+                        sk = "Nastavený PIN uzamyká prístup na túto kartu - vstup do PROTECT potom vyžaduje jeho zadanie.", da = "En indstillet PIN låser adgangen til denne fane - adgang til PROTECT kræver den så.", ru = "Установленный PIN блокирует доступ к этой вкладке - вход в PROTECT потребует его ввода.",
                     ),
                     fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
                 )
@@ -173,7 +173,7 @@ private fun PinGate(onUnlock: () -> Unit, correctPin: String) {
 
     Spacer(Modifier.height(40.dp))
     Text(
-        tr("Wpisz PIN, żeby wejść do PROTECT", "Enter the PIN to access PROTECT", de = "PIN eingeben, um PROTECT zu öffnen", fr = "Entrez le PIN pour accéder à PROTECT", es = "Introduce el PIN para acceder a PROTECT", pt = "Introduz o PIN para aceder ao PROTECT", it = "Inserisci il PIN per accedere a PROTECT", nl = "Voer de pincode in om PROTECT te openen", sv = "Ange PIN för att komma åt PROTECT", cs = "Zadej PIN pro vstup do PROTECT", sk = "Zadaj PIN pre vstup do PROTECT"),
+        tr("Wpisz PIN, żeby wejść do PROTECT", "Enter the PIN to access PROTECT", de = "PIN eingeben, um PROTECT zu öffnen", fr = "Entrez le PIN pour accéder à PROTECT", es = "Introduce el PIN para acceder a PROTECT", pt = "Introduz o PIN para aceder ao PROTECT", it = "Inserisci il PIN per accedere a PROTECT", nl = "Voer de pincode in om PROTECT te openen", sv = "Ange PIN för att komma åt PROTECT", cs = "Zadej PIN pro vstup do PROTECT", sk = "Zadaj PIN pre vstup do PROTECT", da = "Indtast PIN for at få adgang til PROTECT", ru = "Введите PIN для доступа к PROTECT"),
         modifier = Modifier.fillMaxWidth(),
         textAlign = TextAlign.Center,
         fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary,
@@ -198,7 +198,7 @@ private fun PinGate(onUnlock: () -> Unit, correctPin: String) {
     if (error) {
         Spacer(Modifier.height(8.dp))
         Text(
-            tr("Zły PIN", "Wrong PIN", de = "Falscher PIN", fr = "PIN incorrect", es = "PIN incorrecto", pt = "PIN incorreto", it = "PIN errato", nl = "Onjuiste pincode", sv = "Fel PIN", cs = "Nesprávný PIN", sk = "Nesprávny PIN"),
+            tr("Zły PIN", "Wrong PIN", de = "Falscher PIN", fr = "PIN incorrect", es = "PIN incorrecto", pt = "PIN incorreto", it = "PIN errato", nl = "Onjuiste pincode", sv = "Fel PIN", cs = "Nesprávný PIN", sk = "Nesprávny PIN", da = "Forkert PIN", ru = "Неверный PIN"),
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             fontFamily = Manrope, fontSize = 12.sp, color = Tokens.Red,
@@ -213,7 +213,7 @@ private fun PinGate(onUnlock: () -> Unit, correctPin: String) {
             .padding(vertical = 12.dp),
     ) {
         Text(
-            tr("Zatwierdź", "Confirm", de = "Bestätigen", fr = "Confirmer", es = "Confirmar", pt = "Confirmar", it = "Conferma", nl = "Bevestigen", sv = "Bekräfta", cs = "Potvrdit", sk = "Potvrdiť"),
+            tr("Zatwierdź", "Confirm", de = "Bestätigen", fr = "Confirmer", es = "Confirmar", pt = "Confirmar", it = "Conferma", nl = "Bevestigen", sv = "Bekräfta", cs = "Potvrdit", sk = "Potvrdiť", da = "Bekræft", ru = "Подтвердить"),
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Tokens.OnAccent,
@@ -252,9 +252,9 @@ private fun PinField(initial: String, onSave: (String) -> Unit) {
     ) {
         Text(
             if (saved) {
-                tr("Zapisano", "Saved", de = "Gespeichert", fr = "Enregistré", es = "Guardado", pt = "Guardado", it = "Salvato", nl = "Opgeslagen", sv = "Sparat", cs = "Uloženo", sk = "Uložené")
+                tr("Zapisano", "Saved", de = "Gespeichert", fr = "Enregistré", es = "Guardado", pt = "Guardado", it = "Salvato", nl = "Opgeslagen", sv = "Sparat", cs = "Uloženo", sk = "Uložené", da = "Gemt", ru = "Сохранено")
             } else {
-                tr("Zapisz PIN", "Save PIN", de = "PIN speichern", fr = "Enregistrer le PIN", es = "Guardar PIN", pt = "Guardar PIN", it = "Salva PIN", nl = "PIN opslaan", sv = "Spara PIN", cs = "Uložit PIN", sk = "Uložiť PIN")
+                tr("Zapisz PIN", "Save PIN", de = "PIN speichern", fr = "Enregistrer le PIN", es = "Guardar PIN", pt = "Guardar PIN", it = "Salva PIN", nl = "PIN opslaan", sv = "Spara PIN", cs = "Uložit PIN", sk = "Uložiť PIN", da = "Gem PIN", ru = "Сохранить PIN")
             },
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,

@@ -40,7 +40,7 @@ fun LanguageScreen(current: AppLanguage, onSelect: (AppLanguage) -> Unit) {
             .padding(PaddingValues(start = 14.dp, end = 14.dp, top = 0.dp, bottom = 16.dp)),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        MicroLabel(tr("Język aplikacji", "App language", de = "App-Sprache", fr = "Langue de l'application", es = "Idioma de la app", pt = "Idioma da app", it = "Lingua dell'app", nl = "App-taal", sv = "Appspråk", cs = "Jazyk aplikace", sk = "Jazyk aplikácie"))
+        MicroLabel(tr("Język aplikacji", "App language", de = "App-Sprache", fr = "Langue de l'application", es = "Idioma de la app", pt = "Idioma da app", it = "Lingua dell'app", nl = "App-taal", sv = "Appspråk", cs = "Jazyk aplikace", sk = "Jazyk aplikácie", da = "App-sprog", ru = "Язык приложения"))
         AppLanguage.entries.forEach { lang ->
             val selected = lang == current
             TokenCard(
@@ -64,7 +64,7 @@ fun LanguageScreen(current: AppLanguage, onSelect: (AppLanguage) -> Unit) {
                                 .padding(horizontal = 10.dp, vertical = 4.dp),
                         ) {
                             Text(
-                                tr("Aktywny", "Active", de = "Aktiv", fr = "Actif", es = "Activo", pt = "Ativo", it = "Attivo", nl = "Actief", sv = "Aktiv", cs = "Aktivní", sk = "Aktívny"),
+                                tr("Aktywny", "Active", de = "Aktiv", fr = "Actif", es = "Activo", pt = "Ativo", it = "Attivo", nl = "Actief", sv = "Aktiv", cs = "Aktivní", sk = "Aktívny", da = "Aktiv", ru = "Активен"),
                                 fontFamily = Manrope, fontWeight = FontWeight.Bold, fontSize = 11.sp, color = Tokens.OnAccent,
                             )
                         }

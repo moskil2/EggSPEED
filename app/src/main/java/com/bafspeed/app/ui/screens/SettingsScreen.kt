@@ -72,13 +72,13 @@ fun SettingsScreen(
             .padding(PaddingValues(start = 14.dp, end = 14.dp, top = 0.dp, bottom = 16.dp)),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        MicroLabel(tr("Firmware sterownika", "Controller firmware", de = "Steuergerät-Firmware", fr = "Firmware du contrôleur", es = "Firmware del controlador", pt = "Firmware do controlador", it = "Firmware del controller", nl = "Controller-firmware", sv = "Styrenhetens firmware", cs = "Firmware řadiče", sk = "Firmware radiča"))
+        MicroLabel(tr("Firmware sterownika", "Controller firmware", de = "Steuergerät-Firmware", fr = "Firmware du contrôleur", es = "Firmware del controlador", pt = "Firmware do controlador", it = "Firmware del controller", nl = "Controller-firmware", sv = "Styrenhetens firmware", cs = "Firmware řadiče", sk = "Firmware radiča", da = "Controller-firmware", ru = "Прошивка контроллера"))
         var firmwareInfoExpanded by remember { mutableStateOf(false) }
         TokenCard(borderColor = Tokens.WhiteBorder) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(tr("Firmware", "Firmware", de = "Firmware", fr = "Firmware", es = "Firmware", pt = "Firmware", it = "Firmware", nl = "Firmware", sv = "Firmware", cs = "Firmware", sk = "Firmvér"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary, modifier = Modifier.weight(1f))
+                Text(tr("Firmware", "Firmware", de = "Firmware", fr = "Firmware", es = "Firmware", pt = "Firmware", it = "Firmware", nl = "Firmware", sv = "Firmware", cs = "Firmware", sk = "Firmvér", da = "Firmware", ru = "Прошивка"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary, modifier = Modifier.weight(1f))
                 SegmentedControl(
-                    options = listOf(tr("OEM Bafang", "OEM Bafang", de = "OEM Bafang", fr = "OEM Bafang", es = "OEM Bafang", pt = "OEM Bafang", it = "OEM Bafang", nl = "OEM Bafang", sv = "OEM Bafang", cs = "OEM Bafang", sk = "OEM Bafang"), "BBS-FW"),
+                    options = listOf(tr("OEM Bafang", "OEM Bafang", de = "OEM Bafang", fr = "OEM Bafang", es = "OEM Bafang", pt = "OEM Bafang", it = "OEM Bafang", nl = "OEM Bafang", sv = "OEM Bafang", cs = "OEM Bafang", sk = "OEM Bafang", da = "OEM Bafang", ru = "OEM Bafang"), "BBS-FW"),
                     selectedIndex = if (state.firmwareType == FirmwareType.BBS_FW) 1 else 0,
                     onSelect = { onFirmwareTypeChange(if (it == 1) FirmwareType.BBS_FW else FirmwareType.OEM_BAFANG) },
                     modifier = Modifier.width(180.dp),
@@ -90,7 +90,7 @@ fun SettingsScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    tr("Co to znaczy?", "What does this mean?", de = "Was bedeutet das?", fr = "Qu'est-ce que cela signifie ?", es = "¿Qué significa esto?", pt = "O que significa isto?", it = "Cosa significa?", nl = "Wat betekent dit?", sv = "Vad betyder detta?", cs = "Co to znamená?", sk = "Čo to znamená?"),
+                    tr("Co to znaczy?", "What does this mean?", de = "Was bedeutet das?", fr = "Qu'est-ce que cela signifie ?", es = "¿Qué significa esto?", pt = "O que significa isto?", it = "Cosa significa?", nl = "Wat betekent dit?", sv = "Vad betyder detta?", cs = "Co to znamená?", sk = "Čo to znamená?", da = "Hvad betyder det?", ru = "Что это значит?"),
                     fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary, modifier = Modifier.weight(1f),
                 )
                 Text(if (firmwareInfoExpanded) "▲" else "▼", fontFamily = Manrope, fontSize = 14.sp, color = Tokens.Emerald)
@@ -111,6 +111,8 @@ fun SettingsScreen(
                         sv = "den slutna fabriksfirmware som Bafang BBS01/BBS02/BBSHD-styrenheter levereras med som standard. Talar Bafang Configuration Tool-protokollet, som appen använder som standard.",
                         cs = "tovární firmware s uzavřeným zdrojovým kódem, se kterým se řadiče Bafang BBS01/BBS02/BBSHD standardně dodávají. Komunikuje protokolem Bafang Configuration Tool, který aplikace používá ve výchozím nastavení.",
                         sk = "továrenský firmvér s uzavretým zdrojovým kódom, s ktorým sa radiče Bafang BBS01/BBS02/BBSHD štandardne dodávajú. Komunikuje protokolom Bafang Configuration Tool, ktorý aplikácia používa predvolene.",
+                        da = "den fabriksindstillede, closed-source firmware, som Bafang BBS01/BBS02/BBSHD-styreenheder leveres med som standard. Taler Bafang Configuration Tool-protokollen, som appen bruger som standard.",
+                        ru = "заводская прошивка с закрытым исходным кодом, с которой контроллеры Bafang BBS01/BBS02/BBSHD поставляются по умолчанию. Использует протокол Bafang Configuration Tool, который приложение использует по умолчанию.",
                     ),
                 )
                 Spacer(Modifier.height(8.dp))
@@ -128,6 +130,8 @@ fun SettingsScreen(
                         sv = "(github.com/danielnilsson9/bbs-fw) - öppen källkod, alternativ firmware som du själv kan flasha på samma styrenheter i stället för fabriksversionen. Har sitt EGET, ANNAT konfigurationsprotokoll, så denna reglage ändrar vilka ramar appen använder för att prata med styrenheten.",
                         cs = "(github.com/danielnilsson9/bbs-fw) - open-source, alternativní firmware, který si můžeš sám nahrát do stejných řadičů namísto továrního. Má VLASTNÍ, JINÝ konfigurační protokol, takže tento přepínač mění, jaké rámce aplikace používá ke komunikaci s řadičem.",
                         sk = "(github.com/danielnilsson9/bbs-fw) - open-source, alternatívny firmvér, ktorý si môžeš sám nahrať do rovnakých radičov namiesto továrenského. Má VLASTNÝ, INÝ konfiguračný protokol, takže tento prepínač mení, aké rámce aplikácia používa na komunikáciu s radičom.",
+                        da = "(github.com/danielnilsson9/bbs-fw) - open source, alternativ firmware, som du selv kan flashe på de samme styreenheder i stedet for fabriksversionen. Har sin EGEN, ANDEN konfigurationsprotokol, så denne kontakt ændrer, hvilke frames appen bruger til at tale med styreenheden.",
+                        ru = "(github.com/danielnilsson9/bbs-fw) - альтернативная прошивка с открытым исходным кодом, которую можно самостоятельно прошить на те же контроллеры вместо заводской. Имеет СОБСТВЕННЫЙ, ОТЛИЧНЫЙ протокол настройки, поэтому этот переключатель меняет, какие кадры приложение использует для связи с контроллером.",
                     ),
                 )
                 Spacer(Modifier.height(8.dp))
@@ -144,6 +148,8 @@ fun SettingsScreen(
                         sv = "Välj alternativet som matchar det som faktiskt är flashat på din styrenhet. Ändring kräver återanslutning.",
                         cs = "Vyber možnost, která odpovídá tomu, co je skutečně nahráno v tvém řadiči. Změna vyžaduje opětovné připojení.",
                         sk = "Vyber možnosť, ktorá zodpovedá tomu, čo je skutočne nahrané v tvojom radiči. Zmena vyžaduje opätovné pripojenie.",
+                        da = "Vælg den, der matcher, hvad der faktisk er flashet på din styreenhed. Ændring kræver genforbindelse.",
+                        ru = "Выберите вариант, соответствующий тому, что действительно прошито в вашем контроллере. Изменение требует повторного подключения.",
                     ),
                     fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
                 )
@@ -151,11 +157,11 @@ fun SettingsScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Szybkie odświeżanie Kokpitu", "Fast Cockpit refresh", de = "Schnelle Cockpit-Aktualisierung", fr = "Rafraîchissement rapide (Cockpit)", es = "Actualización rápida (Cockpit)", pt = "Atualização rápida do Cockpit", it = "Aggiornamento rapido Cockpit", nl = "Snelle Cockpit-verversing", sv = "Snabb uppdatering av Cockpit", cs = "Rychlé obnovování Cockpitu", sk = "Rýchle obnovovanie Cockpitu"),
+            label = tr("Szybkie odświeżanie Kokpitu", "Fast Cockpit refresh", de = "Schnelle Cockpit-Aktualisierung", fr = "Rafraîchissement rapide (Cockpit)", es = "Actualización rápida (Cockpit)", pt = "Atualização rápida do Cockpit", it = "Aggiornamento rapido Cockpit", nl = "Snelle Cockpit-verversing", sv = "Snabb uppdatering av Cockpit", cs = "Rychlé obnovování Cockpitu", sk = "Rýchle obnovovanie Cockpitu", da = "Hurtig Cockpit-opdatering", ru = "Быстрое обновление Кокпита"),
             valueLabel = if (state.fastCockpitRefresh) {
-                tr("Włączone", "On", de = "An", fr = "Activé", es = "Activado", pt = "Ativado", it = "Attivo", nl = "Aan", sv = "På", cs = "Zapnuto", sk = "Zapnuté")
+                tr("Włączone", "On", de = "An", fr = "Activé", es = "Activado", pt = "Ativado", it = "Attivo", nl = "Aan", sv = "På", cs = "Zapnuto", sk = "Zapnuté", da = "Til", ru = "Вкл")
             } else {
-                tr("Wyłączone", "Off", de = "Aus", fr = "Désactivé", es = "Desactivado", pt = "Desativado", it = "Disattivo", nl = "Uit", sv = "Av", cs = "Vypnuto", sk = "Vypnuté")
+                tr("Wyłączone", "Off", de = "Aus", fr = "Désactivé", es = "Desactivado", pt = "Desativado", it = "Disattivo", nl = "Uit", sv = "Av", cs = "Vypnuto", sk = "Vypnuté", da = "Fra", ru = "Выкл")
             },
             description = tr(
                 "Skraca odstępy między odczytami prędkości/prądu w pętli telemetrii, żeby wartości w Kokpicie " +
@@ -191,10 +197,16 @@ fun SettingsScreen(
                 sk = "Skracuje intervaly medzi odčítaniami rýchlosti/prúdu v slučke telemetrie, aby sa hodnoty v Cockpite " +
                     "menili plynulo namiesto skokovo. Nemusí správne fungovať na niektorých radičoch " +
                     "(napr. chýbajúce/stratené odčítania) - ak po zapnutí Cockpit začne sekať alebo zobrazovať nuly, túto možnosť znova vypni.",
+                da = "Forkorter mellemrummene mellem hastigheds-/strømaflæsninger i telemetriløkken, så Cockpit-værdierne " +
+                    "ændres jævnt i stedet for i synlige spring. Fungerer muligvis ikke korrekt på visse styreenheder " +
+                    "(f.eks. manglende/tabte aflæsninger) - hvis Cockpit begynder at hakke eller viser nuller efter aktivering, så slå funktionen fra igen.",
+                ru = "Сокращает интервалы между считываниями скорости/тока в цикле телеметрии, чтобы значения в Кокпите " +
+                    "менялись плавно, а не скачками. Может работать некорректно на некоторых контроллерах " +
+                    "(например, пропущенные/потерянные показания) - если после включения Кокпит начнёт зависать или показывать нули, отключите эту опцию.",
             ),
         ) {
             ToggleRow(
-                label = tr("Szybkie odświeżanie", "Fast refresh", de = "Schnelle Aktualisierung", fr = "Rafraîchissement rapide", es = "Actualización rápida", pt = "Atualização rápida", it = "Aggiornamento rapido", nl = "Snelle verversing", sv = "Snabb uppdatering", cs = "Rychlé obnovování", sk = "Rýchle obnovovanie"),
+                label = tr("Szybkie odświeżanie", "Fast refresh", de = "Schnelle Aktualisierung", fr = "Rafraîchissement rapide", es = "Actualización rápida", pt = "Atualização rápida", it = "Aggiornamento rapido", nl = "Snelle verversing", sv = "Snabb uppdatering", cs = "Rychlé obnovování", sk = "Rýchle obnovovanie", da = "Hurtig opdatering", ru = "Быстрое обновление"),
                 checked = state.fastCockpitRefresh,
                 onCheckedChange = onFastCockpitRefreshChange,
             )
@@ -203,9 +215,9 @@ fun SettingsScreen(
         ExpandableParamTile(
             label = "GPS Speed",
             valueLabel = if (state.gpsSpeedEnabled) {
-                tr("Włączone", "On", de = "An", fr = "Activé", es = "Activado", pt = "Ativado", it = "Attivo", nl = "Aan", sv = "På", cs = "Zapnuto", sk = "Zapnuté")
+                tr("Włączone", "On", de = "An", fr = "Activé", es = "Activado", pt = "Ativado", it = "Attivo", nl = "Aan", sv = "På", cs = "Zapnuto", sk = "Zapnuté", da = "Til", ru = "Вкл")
             } else {
-                tr("Wyłączone", "Off", de = "Aus", fr = "Désactivé", es = "Desactivado", pt = "Desativado", it = "Disattivo", nl = "Uit", sv = "Av", cs = "Vypnuto", sk = "Vypnuté")
+                tr("Wyłączone", "Off", de = "Aus", fr = "Désactivé", es = "Desactivado", pt = "Desativado", it = "Disattivo", nl = "Uit", sv = "Av", cs = "Vypnuto", sk = "Vypnuté", da = "Fra", ru = "Выкл")
             },
             description = tr(
                 "Dodaje na Kokpicie małą adnotację z prędkością odczytaną bezpośrednio z GPS telefonu, obok " +
@@ -241,6 +253,12 @@ fun SettingsScreen(
                 sk = "Pridá do Cockpitu malú poznámku s rýchlosťou čítanou priamo z GPS telefónu, vedľa " +
                     "hlavného odčítania z radiča - užitočné na porovnanie oboch hodnôt. Vyžaduje povolenie na polohu " +
                     "(požiadame oň až po zapnutí tejto možnosti).",
+                da = "Tilføjer en lille annotation på Cockpit med hastigheden aflæst direkte fra telefonens GPS, ved siden af " +
+                    "hovedhastighedsaflæsningen fra styreenheden - nyttigt til at sammenligne de to. Kræver placeringstilladelse " +
+                    "(vi spørger først, når du aktiverer denne indstilling).",
+                ru = "Добавляет на Кокпите небольшую пометку со скоростью, считанной напрямую с GPS телефона, рядом " +
+                    "с основным показанием скорости от контроллера - удобно для сравнения обоих значений. Требует разрешения на доступ к местоположению " +
+                    "(мы запросим его только после включения этой опции).",
             ),
         ) {
             ToggleRow(
@@ -250,10 +268,10 @@ fun SettingsScreen(
             )
         }
 
-        MicroLabel(tr("Aplikacja", "Application", de = "Anwendung", fr = "Application", es = "Aplicación", pt = "Aplicação", it = "Applicazione", nl = "Applicatie", sv = "Applikation", cs = "Aplikace", sk = "Aplikácia"))
+        MicroLabel(tr("Aplikacja", "Application", de = "Anwendung", fr = "Application", es = "Aplicación", pt = "Aplicação", it = "Applicazione", nl = "Applicatie", sv = "Applikation", cs = "Aplikace", sk = "Aplikácia", da = "Applikation", ru = "Приложение"))
         TokenCard(borderColor = Tokens.WhiteBorder) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(tr("Jednostki", "Units", de = "Einheiten", fr = "Unités", es = "Unidades", pt = "Unidades", it = "Unità", nl = "Eenheden", sv = "Enheter", cs = "Jednotky", sk = "Jednotky"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary, modifier = Modifier.weight(1f))
+                Text(tr("Jednostki", "Units", de = "Einheiten", fr = "Unités", es = "Unidades", pt = "Unidades", it = "Unità", nl = "Eenheden", sv = "Enheter", cs = "Jednotky", sk = "Jednotky", da = "Enheder", ru = "Единицы"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary, modifier = Modifier.weight(1f))
                 SegmentedControl(
                     options = listOf("km/h", "mph"),
                     selectedIndex = if (state.units == SpeedUnit.MPH) 1 else 0,
@@ -264,7 +282,7 @@ fun SettingsScreen(
         }
 
         ExpandableParamTile(
-            label = tr("Przebieg (ODO)", "Odometer (ODO)", de = "Kilometerstand (ODO)", fr = "Compteur (ODO)", es = "Odómetro (ODO)", pt = "Odómetro (ODO)", it = "Contachilometri (ODO)", nl = "Kilometerteller (ODO)", sv = "Trippmätare (ODO)", cs = "Tachometr (ODO)", sk = "Tachometer (ODO)"),
+            label = tr("Przebieg (ODO)", "Odometer (ODO)", de = "Kilometerstand (ODO)", fr = "Compteur (ODO)", es = "Odómetro (ODO)", pt = "Odómetro (ODO)", it = "Contachilometri (ODO)", nl = "Kilometerteller (ODO)", sv = "Trippmätare (ODO)", cs = "Tachometr (ODO)", sk = "Tachometer (ODO)", da = "Kilometertæller (ODO)", ru = "Одометр (ODO)"),
             valueLabel = "",
             description = tr(
                 "Jeśli migrujesz z innego wyświetlacza i chcesz zachować dotychczasowy przebieg, " +
@@ -311,6 +329,14 @@ fun SettingsScreen(
                     "zadaj ho tu ako východiskový bod. EggSPEED k nemu pripočíta vzdialenosť sledovanú v reálnom čase v " +
                     "Cockpite (aktuálne ${String.format("%.1f", unit.fromKmh(state.tripKm))} ${unit.distanceLabel} od začiatku tejto relácie Cockpitu). " +
                     "Hodnota sa trvalo uloží do telefónu.",
+                da = "Hvis du migrerer fra en anden skærm og vil beholde din nuværende kilometerstand, " +
+                    "så indtast den her som udgangspunkt. EggSPEED lægger den afstand til, som spores live i " +
+                    "Cockpit (i øjeblikket ${String.format("%.1f", unit.fromKmh(state.tripKm))} ${unit.distanceLabel} siden denne Cockpit-session startede). " +
+                    "Værdien gemmes permanent på din telefon.",
+                ru = "Если вы переходите с другого дисплея и хотите сохранить существующий пробег, " +
+                    "введите его здесь как начальную точку. EggSPEED прибавит к нему расстояние, отслеживаемое в реальном времени в " +
+                    "Кокпите (сейчас ${String.format("%.1f", unit.fromKmh(state.tripKm))} ${unit.distanceLabel} с начала этой сессии Кокпита). " +
+                    "Значение сохраняется постоянно на вашем телефоне.",
             ),
         ) {
             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -327,13 +353,13 @@ fun SettingsScreen(
             }
         }
 
-        MicroLabel(tr("Połączenie", "Connection", de = "Verbindung", fr = "Connexion", es = "Conexión", pt = "Ligação", it = "Connessione", nl = "Verbinding", sv = "Anslutning", cs = "Připojení", sk = "Pripojenie"))
+        MicroLabel(tr("Połączenie", "Connection", de = "Verbindung", fr = "Connexion", es = "Conexión", pt = "Ligação", it = "Connessione", nl = "Verbinding", sv = "Anslutning", cs = "Připojení", sk = "Pripojenie", da = "Forbindelse", ru = "Соединение"))
         TokenCard(borderColor = Tokens.WhiteBorder, modifier = Modifier.alpha(0.55f)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text(tr("Typ połączenia", "Connection type", de = "Verbindungstyp", fr = "Type de connexion", es = "Tipo de conexión", pt = "Tipo de ligação", it = "Tipo di connessione", nl = "Verbindingstype", sv = "Anslutningstyp", cs = "Typ připojení", sk = "Typ pripojenia"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary)
+                    Text(tr("Typ połączenia", "Connection type", de = "Verbindungstyp", fr = "Type de connexion", es = "Tipo de conexión", pt = "Tipo de ligação", it = "Tipo di connessione", nl = "Verbindingstype", sv = "Anslutningstyp", cs = "Typ připojení", sk = "Typ pripojenia", da = "Forbindelsestype", ru = "Тип соединения"), fontFamily = Manrope, fontSize = 14.sp, color = Tokens.TextPrimary)
                     Text(
-                        tr("Bluetooth - wkrótce", "Bluetooth - coming soon", de = "Bluetooth - demnächst", fr = "Bluetooth - bientôt", es = "Bluetooth - próximamente", pt = "Bluetooth - brevemente", it = "Bluetooth - prossimamente", nl = "Bluetooth - binnenkort", sv = "Bluetooth - kommer snart", cs = "Bluetooth - již brzy", sk = "Bluetooth - už čoskoro"),
+                        tr("Bluetooth - wkrótce", "Bluetooth - coming soon", de = "Bluetooth - demnächst", fr = "Bluetooth - bientôt", es = "Bluetooth - próximamente", pt = "Bluetooth - brevemente", it = "Bluetooth - prossimamente", nl = "Bluetooth - binnenkort", sv = "Bluetooth - kommer snart", cs = "Bluetooth - již brzy", sk = "Bluetooth - už čoskoro", da = "Bluetooth - kommer snart", ru = "Bluetooth - скоро"),
                         fontFamily = Manrope, fontSize = 11.sp, color = Tokens.TextSecondary,
                     )
                 }

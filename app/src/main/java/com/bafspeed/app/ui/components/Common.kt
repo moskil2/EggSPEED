@@ -83,14 +83,14 @@ fun ReadWriteButtons(onRead: () -> Unit, onWrite: () -> Unit, enabled: Boolean, 
                 .let { if (enabled) it.clickable { onRead() } else it }
                 .padding(vertical = 14.dp),
             contentAlignment = Alignment.Center,
-        ) { Text(tr("Odczytaj", "Read", de = "Lesen", fr = "Lire", es = "Leer", pt = "Ler", it = "Leggi", nl = "Lezen", sv = "Läs", cs = "Číst", sk = "Čítať"), fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = if (enabled) Tokens.OnAccent else Tokens.TextTertiary) }
+        ) { Text(tr("Odczytaj", "Read", de = "Lesen", fr = "Lire", es = "Leer", pt = "Ler", it = "Leggi", nl = "Lezen", sv = "Läs", cs = "Číst", sk = "Čítať", da = "Læs", ru = "Читать"), fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = if (enabled) Tokens.OnAccent else Tokens.TextTertiary) }
         Box(
             modifier = Modifier.weight(1f)
                 .background(if (enabled) Tokens.Red else Tokens.Elevated, RoundedCornerShape(14.dp))
                 .let { if (enabled) it.clickable { onWrite() } else it }
                 .padding(vertical = 14.dp),
             contentAlignment = Alignment.Center,
-        ) { Text(tr("Zapisz", "Write", de = "Schreiben", fr = "Écrire", es = "Escribir", pt = "Escrever", it = "Scrivi", nl = "Schrijven", sv = "Skriv", cs = "Zapsat", sk = "Zapísať"), fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = if (enabled) Color.White else Tokens.TextTertiary) }
+        ) { Text(tr("Zapisz", "Write", de = "Schreiben", fr = "Écrire", es = "Escribir", pt = "Escrever", it = "Scrivi", nl = "Schrijven", sv = "Skriv", cs = "Zapsat", sk = "Zapísať", da = "Skriv", ru = "Записать"), fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = if (enabled) Color.White else Tokens.TextTertiary) }
     }
 }
 
@@ -106,13 +106,13 @@ fun TelemetryPausedNotice(monitoringActive: Boolean, aodActive: Boolean, modifie
     Column(modifier.fillMaxWidth().padding(top = 6.dp)) {
         if (monitoringActive) {
             Text(
-                tr("Monitoring wstrzymany na czas edycji", "Monitoring paused while editing", de = "Monitoring während der Bearbeitung pausiert", fr = "Monitoring en pause pendant l'édition", es = "Monitoreo en pausa durante la edición", pt = "Monitoring pausado durante a edição", it = "Monitoring in pausa durante la modifica", nl = "Monitoring gepauzeerd tijdens bewerken", sv = "Monitoring pausad under redigering", cs = "Monitoring pozastaven během úprav", sk = "Monitoring pozastavený počas úprav"),
+                tr("Monitoring wstrzymany na czas edycji", "Monitoring paused while editing", de = "Monitoring während der Bearbeitung pausiert", fr = "Monitoring en pause pendant l'édition", es = "Monitoreo en pausa durante la edición", pt = "Monitoring pausado durante a edição", it = "Monitoring in pausa durante la modifica", nl = "Monitoring gepauzeerd tijdens bewerken", sv = "Monitoring pausad under redigering", cs = "Monitoring pozastaven během úprav", sk = "Monitoring pozastavený počas úprav", da = "Monitorering sat på pause under redigering", ru = "Мониторинг приостановлен во время редактирования"),
                 fontFamily = Manrope, fontWeight = FontWeight.SemiBold, fontSize = 12.sp, color = Tokens.Red,
             )
         }
         if (aodActive) {
             Text(
-                tr("Ekran blokady (AOD) wstrzymany na czas edycji", "Lock screen display (AOD) paused while editing", de = "Sperrbildschirm-Anzeige (AOD) während der Bearbeitung pausiert", fr = "Affichage écran verrouillé (AOD) en pause pendant l'édition", es = "Pantalla de bloqueo (AOD) en pausa durante la edición", pt = "Ecrã de bloqueio (AOD) pausado durante a edição", it = "Schermata di blocco (AOD) in pausa durante la modifica", nl = "Vergrendelscherm (AOD) gepauzeerd tijdens bewerken", sv = "Låsskärmsvisning (AOD) pausad under redigering", cs = "Zobrazení na zamykací obrazovce (AOD) pozastaveno během úprav", sk = "Zobrazenie na zamykacej obrazovke (AOD) pozastavené počas úprav"),
+                tr("Ekran blokady (AOD) wstrzymany na czas edycji", "Lock screen display (AOD) paused while editing", de = "Sperrbildschirm-Anzeige (AOD) während der Bearbeitung pausiert", fr = "Affichage écran verrouillé (AOD) en pause pendant l'édition", es = "Pantalla de bloqueo (AOD) en pausa durante la edición", pt = "Ecrã de bloqueio (AOD) pausado durante a edição", it = "Schermata di blocco (AOD) in pausa durante la modifica", nl = "Vergrendelscherm (AOD) gepauzeerd tijdens bewerken", sv = "Låsskärmsvisning (AOD) pausad under redigering", cs = "Zobrazení na zamykací obrazovce (AOD) pozastaveno během úprav", sk = "Zobrazenie na zamykacej obrazovke (AOD) pozastavené počas úprav", da = "Låseskærmsvisning (AOD) sat på pause under redigering", ru = "Экран блокировки (AOD) приостановлен во время редактирования"),
                 fontFamily = Manrope, fontWeight = FontWeight.SemiBold, fontSize = 12.sp, color = Tokens.Red,
             )
         }

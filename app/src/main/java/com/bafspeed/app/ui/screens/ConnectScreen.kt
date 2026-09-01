@@ -74,7 +74,7 @@ fun ConnectScreen(
                 "dla Bafang BBS01 / BBS02 / BBSHD", "for Bafang BBS01 / BBS02 / BBSHD",
                 de = "für Bafang BBS01 / BBS02 / BBSHD", fr = "pour Bafang BBS01 / BBS02 / BBSHD", es = "para Bafang BBS01 / BBS02 / BBSHD",
                 pt = "para Bafang BBS01 / BBS02 / BBSHD", it = "per Bafang BBS01 / BBS02 / BBSHD", nl = "voor Bafang BBS01 / BBS02 / BBSHD",
-                sv = "för Bafang BBS01 / BBS02 / BBSHD", cs = "pro Bafang BBS01 / BBS02 / BBSHD", sk = "pre Bafang BBS01 / BBS02 / BBSHD",
+                sv = "för Bafang BBS01 / BBS02 / BBSHD", cs = "pro Bafang BBS01 / BBS02 / BBSHD", sk = "pre Bafang BBS01 / BBS02 / BBSHD", da = "for Bafang BBS01 / BBS02 / BBSHD", ru = "для Bafang BBS01 / BBS02 / BBSHD",
             ),
             fontFamily = Manrope,
             fontSize = 13.sp,
@@ -144,11 +144,11 @@ fun ConnectScreen(
 
         Text(
             text = when (state.connection) {
-                ConnectionStatus.DISCONNECTED -> tr("Niepołączono", "Not connected", de = "Nicht verbunden", fr = "Non connecté", es = "No conectado", pt = "Não conectado", it = "Non connesso", nl = "Niet verbonden", sv = "Ej ansluten", cs = "Nepřipojeno", sk = "Nepripojené")
-                ConnectionStatus.SEARCHING -> tr("Szukam sterownika…", "Searching for controller…", de = "Suche Steuergerät…", fr = "Recherche du contrôleur…", es = "Buscando controlador…", pt = "A procurar controlador…", it = "Ricerca controller…", nl = "Controller zoeken…", sv = "Söker styrenhet…", cs = "Hledám řadič…", sk = "Hľadám radič…")
-                ConnectionStatus.CONNECTING -> tr("Identyfikuję sterownik…", "Identifying controller…", de = "Identifiziere Steuergerät…", fr = "Identification du contrôleur…", es = "Identificando controlador…", pt = "A identificar controlador…", it = "Identificazione controller…", nl = "Controller identificeren…", sv = "Identifierar styrenhet…", cs = "Identifikuji řadič…", sk = "Identifikujem radič…")
-                ConnectionStatus.CONNECTED -> tr("Połączono", "Connected", de = "Verbunden", fr = "Connecté", es = "Conectado", pt = "Conectado", it = "Connesso", nl = "Verbonden", sv = "Ansluten", cs = "Připojeno", sk = "Pripojené")
-                ConnectionStatus.ERROR -> tr("Błąd połączenia", "Connection error", de = "Verbindungsfehler", fr = "Erreur de connexion", es = "Error de conexión", pt = "Erro de ligação", it = "Errore di connessione", nl = "Verbindingsfout", sv = "Anslutningsfel", cs = "Chyba připojení", sk = "Chyba pripojenia")
+                ConnectionStatus.DISCONNECTED -> tr("Niepołączono", "Not connected", de = "Nicht verbunden", fr = "Non connecté", es = "No conectado", pt = "Não conectado", it = "Non connesso", nl = "Niet verbonden", sv = "Ej ansluten", cs = "Nepřipojeno", sk = "Nepripojené", da = "Ikke forbundet", ru = "Не подключено")
+                ConnectionStatus.SEARCHING -> tr("Szukam sterownika…", "Searching for controller…", de = "Suche Steuergerät…", fr = "Recherche du contrôleur…", es = "Buscando controlador…", pt = "A procurar controlador…", it = "Ricerca controller…", nl = "Controller zoeken…", sv = "Söker styrenhet…", cs = "Hledám řadič…", sk = "Hľadám radič…", da = "Søger efter controller…", ru = "Поиск контроллера…")
+                ConnectionStatus.CONNECTING -> tr("Identyfikuję sterownik…", "Identifying controller…", de = "Identifiziere Steuergerät…", fr = "Identification du contrôleur…", es = "Identificando controlador…", pt = "A identificar controlador…", it = "Identificazione controller…", nl = "Controller identificeren…", sv = "Identifierar styrenhet…", cs = "Identifikuji řadič…", sk = "Identifikujem radič…", da = "Identificerer controller…", ru = "Определение контроллера…")
+                ConnectionStatus.CONNECTED -> tr("Połączono", "Connected", de = "Verbunden", fr = "Connecté", es = "Conectado", pt = "Conectado", it = "Connesso", nl = "Verbonden", sv = "Ansluten", cs = "Připojeno", sk = "Pripojené", da = "Forbundet", ru = "Подключено")
+                ConnectionStatus.ERROR -> tr("Błąd połączenia", "Connection error", de = "Verbindungsfehler", fr = "Erreur de connexion", es = "Error de conexión", pt = "Erro de ligação", it = "Errore di connessione", nl = "Verbindingsfout", sv = "Anslutningsfel", cs = "Chyba připojení", sk = "Chyba pripojenia", da = "Forbindelsesfejl", ru = "Ошибка подключения")
             },
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
@@ -173,7 +173,7 @@ fun ConnectScreen(
                     nl = "Sluit de Bafang-programmeerkabel aan tussen je telefoon en de controller",
                     sv = "Anslut Bafang-programmeringskabeln mellan din telefon och styrenheten",
                     cs = "Připoj programovací kabel Bafang mezi telefon a řadič",
-                    sk = "Pripoj programovací kábel Bafang medzi telefón a radič",
+                    sk = "Pripoj programovací kábel Bafang medzi telefón a radič", da = "Forbind Bafang-programmeringskablet mellem din telefon og controlleren", ru = "Подключите программирующий кабель Bafang между телефоном и контроллером",
                 )
             } else {
                 tr(state.statusMessagePl, state.statusMessageEn)
@@ -199,7 +199,7 @@ fun ConnectScreen(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    tr("Przejdź do Kokpitu →", "Go to Cockpit →", de = "Zum Cockpit →", fr = "Aller au Cockpit →", es = "Ir al Cockpit →", pt = "Ir para o Cockpit →", it = "Vai al Cockpit →", nl = "Ga naar Cockpit →", sv = "Gå till Cockpit →", cs = "Přejít do Cockpitu →", sk = "Prejsť do Cockpitu →"),
+                    tr("Przejdź do Kokpitu →", "Go to Cockpit →", de = "Zum Cockpit →", fr = "Aller au Cockpit →", es = "Ir al Cockpit →", pt = "Ir para o Cockpit →", it = "Vai al Cockpit →", nl = "Ga naar Cockpit →", sv = "Gå till Cockpit →", cs = "Přejít do Cockpitu →", sk = "Prejsť do Cockpitu →", da = "Gå til Cockpit →", ru = "Перейти в Кокпит →"),
                     fontFamily = Sora, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Tokens.Blue,
                 )
             }
@@ -237,9 +237,9 @@ fun ConnectScreen(
         ) {
             Text(
                 if (connected) {
-                    tr("Rozłącz", "Disconnect", de = "Trennen", fr = "Déconnecter", es = "Desconectar", pt = "Desligar", it = "Disconnetti", nl = "Verbreken", sv = "Koppla från", cs = "Odpojit", sk = "Odpojiť")
+                    tr("Rozłącz", "Disconnect", de = "Trennen", fr = "Déconnecter", es = "Desconectar", pt = "Desligar", it = "Disconnetti", nl = "Verbreken", sv = "Koppla från", cs = "Odpojit", sk = "Odpojiť", da = "Afbryd", ru = "Отключить")
                 } else {
-                    tr("Połącz", "Connect", de = "Verbinden", fr = "Connecter", es = "Conectar", pt = "Ligar", it = "Connetti", nl = "Verbinden", sv = "Anslut", cs = "Připojit", sk = "Pripojiť")
+                    tr("Połącz", "Connect", de = "Verbinden", fr = "Connecter", es = "Conectar", pt = "Ligar", it = "Connetti", nl = "Verbinden", sv = "Anslut", cs = "Připojit", sk = "Pripojiť", da = "Forbind", ru = "Подключить")
                 },
                 fontFamily = Sora,
                 fontWeight = FontWeight.Bold,
