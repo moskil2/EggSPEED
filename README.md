@@ -145,6 +145,8 @@
     <td><img src="screenshots/8.jpg" width="140" alt="BBS-FW System screen, Global and Throttle settings" /></td>
     <td><img src="screenshots/9.jpg" width="140" alt="BBS-FW System screen, Features and Speed Sensor settings" /></td>
     <td><img src="screenshots/10.jpg" width="140" alt="BBS-FW Assist Levels screen, Standard/Sport pages" /></td>
+    <td><img src="screenshots/16.jpg" width="140" alt="Cockpit with the bbs-fw Tc temperature tile" /></td>
+    <td><img src="screenshots/17.jpg" width="140" alt="BBS-FW Temperature control screen" /></td>
   </tr>
 </table>
 
