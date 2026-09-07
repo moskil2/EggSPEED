@@ -157,17 +157,15 @@ EggSPEED is available now on Google Play - **[get it here](https://play.google.c
 ## Coming soon
 
 - Dedicated handling for Bluetooth remote/button controllers, with configurable button functions
-- SW102 display support (modified firmware) - EggRider-style features without the EggRider price tag
-- STREET and RACE dual assist-profile modes for OEM Bafang controllers - switch between two full sets of 10 assist levels on the fly, the EggRider Road/Offroad equivalent
-- A Bluetooth module replacing the USB OTG programming cable - full read/write communication over BT, no cable and no plugging the phone into the controller needed
+  <br><img src="screenshots/20.jpg" width="140" alt="Bluetooth handlebar remote/button controller" />
 
-<table align="center">
-  <tr>
-    <td><img src="screenshots/20.jpg" width="140" alt="Bluetooth handlebar remote/button controller" /></td>
-    <td><img src="screenshots/18.jpg" width="140" alt="SW102 firmware mockup - speed, power, assist level, trip/odo/range" /></td>
-    <td><img src="screenshots/19.jpg" width="140" alt="SW102 handlebar display device" /></td>
-  </tr>
-</table>
+- SW102 display support (modified firmware) - EggRider-style features without the EggRider price tag
+  <br><img src="screenshots/18.jpg" width="140" alt="SW102 firmware mockup - speed, power, assist level, trip/odo/range" /> <img src="screenshots/19.jpg" width="140" alt="SW102 handlebar display device" />
+
+- STREET and RACE dual assist-profile modes for OEM Bafang controllers - switch between two full sets of 10 assist levels on the fly, the EggRider Road/Offroad equivalent
+  <br><img src="screenshots/21.jpg" width="140" alt="STREET/RACE assist levels screen" />
+
+- A Bluetooth module replacing the USB OTG programming cable - full read/write communication over BT, no cable and no plugging the phone into the controller needed
 
 ## Safety model
 
