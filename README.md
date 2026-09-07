@@ -81,7 +81,7 @@
 - Menu automatically shows only the screen set relevant to the selected firmware
 
 ### Calibration
-- Current calibration factor (display-only multiplier, e.g. for shunt-modded controllers) with live before/after preview and reset
+- Current calibration factor (display-only multiplier, e.g. for shunt-modded/AmpMax controllers) with live before/after preview and reset
 - Voltage correction offset with live before/after preview and reset
 - Speed calibration factor with live before/after preview and reset
 
