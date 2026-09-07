@@ -166,6 +166,7 @@ EggSPEED is available now on Google Play - **[get it here](https://play.google.c
   <br><img src="screenshots/21.jpg" width="140" alt="STREET/RACE assist levels screen" />
 
 - **Progress: 20%** - A Bluetooth module replacing the USB OTG programming cable - full read/write communication over BT, no cable and no plugging the phone into the controller needed
+  <br><img src="screenshots/22.jpg" width="140" alt="HM-10 Bluetooth UART module" />
 
 ## Safety model
 
