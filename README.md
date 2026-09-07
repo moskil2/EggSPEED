@@ -163,6 +163,7 @@ EggSPEED is available now on Google Play - **[get it here](https://play.google.c
 
 <table align="center">
   <tr>
+    <td><img src="screenshots/20.jpg" width="140" alt="Bluetooth handlebar remote/button controller" /></td>
     <td><img src="screenshots/18.jpg" width="140" alt="SW102 firmware mockup - speed, power, assist level, trip/odo/range" /></td>
     <td><img src="screenshots/19.jpg" width="140" alt="SW102 handlebar display device" /></td>
   </tr>
