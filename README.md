@@ -154,6 +154,20 @@
 
 EggSPEED is available now on Google Play - **[get it here](https://play.google.com/store/apps/details?id=app.spotrobotics.eggspeed)**. The latest version is always available there, and the app updates itself through Google Play like any other app.
 
+## Coming soon
+
+- Dedicated handling for Bluetooth remote/button controllers, with configurable button functions
+- SW102 display support (modified firmware) - EggRider-style features without the EggRider price tag
+- STREET and RACE dual assist-profile modes for OEM Bafang controllers - switch between two full sets of 10 assist levels on the fly, the EggRider Road/Offroad equivalent
+- A Bluetooth module replacing the USB OTG programming cable - full read/write communication over BT, no cable and no plugging the phone into the controller needed
+
+<table align="center">
+  <tr>
+    <td><img src="screenshots/18.jpg" width="140" alt="SW102 firmware mockup - speed, power, assist level, trip/odo/range" /></td>
+    <td><img src="screenshots/19.jpg" width="140" alt="SW102 handlebar display device" /></td>
+  </tr>
+</table>
+
 ## Safety model
 
 EggSPEED can read from and write to the controller's configuration - it is no longer read-only, on either firmware. It never flashes firmware, and firmware flashing is not planned at all. On OEM Bafang, commands sent to the controller fall into four categories:
