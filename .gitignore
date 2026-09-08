@@ -26,6 +26,10 @@ Thumbs.db
 emulator_log.txt
 emulator_screenshot.png
 
+### Skompilowane biblioteki z prywatnego repo protokolu - nigdy nie commitowac do publicznego repo,
+### buduje sie je lokalnie z BafSPEED-protocol i kopiuje recznie do app/libs/ przed kazdym buildem ###
+app/libs/*.aar
+
 ### Decompiled/reverse-engineered reference material - never commit ###
 /apk_extracted/
 /reconstructed_source/
