@@ -156,7 +156,7 @@ EggSPEED is available now on Google Play - **[get it here](https://play.google.c
 
 ## Coming soon
 
-- **Progress: 30%** - Dedicated handling for Bluetooth remote/button controllers, with configurable button functions
+- **Progress: 80%** - Dedicated handling for Bluetooth remote/button controllers, with configurable button functions
   <br><img src="screenshots/20.jpg" width="140" alt="Bluetooth handlebar remote/button controller" />
 
 - **Progress: 60%** - SW102 display support (modified firmware) - EggRider-style features without the EggRider price tag
@@ -167,6 +167,8 @@ EggSPEED is available now on Google Play - **[get it here](https://play.google.c
 
 - **Progress: 20%** - A Bluetooth module replacing the USB OTG programming cable - full read/write communication over BT, no cable and no plugging the phone into the controller needed
   <br><img src="screenshots/22.jpg" width="140" alt="HM-10 Bluetooth UART module" />
+
+- **Progress: 0%** - Add Japanese, Latvian, and Estonian language support (16 languages total)
 
 ## Safety model
 
