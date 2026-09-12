@@ -168,7 +168,11 @@ EggSPEED is available now on Google Play - **[get it here](https://play.google.c
 - **Progress: 20%** - A Bluetooth module replacing the USB OTG programming cable - full read/write communication over BT, no cable and no plugging the phone into the controller needed
   <br><img src="screenshots/22.jpg" width="140" alt="HM-10 Bluetooth UART module" />
 
-- **Progress: 0%** - Add Japanese, Latvian, and Estonian language support (16 languages total)
+- **Progress: 0%** - Add new language support (17 languages total):
+  - Norwegian
+  - Japanese
+  - Latvian
+  - Estonian
 
 ## Safety model
 
