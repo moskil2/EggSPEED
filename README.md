@@ -266,6 +266,28 @@ app/src/main/java/com/bafspeed/app/
 
 ## Changelog
 
+## v0.4.3 - 2026-09-12 (versionCode 77)
+- Shortened the close-app button label to "Close App" (per language) and constrained its width so long translations wrap instead of stretching the layout.
+
+## v0.4.2 - 2026-09-12 (versionCode 76)
+- Moved the close-app button to the top-right corner next to the EggSPEED wordmark; relabeled to "Close Application".
+
+## v0.4.1 - 2026-09-12 (versionCode 75)
+- Fixed missing translations for BBS-FW Version/System/Assist Levels screen titles and the app-close button - previously hardcoded in English regardless of language setting.
+
+## v0.4.0 - 2026-09-12 (versionCode 74)
+- Added Japanese - 17 languages total.
+
+## v0.3.70 - 2026-09-12 (versionCode 73)
+- Added Norwegian, Estonian, and Latvian - 16 languages total.
+
+## v0.3.69-RaceMode - 2026-09-10 (versionCode 72)
+- New controller hardware-error checking (opt-in, off by default): decodes the Bafang STATUS register into named error codes (based on bbs-fw's app.h constants) and shows a blinking warning triangle on the Cockpit when a fault is active - tapping it jumps straight to Diagnostics. Enabled via a new "Show errors" toggle in Settings (grouped under a new "Cockpit" section header there).
+- Diagnostics: the "Current errors" tile now has a collapsible reference list of all known controller error codes and their descriptions, alongside the live current-error status.
+- Settings screen readability pass: bigger section-header and label fonts throughout, Firmware/Units tiles rebuilt on the shared collapsible-tile pattern (title + description behind a green expand arrow, control always visible), Firmware tile gets a red border as a "requires reconnect" cue.
+- BT Button, Diagnostics ("Connect to scan registers", "Test mode") and Monitoring: long always-visible descriptions moved behind the same collapsible green-arrow pattern used elsewhere instead of permanently taking up space; Monitoring's explanation banner moved inline next to the master on/off toggle instead of a separate banner at the top.
+- Visual consistency fixes across the 4 Diagnostics tiles: identical text padding from the tile edges, and the TEST / "Scan all registers" buttons have their background restored (it was blending into the tile behind them).
+
 ## v0.3.63 - 2026-09-01 (versionCode 65)
 - Added Danish and Russian - EggSPEED now speaks 13 languages total (Polish, English, German, French, Spanish, Portuguese, Italian, Dutch, Swedish, Czech, Slovak, Danish, Russian), switchable anytime from the Language menu.
 - Improved range (RANGE) estimation on the Cockpit: capped how much a single early, low-power chunk of a ride can override the learned historical Wh/km average, fixing unrealistically high range readings (e.g. 500 km) right at the start of a ride.
