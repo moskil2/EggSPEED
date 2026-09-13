@@ -162,7 +162,7 @@ EggSPEED is available now on Google Play - **[get it here](https://play.google.c
 - **Progress: 60%** - SW102 display support (modified firmware) - EggRider-style features without the EggRider price tag
   <br><img src="screenshots/18.jpg" width="140" alt="SW102 firmware mockup - speed, power, assist level, trip/odo/range" /> <img src="screenshots/19.jpg" width="140" alt="SW102 handlebar display device" />
 
-- **Progress: 90%** - STREET and RACE dual assist-profile modes for OEM Bafang controllers - switch between two full sets of 10 assist levels on the fly, the EggRider Road/Offroad equivalent
+- ✅ **Progress: 100%** - STREET and RACE dual assist-profile modes for OEM Bafang controllers - switch between two full sets of 10 assist levels on the fly, the EggRider Road/Offroad equivalent
   <br><img src="screenshots/21.jpg" width="140" alt="STREET/RACE assist levels screen" />
 
 - **Progress: 20%** - A Bluetooth module replacing the USB OTG programming cable - full read/write communication over BT, no cable and no plugging the phone into the controller needed
