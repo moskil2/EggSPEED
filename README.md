@@ -110,6 +110,11 @@
 - SAFE indicator; unlocking only possible from the Service screen (no cockpit-side escape hatch, by design)
 - Optional PIN gate restricting access to the Service screen
 
+### STREET/RACE (OEM Bafang only)
+- Second, independent set of 10 assist levels (RACE) alongside the default one (STREET)
+- Toggle on the Cockpit switches between them on the fly, reprogramming the controller
+- Enable/disable in the Assist Levels tab
+
 ### Temperature control (bbs-fw only)
 - Toggle to show/hide the controller-temperature (Tc) tile on the Cockpit
 - Configurable Warning and Alarm thresholds (color/blink/sound)
@@ -119,10 +124,17 @@
 - "All in View" - consolidated read-only listing of every current parameter, with clipboard copy
 - Full register scanner (0x00-0xFF) with run history and clipboard export
 - Test mode toggle (same as Cockpit)
+- Controller hardware-error detection (opt-in, off by default) - decodes the Bafang STATUS register into named error codes, shows a warning icon on the Cockpit when a fault is active, tapping it jumps straight to Diagnostics
+- Collapsible reference list of all known controller error codes and their descriptions
 
 ### Profiles
 - Save/load/delete named configuration presets, locally in the app - loading is blocked with a clear error if the profile's firmware doesn't match the one currently selected, instead of silently writing into the wrong fields
 - Export config to a `.ini` file (via file picker) and import with preview
+
+### Bluetooth remote button control
+- Map Vol+/Vol- from a Bluetooth media remote to assist level, light, PROTECT, or STREET/RACE
+- Works identically on OEM Bafang and bbs-fw
+- Play/Pause/Next/Previous aren't mappable - Android always routes them to the phone's default audio app instead of EggSPEED
 
 ### Settings
 - Firmware type switch (see above)
@@ -130,7 +142,7 @@
 - GPS Speed toggle (phone-GPS speed annotation on Cockpit, location permission requested on enable)
 - Units toggle (km/h/mph)
 - Odometer offset
-- App language selector (13 languages: Polish, English, German, French, Spanish, Portuguese, Italian, Dutch, Swedish, Czech, Slovak, Danish, Russian)
+- App language selector (17 languages: Polish, English, German, French, Spanish, Portuguese, Italian, Dutch, Swedish, Czech, Slovak, Danish, Russian, Norwegian, Estonian, Latvian, Japanese)
 
 ### About
 - App version, build stamp
@@ -203,7 +215,7 @@ Every write goes through two safety layers before anything is sent:
 
 ### What EggSPEED deliberately does NOT do
 - Flash firmware (not planned at all)
-- Bluetooth (planned for the future - needs its own hardware bridge)
+- Talk to the controller over Bluetooth (planned for the future - needs its own hardware bridge; Bluetooth IS supported for the optional remote-button feature, see above)
 
 ## Building
 
