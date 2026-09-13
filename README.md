@@ -262,6 +262,17 @@ app/src/main/java/com/bafspeed/app/
 
 ## Changelog
 
+## v0.4.8 - 2026-09-13 (versionCode 82)
+- Cockpit: nudged the power reading a bit to the right (was sitting slightly off-center).
+- STREET/RACE: turning the feature off while RACE is the active profile now blocks with an explanatory message instead of silently auto-switching back to STREET in the background - switch back manually with the existing Cockpit button first.
+- Read/Write buttons (all controller programming screens) now show a visible in-progress state (spinner) while reading, instead of no feedback at all until completion - a manual re-read also now times out with an error message after ~8s if the controller never responds, instead of hanging indefinitely.
+- Fixed the STREET/RACE switch confirmation on the Cockpit (and the profile-save status message) pushing the rest of the layout down and causing a flicker - both now render as a proper floating overlay that doesn't affect layout.
+
+## v0.4.7-RaceMode - 2026-09-13 (versionCode 81)
+- Safer profile saving: "Save current" now does a fresh, verified read of the controller (BAS/PAS/THR for OEM, full config for bbs-fw) right before writing the .ini file, instead of saving whatever the app happened to have cached in memory (which could include unsent edits, a loaded-as-preview profile, or - for OEM with STREET/RACE - the RACE table instead of the normal one).
+- Blocks saving with an explanatory message if the controller isn't connected, or (OEM + STREET/RACE) if RACE is the active profile - switch back to STREET first, since saving while on RACE would silently capture RACE's values instead of your normal ones.
+- OEM profiles with STREET/RACE enabled now also embed the RACE assist table in a new `[RACE]` section of the .ini file (backward-compatible - ignored by the official Bafang Configuration Tool and by older EggSPEED versions), so loading the profile back restores both STREET and RACE instead of just whichever was active at save time.
+
 ## v0.4.6-RaceMode - 2026-09-13 (versionCode 80)
 - Fixed the Cockpit resetting to the Connect tab on its own whenever a Bluetooth remote connects or disconnects - the current-tab state wasn't saved across Activity recreation (which a keyboard/navigation-device configuration change, not declared in the manifest, can trigger), so it silently fell back to its default (Connect) instead of staying put. The v0.4.5 touch-only fix for the ONLINE/OFFLINE badge addressed a different, unrelated cause and didn't fix this.
 - CLOSE APP now uses `finishAndRemoveTask()` instead of `finishAffinity()`, so the app actually disappears from Android's recent/active apps list instead of lingering there.
