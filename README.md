@@ -168,12 +168,6 @@ EggSPEED is available now on Google Play - **[get it here](https://play.google.c
 - **Progress: 20%** - A Bluetooth module replacing the USB OTG programming cable - full read/write communication over BT, no cable and no plugging the phone into the controller needed
   <br><img src="screenshots/22.jpg" width="140" alt="HM-10 Bluetooth UART module" />
 
-- **Progress: 0%** - Add new language support (17 languages total):
-  - Norwegian
-  - Japanese
-  - Latvian
-  - Estonian
-
 ## Safety model
 
 EggSPEED can read from and write to the controller's configuration - it is no longer read-only, on either firmware. It never flashes firmware, and firmware flashing is not planned at all. On OEM Bafang, commands sent to the controller fall into four categories:
@@ -265,6 +259,21 @@ app/src/main/java/com/bafspeed/app/
 4. **`try_process_bafang_read_request` (bbs-fw's display-compat layer) only implements 9 opcodes** - it silently ignores everything else, including the OEM Configuration Tool's GEN/BAS/PAS/THR block reads (`0x51`-`0x54`) - by design, not a bug.
 
 ## Changelog
+
+## v0.4.6-RaceMode - 2026-09-13 (versionCode 80)
+- Fixed the Cockpit resetting to the Connect tab on its own whenever a Bluetooth remote connects or disconnects - the current-tab state wasn't saved across Activity recreation (which a keyboard/navigation-device configuration change, not declared in the manifest, can trigger), so it silently fell back to its default (Connect) instead of staying put. The v0.4.5 touch-only fix for the ONLINE/OFFLINE badge addressed a different, unrelated cause and didn't fix this.
+- CLOSE APP now uses `finishAndRemoveTask()` instead of `finishAffinity()`, so the app actually disappears from Android's recent/active apps list instead of lingering there.
+- BT button tab: renamed the top toggle from "Bluetooth button support" to "Enable/Disable" and added a permanent (non-collapsible) note that it only works while the controller is connected or Test mode is active in Diagnostics.
+
+## v0.4.5-RaceMode - 2026-09-13 (versionCode 79)
+- BT button: dropped Next/Previous mapping and Play/Pause action selection - testing on multiple phones/Android versions showed Android always routes these three to the phone's default audio app, never to EggSPEED, so they can't be made to work reliably. Play/Pause now shows a fixed "Play/Stop" indicator explaining it toggles between EggSPEED and the user's media player instead. Vol+/Vol- (the only reliably working buttons) now default to Assist+/Assist- the first time the feature is enabled, remembering the user's choice after that. Renamed the tile heading from "BT" to "Bluetooth".
+- Fixed the Cockpit occasionally jumping to the Connect tab on its own - the ONLINE/OFFLINE badge was reacting to stray keyboard/focus events (e.g. from a flaky Bluetooth remote losing connection), not just touch; it's now touch-only.
+- CLOSE APP (hamburger menu) now actually waits for the safety shutdown sequence (assist to 0, light off, disconnect) to finish before killing the app - previously the process could be killed mid-sequence, sometimes leaving assist engaged.
+- Renamed "Speed calibration" to "Speed calibration factor" (Calibration tab) for consistency with the current calibration tile; the current-calibration banner now also mentions the AmpMax controller setting alongside shunt mods as a cause of skewed current readings.
+- Renamed "Current errors" to "Actual errors" (Diagnostics tab, English only - avoids reading as electrical current) and "Show errors" to "Show errors on Cockpit" (Settings tab) for clarity.
+
+## v0.4.4-RaceMode - 2026-09-13 (versionCode 78)
+- BT button: request audio focus so the EggSPEED media session keeps priority over other media apps for Bluetooth remote button events, and register a MediaButtonReceiver so Play/Pause/Next/Previous route to EggSPEED instead of the default music app. Added diagnostic logging around the button/volume callbacks (in-progress, not yet verified on hardware).
 
 ## v0.4.3 - 2026-09-12 (versionCode 77)
 - Shortened the close-app button label to "Close App" (per language) and constrained its width so long translations wrap instead of stretching the layout.
