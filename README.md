@@ -166,6 +166,17 @@
 
 EggSPEED is available now on Google Play - **[get it here](https://play.google.com/store/apps/details?id=app.spotrobotics.eggspeed)**. The latest version is always available there, and the app updates itself through Google Play like any other app.
 
+## What do you need to use EggSPEED
+
+A standard Bafang BBS USB programming cable (OTG) - you can buy an official one
+[here](https://fasterbikes.eu/en/shop/accessories/cables/bafang-bbs-usb-programming-cable/),
+or use one of the cheap Chinese equivalents, which work just as well.
+
+## How to connect the app to your controller
+
+For a step-by-step guide on setting up EggSPEED with your Bafang BBS controller, see:
+[Set up Bafang BBS from your phone with EggSPEED](https://fasterbikes.eu/en/set-up-bafang-bbs-from-your-phone-eggspeed/) (fasterbikes.eu)
+
 ## Roadmap
 
 - ✅ **Progress: 100%** - Bluetooth remote/button control - Vol+/Vol- map to assist level/light/PROTECT/STREET-RACE (Play/Pause/Next/Previous can't be reliably captured - Android always routes them to the phone's default media app instead)
