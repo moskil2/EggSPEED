@@ -183,7 +183,8 @@ For a step-by-step guide on setting up EggSPEED with your Bafang BBS controller,
   <br><img src="screenshots/20.jpg" width="140" alt="Bluetooth handlebar remote/button controller" />
 
 - **Progress: 60%** - SW102 display support (modified firmware) - EggRider-style features without the EggRider price tag
-  <br><a href="https://www.youtube.com/watch?v=dRWXJn7uJVk"><img src="https://img.youtube.com/vi/dRWXJn7uJVk/maxresdefault.jpg" width="140" alt="SW102 demo video" /></a> <img src="screenshots/23.jpg" width="140" alt="SW102 boot screen on real hardware" /> <img src="screenshots/24.jpg" width="140" alt="SW102 cockpit screen on real hardware" /> <img src="screenshots/25.jpg" width="140" alt="SW102 menu with marker icon" /> <img src="screenshots/26.jpg" width="140" alt="SW102 menu top level" />
+  <br><a href="https://www.youtube.com/watch?v=dRWXJn7uJVk"><img src="https://img.youtube.com/vi/dRWXJn7uJVk/maxresdefault.jpg" width="480" alt="SW102 demo video" /></a>
+  <br><img src="screenshots/23.jpg" width="140" alt="SW102 boot screen on real hardware" /> <img src="screenshots/24.jpg" width="140" alt="SW102 cockpit screen on real hardware" /> <img src="screenshots/25.jpg" width="140" alt="SW102 menu with marker icon" /> <img src="screenshots/26.jpg" width="140" alt="SW102 menu top level" />
 
 - ✅ **Progress: 100%** - STREET and RACE dual assist-profile modes for OEM Bafang controllers - switch between two full sets of 10 assist levels on the fly, the EggRider Road/Offroad equivalent
   <br><img src="screenshots/21.jpg" width="140" alt="STREET/RACE assist levels screen" />
@@ -284,6 +285,12 @@ app/src/main/java/com/bafspeed/app/
 4. **`try_process_bafang_read_request` (bbs-fw's display-compat layer) only implements 9 opcodes** - it silently ignores everything else, including the OEM Configuration Tool's GEN/BAS/PAS/THR block reads (`0x51`-`0x54`) - by design, not a bug.
 
 ## Changelog
+
+## v0.4.10 - 2026-09-16 (versionCode 84)
+- Hotfix: fixed a critical bug where the app crashed every time you tried to write any setting to the controller (Basic, Pedal Assist, Throttle, bbs-fw config) when installed from Google Play - caused by an internal integrity check that didn't recognize Google Play's own signing certificate. Writing now works correctly regardless of install source. If the check ever does fail for a genuinely tampered copy, the app now shows a clear error message instead of crashing.
+
+## v0.4.9 - 2026-09-13 (versionCode 83)
+- AOD lock screen: fixed the app's own Next/Previous notification icons losing PAS (assist level) control when the BT button feature was enabled - they were being nulled out along with the external Bluetooth remote's Next/Previous mapping, even though tapping the app's own on-screen icons doesn't have the same routing ambiguity Android has with a real external remote.
 
 ## v0.4.8 - 2026-09-13 (versionCode 82)
 - Cockpit: nudged the power reading a bit to the right (was sitting slightly off-center).

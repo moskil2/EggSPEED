@@ -1,6 +1,12 @@
 # Changelog
 
 
+## v0.4.10 - 2026-09-16 (versionCode 84)
+- Hotfix: fixed a critical bug where the app crashed every time you tried to write any setting to the controller (Basic, Pedal Assist, Throttle, bbs-fw config) when installed from Google Play - caused by an internal integrity check that didn't recognize Google Play's own signing certificate. Writing now works correctly regardless of install source. If the check ever does fail for a genuinely tampered copy, the app now shows a clear error message instead of crashing.
+
+## v0.4.9 - 2026-09-13 (versionCode 83)
+- AOD lock screen: fixed the app's own Next/Previous notification icons losing PAS (assist level) control when the BT button feature was enabled - they were being nulled out along with the external Bluetooth remote's Next/Previous mapping, even though tapping the app's own on-screen icons doesn't have the same routing ambiguity Android has with a real external remote.
+
 ## v0.4.8 - 2026-09-13 (versionCode 82)
 - Cockpit: nudged the power reading a bit to the right (was sitting slightly off-center).
 - STREET/RACE: turning the feature off while RACE is the active profile now blocks with an explanatory message instead of silently auto-switching back to STREET in the background - switch back manually with the existing Cockpit button first.
