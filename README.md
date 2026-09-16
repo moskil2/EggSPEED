@@ -168,7 +168,7 @@ EggSPEED is available now on Google Play - **[get it here](https://play.google.c
 
 ## What do you need to use EggSPEED
 
-A standard Bafang BBS USB programming cable (OTG) - you can buy an official one
+A standard Bafang BBS USB programming cable (OTG) - you can get one
 [here](https://fasterbikes.eu/en/shop/accessories/cables/bafang-bbs-usb-programming-cable/),
 or use one of the cheap Chinese equivalents, which work just as well.
 
@@ -182,7 +182,7 @@ For a step-by-step guide on setting up EggSPEED with your Bafang BBS controller,
 - ✅ **Progress: 100%** - Bluetooth remote/button control - Vol+/Vol- map to assist level/light/PROTECT/STREET-RACE (Play/Pause/Next/Previous can't be reliably captured - Android always routes them to the phone's default media app instead)
   <br><img src="screenshots/20.jpg" width="140" alt="Bluetooth handlebar remote/button controller" />
 
-- **Progress: 60%** - SW102 display support (modified firmware) - EggRider-style features without the EggRider price tag
+- **Progress: 60%** - SW102 display support (modified firmware) - EggRider-style features without the EggRider price tag ([demo video](https://www.youtube.com/watch?v=dRWXJn7uJVk))
   <br><img src="screenshots/23.jpg" width="140" alt="SW102 boot screen on real hardware" /> <img src="screenshots/24.jpg" width="140" alt="SW102 cockpit screen on real hardware" /> <img src="screenshots/25.jpg" width="140" alt="SW102 menu with marker icon" /> <img src="screenshots/26.jpg" width="140" alt="SW102 menu top level" />
 
 - ✅ **Progress: 100%** - STREET and RACE dual assist-profile modes for OEM Bafang controllers - switch between two full sets of 10 assist levels on the fly, the EggRider Road/Offroad equivalent
