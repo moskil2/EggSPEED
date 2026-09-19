@@ -182,7 +182,7 @@ For a step-by-step guide on setting up EggSPEED with your Bafang BBS controller,
 - ✅ **Progress: 100%** - Bluetooth remote/button control - Vol+/Vol- map to assist level/light/PROTECT/STREET-RACE (Play/Pause/Next/Previous can't be reliably captured - Android always routes them to the phone's default media app instead)
   <br><img src="screenshots/20.jpg" width="140" alt="Bluetooth handlebar remote/button controller" />
 
-- **Progress: 60%** - SW102 display support (modified firmware) - EggRider-style features without the EggRider price tag
+- **Progress: 60%** - SW102 display support (modified firmware) - EggRider-style features without the EggRider price tag - **[Project repository on GitHub](https://github.com/moskil2/SW102_BAFANG_OSF)**
   <br><a href="https://www.youtube.com/watch?v=dRWXJn7uJVk"><img src="https://img.youtube.com/vi/dRWXJn7uJVk/maxresdefault.jpg" width="480" alt="SW102 demo video" /></a>
   <br><img src="screenshots/23.jpg" width="140" alt="SW102 boot screen on real hardware" /> <img src="screenshots/24.jpg" width="140" alt="SW102 cockpit screen on real hardware" /> <img src="screenshots/25.jpg" width="140" alt="SW102 menu with marker icon" /> <img src="screenshots/26.jpg" width="140" alt="SW102 menu top level" />
 
