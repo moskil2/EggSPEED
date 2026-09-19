@@ -17,8 +17,8 @@
 </p>
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=zbL4AiccX18">
-    <img src="https://img.youtube.com/vi/zbL4AiccX18/maxresdefault.jpg" width="480" alt="EggSPEED demo video" />
+  <a href="https://www.youtube.com/watch?v=36AEC7tj11M">
+    <img src="https://img.youtube.com/vi/36AEC7tj11M/maxresdefault.jpg" width="480" alt="EggSPEED demo video" />
     <br />▶️ Watch demo video
   </a>
 </p>
@@ -183,8 +183,8 @@ For a step-by-step guide on setting up EggSPEED with your Bafang BBS controller,
   <br><img src="screenshots/20.jpg" width="140" alt="Bluetooth handlebar remote/button controller" />
 
 - **Progress: 60%** - SW102 display support (modified firmware) - EggRider-style features without the EggRider price tag - **[Project repository on GitHub](https://github.com/moskil2/SW102_BAFANG_OSF)**
-  <br><a href="https://www.youtube.com/watch?v=dRWXJn7uJVk"><img src="https://img.youtube.com/vi/dRWXJn7uJVk/maxresdefault.jpg" width="480" alt="SW102 demo video" /></a>
-  <br><img src="screenshots/23.jpg" width="140" alt="SW102 boot screen on real hardware" /> <img src="screenshots/24.jpg" width="140" alt="SW102 cockpit screen on real hardware" /> <img src="screenshots/25.jpg" width="140" alt="SW102 menu with marker icon" /> <img src="screenshots/26.jpg" width="140" alt="SW102 menu top level" />
+  <br><a href="https://www.youtube.com/watch?v=YrcN-K4wGN4"><img src="https://img.youtube.com/vi/YrcN-K4wGN4/maxresdefault.jpg" width="480" alt="SW102 demo video" /></a>
+  <br><img src="screenshots/sw102_boot.jpg" height="230" alt="SW102 boot screen (v0.1.2)" /> <img src="screenshots/sw102_cockpit_a.jpg" height="230" alt="SW102 cockpit screen" /> <img src="screenshots/sw102_data_screen.jpg" height="230" alt="SW102 data screen" /> <img src="screenshots/sw102_menu_top.jpg" height="230" alt="SW102 menu, top level" />
 
 - ✅ **Progress: 100%** - STREET and RACE dual assist-profile modes for OEM Bafang controllers - switch between two full sets of 10 assist levels on the fly, the EggRider Road/Offroad equivalent
   <br><img src="screenshots/21.jpg" width="140" alt="STREET/RACE assist levels screen" />
