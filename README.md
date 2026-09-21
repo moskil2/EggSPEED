@@ -286,6 +286,18 @@ app/src/main/java/com/bafspeed/app/
 
 ## Changelog
 
+## v0.5.0 - 2026-09-21 (versionCode 89)
+- New "Trip" tab (menu, right under Cockpit): every trip you reset in the Cockpit is saved to a history list, newest first, named Trip_<start>_<end>. Open any trip to see its distance, trip time, moving time, average and max speed, start and end time, energy used (Wh and Wh/km or Wh/mi), average and max power, average and max current, battery at start/end and % used, min/max voltage and estimated range. Trips can be deleted manually.
+- Trip Options: optionally start a new trip automatically every time you connect to the controller, and/or after a break in riding longer than a time you choose (1 minute to 24 hours).
+- The app authenticity check now has a clear title and a friendly explanation, plus technical details with a "Copy details" button that puts them on the clipboard for easy sharing with support.
+
+## v0.4.12 - 2026-09-19 (versionCode 86)
+- Lock-screen/AOD display and the Bluetooth button now work for installs from Google Play: their authenticity check now recognizes Google Play's signing certificates.
+- When the authenticity check needs attention (writing, lock-screen display, STREET/RACE switching), a clear message is shown instead of the feature silently not working.
+
+## v0.4.11 - 2026-09-16 (versionCode 85)
+- Writing settings to the controller now works for all Google Play installs: added Google Play's distribution signing certificate to the accepted ones.
+
 ## v0.4.10 - 2026-09-16 (versionCode 84)
 - Hotfix: fixed a critical bug where the app crashed every time you tried to write any setting to the controller (Basic, Pedal Assist, Throttle, bbs-fw config) when installed from Google Play - caused by an internal integrity check that didn't recognize Google Play's own signing certificate. Writing now works correctly regardless of install source. If the check ever does fail for a genuinely tampered copy, the app now shows a clear error message instead of crashing.
 
