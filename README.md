@@ -64,6 +64,11 @@
 - PROTECT/SAFE status chip (shown only if PROTECT is enabled)
 - Built-in "Test mode" forcing extreme values across the Cockpit layout for visual verification
 
+### Trip history
+- Every trip you reset in the Cockpit is saved to a history list (newest first, named Trip_<start>_<end>); open a trip to see its distance, trip and moving time, average and max speed, start/end time, energy used (Wh, Wh/km or Wh/mi), average and max power and current, battery at start/end and % used, min/max voltage, and estimated range
+- Trips can be deleted manually
+- Options: start a new trip automatically each time you connect to the controller, and/or after a break in riding longer than a time you choose (1 minute to 24 hours)
+
 ### Controller programming - OEM Bafang firmware
 - Full read/write access to the Bafang Configuration Tool blocks: Basic, Pedal/PAS, Throttle, and per-level Assist settings (10 levels)
 - Read-only controller identity screen (manufacturer, model, HW/FW version, nominal voltage, max current)
