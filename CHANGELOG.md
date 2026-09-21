@@ -1,6 +1,9 @@
 # Changelog
 
 
+## v0.5.1 - 2026-09-21 (versionCode 90)
+- Profiles tab: clearer buttons - "Save profile" (blue, full width) with "Import from file" and "Export to file" side by side underneath.
+
 ## v0.5.0 - 2026-09-21 (versionCode 89)
 - New "Trip" tab (menu, right under Cockpit): every trip you reset in the Cockpit is saved to a history list, newest first, named Trip_<start>_<end>. Open any trip to see its distance, trip time, moving time, average and max speed, start and end time, energy used (Wh and Wh/km or Wh/mi), average and max power, average and max current, battery at start/end and % used, min/max voltage and estimated range. Trips can be deleted manually.
 - Trip Options: optionally start a new trip automatically every time you connect to the controller, and/or after a break in riding longer than a time you choose (1 minute to 24 hours).
