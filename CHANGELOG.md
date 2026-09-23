@@ -1,6 +1,9 @@
 # Changelog
 
 
+## v0.5.2 - 2026-09-23 (versionCode 91)
+- App authenticity check now works reliably on the newest Android versions (including Android 17) and is prepared for future Google Play signing updates.
+
 ## v0.5.1 - 2026-09-21 (versionCode 90)
 - Profiles tab: clearer buttons - "Save profile" (blue, full width) with "Import from file" and "Export to file" side by side underneath.
 
