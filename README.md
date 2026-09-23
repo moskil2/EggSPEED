@@ -98,7 +98,7 @@
 - Units toggle (km/h vs mph), app-wide
 
 ### Monitoring (charts)
-- Time-series charts (0.5s sampling, up to 10 min history) for Power, Current, Voltage, Speed
+- Time-series charts (0.5s sampling) for Power, Current, Voltage, Speed, with one shared time window for all charts: 2 / 5 / 10 / 30 / 60 min
 - Master switch plus per-chart enable toggle
 - Combined multi-series chart with per-series show/hide and normalization
 - Drag-to-scrub cursor for exact values at any point in history
@@ -116,9 +116,16 @@
 - Optional PIN gate restricting access to the Service screen
 
 ### STREET/RACE (OEM Bafang only)
+Both firmwares have a two-profile feature: STREET/RACE on OEM Bafang, Normal/Sport on bbs-fw (next section).
 - Second, independent set of 10 assist levels (RACE) alongside the default one (STREET)
-- Toggle on the Cockpit switches between them on the fly, reprogramming the controller
+- Toggle on the Cockpit switches between them on the fly, reprogramming the controller (factory OEM firmware has no such feature of its own, so EggSPEED provides it)
 - Enable/disable in the Assist Levels tab
+
+### Normal/Sport (bbs-fw only)
+The bbs-fw counterpart of STREET/RACE - built into the firmware itself, so nothing is reprogrammed when you switch.
+- Two independent sets of 10 assist levels (Normal and Sport), stored in the controller and edited in the Assist Levels tab
+- Toggle on the Cockpit switches between Normal and Sport on the fly
+- Warning on the Cockpit if the bbs-fw setting that gives the Lights button the same job is active
 
 ### Temperature control (bbs-fw only)
 - Toggle to show/hide the controller-temperature (Tc) tile on the Cockpit
@@ -236,43 +243,18 @@ Every write goes through two safety layers before anything is sent:
 
 ## Building
 
-```
-JAVA_HOME=<jdk17+> ../tools/gradle-8.10.2/bin/gradle assembleDebug
-```
-
-APK: `app/build/outputs/apk/debug/app-debug.apk`. Requires Android 8.0+ (API 26) and a phone with USB Host (OTG).
-
-Unit tests for the protocol layer (framing, LRC, WD/SMM/SMS decoding, 0xFF sentinels):
-
-```
-gradle testDebugUnitTest
-```
+EggSPEED is a Kotlin / Jetpack Compose Android app (Gradle project, Android 8.0+ / API 26, phone with USB Host for the cable connection). Release builds are made by the author and distributed through Google Play; parts of the controller-communication code are not published in this repository.
 
 ## Architecture
 
-```
-app/src/main/java/com/bafspeed/app/
-  protocol/            # Protocol layer - pure Kotlin, no Android dependency
-    Lrc.kt             # checksum (byte sum mod 256), shared by both protocols
-    BafangCommands.kt  # OEM Bafang commands (reads, writes, transient display commands)
-    BafangModels.kt    # OEM data models + GEN/BAS/PAS/THR block decoders
-    ConfigFrameParser.kt   # OEM config response framing
-    DisplayStateMachine.kt # telemetry loop (controller polling cycle state machine), shared by both firmwares
-    BbsFwCommands.kt   # bbs-fw commands (read FW version/config, write config)
-    BbsFwModels.kt     # bbs-fw config_t model (1:1 with cfgstore.h) + assist level model
-    BbsFwFrameParser.kt    # bbs-fw response framing
-    BbsFwValidation.kt # bbs-fw field validation ranges (from the official Windows tool's Configuration.cs)
-    BbsFwWriteResponseParser.kt # bbs-fw write ACK parsing
-    BbsFwWriter.kt      # builds the bbs-fw config write frame
-  profile/
-    ProfileIo.kt        # OEM profile format - .ini, compatible with the factory Bafang Configuration Tool
-    BbsFwProfileIo.kt   # bbs-fw profile format - Base64 of the same config bytes sent over the wire, tagged with a firmware marker + CONFIG_VERSION check
-  serial/
-    UsbSerialManager.kt    # USB OTG UART (usb-serial-for-android), 1200 baud 8N1, DTR/RTS asserted on OEM only
-  ui/                  # Jetpack Compose, custom design tokens
-    screens/BbsFwInfoScreen.kt, BbsFwSystemScreen.kt, BbsFwAssistLevelsScreen.kt  # bbs-fw-only screens
-  AppViewModel.kt      # app state, connection sequence, display mode, firmware switch
-```
+Roughly, from the bottom up:
+- **Serial layer** - USB OTG UART (usb-serial-for-android), 1200 baud 8N1; DTR/RTS asserted on OEM only
+- **Protocol layer** - pure Kotlin, no Android dependency; one implementation per firmware (OEM Bafang, bbs-fw) sharing the checksum and the telemetry polling loop
+- **Profiles** - OEM profiles as `.ini` compatible with the factory Bafang Configuration Tool; bbs-fw profiles as Base64 of the config bytes sent over the wire, tagged with a firmware marker and a config-version check
+- **Trip recorder** - saves finished trips to a local history
+- **Lock-screen / AOD Cockpit** - media-session based, runs as its own service
+- **UI** - Jetpack Compose with custom design tokens; the screen set follows the selected firmware
+- **App state** - a single view model holding the connection sequence, display mode and firmware switch
 
 ## Known protocol gotchas (relevant to writing)
 
