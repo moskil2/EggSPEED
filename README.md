@@ -39,6 +39,9 @@
   </tr>
 </table>
 
+<h2 align="center">Got an idea, even a wild one? Want something changed or added in the app?</h2>
+<p align="center">I'd genuinely love to hear it - <a href="https://github.com/moskil2/EggSPEED/issues">open an issue</a> or reach out through the <a href="https://spotrobotics.app/support/">support page</a>.</p>
+
 ## Features
 
 ### Connection
