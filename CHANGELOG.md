@@ -1,6 +1,9 @@
 # Changelog
 
 
+## v0.5.3 - 2026-10-05 (versionCode 92)
+- Added Finnish and Hungarian - EggSPEED now speaks 19 languages, switchable anytime from the Language menu.
+
 ## v0.5.2 - 2026-09-23 (versionCode 91)
 - App authenticity check now works reliably on the newest Android versions (including Android 17) and is prepared for future Google Play signing updates.
 
