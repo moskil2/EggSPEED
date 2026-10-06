@@ -276,6 +276,13 @@ Roughly, from the bottom up:
 
 ## Changelog
 
+## v0.5.6 - 2026-10-06 (versionCode 95)
+- Changed how BBS-FW controller replies are read, so a late reply to one request can no longer be mistaken for the reply to another (speed readings).
+- Wheel size used for speed calculation is now taken from the BBS-FW controller configuration.
+- BBS-FW: support for the newer configuration format 5 (read and write).
+- Calmer connection status message.
+- Added Finnish and Hungarian languages (19 languages in total).
+
 ## v0.5.3 - 2026-10-05 (versionCode 92)
 - Added Finnish and Hungarian - EggSPEED now speaks 19 languages, switchable anytime from the Language menu.
 
