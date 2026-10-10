@@ -275,6 +275,10 @@ Roughly, from the bottom up:
 3. **Retry the initial identification read** - the official tool resends the firmware-version request every 200ms for up to 120s rather than giving up after one timeout; controllers can be slow to respond on the programming port.
 4. **`try_process_bafang_read_request` (bbs-fw's display-compat layer) only implements 9 opcodes** - it silently ignores everything else, including the OEM Configuration Tool's GEN/BAS/PAS/THR block reads (`0x51`-`0x54`) - by design, not a bug.
 
+## Code size
+
+As of v0.5.8: about 21,000 lines of Kotlin across 70 source files, including roughly 1,400 lines of tests. A large share of the app's lines are inline translations - every user-facing text carries all 19 languages right where it's used.
+
 ## Changelog
 
 ## v0.5.8 - 2026-10-08 (versionCode 97)
