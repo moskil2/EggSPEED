@@ -141,6 +141,7 @@ The bbs-fw counterpart of STREET/RACE - built into the firmware itself, so nothi
 - Test mode toggle (same as Cockpit)
 - Controller hardware-error detection (opt-in, off by default) - decodes the Bafang STATUS register into named error codes, shows a warning icon on the Cockpit when a fault is active, tapping it jumps straight to Diagnostics
 - Collapsible reference list of all known controller error codes and their descriptions
+- Communication log (off by default) - records a few minutes of controller data exchange to a file you can send by e-mail; technical data only, no GPS and no personal data
 
 ### Profiles
 - Save/load/delete named configuration presets, locally in the app - loading is blocked with a clear error if the profile's firmware doesn't match the one currently selected, instead of silently writing into the wrong fields
@@ -269,12 +270,17 @@ Roughly, from the bottom up:
 5. The controller validates writes and returns per-parameter error codes - the app still validates client-side before sending (see Safety model above).
 
 ### bbs-fw
-1. **Always verify against the latest tagged GitHub release, not `main`** - `main` can contain merged-but-unreleased struct changes (this bit us once: our config model briefly matched an unreleased `CONFIG_VERSION=5` struct instead of the shipping `v1.5.0`/`CONFIG_VERSION=4`, which every real controller in the wild actually runs).
+1. **Support both config formats, chosen from the controller's reply** - the latest tagged release (`v1.5.0`) uses `CONFIG_VERSION=4` (152 bytes), while `main` (reports itself as `1.5.99`) uses `CONFIG_VERSION=5` (154 bytes, two extra pretension fields right after the lights mode). Both are running on real controllers, so the app takes the version and length from the controller's reply instead of assuming one. Live display telemetry is the same in both.
 2. **Don't assert DTR/RTS** - the official `BBSFWTool.exe` never touches them (both stay at the .NET default `false`); forcing them high broke the connection for testers.
 3. **Retry the initial identification read** - the official tool resends the firmware-version request every 200ms for up to 120s rather than giving up after one timeout; controllers can be slow to respond on the programming port.
 4. **`try_process_bafang_read_request` (bbs-fw's display-compat layer) only implements 9 opcodes** - it silently ignores everything else, including the OEM Configuration Tool's GEN/BAS/PAS/THR block reads (`0x51`-`0x54`) - by design, not a bug.
 
 ## Changelog
+
+## v0.5.8 - 2026-10-08 (versionCode 97)
+- BBS-FW: steadier live readings (voltage, battery, current, temperature) - every controller reply is now checked and incomplete data is skipped, so values no longer jump right after connecting.
+- BBS-FW: the brake indicator and controller messages now appear once confirmed by the next reading.
+- New "Communication log" in Diagnostics (off by default): records a few minutes of data exchanged with the controller and saves it to a file you can send by e-mail, which helps track down unusual readings much faster. Technical data only, no GPS and no personal data.
 
 ## v0.5.6 - 2026-10-06 (versionCode 95)
 - Changed how BBS-FW controller replies are read, so a late reply to one request can no longer be mistaken for the reply to another (speed readings).

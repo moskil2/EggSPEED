@@ -1,6 +1,11 @@
 # Changelog
 
 
+## v0.5.8 - 2026-10-08 (versionCode 97)
+- BBS-FW: steadier live readings (voltage, battery, current, temperature) - every controller reply is now checked and incomplete data is skipped, so values no longer jump right after connecting.
+- BBS-FW: the brake indicator and controller messages now appear once confirmed by the next reading.
+- New "Communication log" in Diagnostics (off by default): records a few minutes of data exchanged with the controller and saves it to a file you can send by e-mail, which helps track down unusual readings much faster. Technical data only, no GPS and no personal data.
+
 ## v0.5.6 - 2026-10-06 (versionCode 95)
 - Changed how BBS-FW controller replies are read, so a late reply to one request can no longer be mistaken for the reply to another (speed readings).
 - Wheel size used for speed calculation is now taken from the BBS-FW controller configuration.
