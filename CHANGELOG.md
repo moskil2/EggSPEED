@@ -1,6 +1,10 @@
 # Changelog
 
 
+## v0.5.9 - 2026-10-10 (versionCode 98)
+- Connection status messages on the Connect screen are now shown in all 19 languages - previously only Polish and English had their own text and the other languages showed English.
+- Calmer, more helpful wording for a few connection messages, e.g. when no connection is made after several attempts the app now suggests checking the cable and power.
+
 ## v0.5.8 - 2026-10-08 (versionCode 97)
 - BBS-FW: steadier live readings (voltage, battery, current, temperature) - every controller reply is now checked and incomplete data is skipped, so values no longer jump right after connecting.
 - BBS-FW: the brake indicator and controller messages now appear once confirmed by the next reading.
