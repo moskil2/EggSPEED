@@ -1,6 +1,12 @@
 # Changelog
 
 
+## v0.6.1 - 2026-10-12 (versionCode 100)
+- New: Bluetooth connection. Settings > Connection (now right below Controller firmware) lets you choose USB OTG Wire or Bluetooth; USB OTG stays the default.
+- Bluetooth works with a BT-06/HC-06 module on a UART-BT converter set to 1200 baud (build notes: https://github.com/moskil2/UART-BT-Konwerter). Pair the module in the phone's Bluetooth settings first, then pick it from the list in Settings - the app remembers it by address, so the module can have any name. Tested with OEM Bafang firmware.
+- The app asks for the Bluetooth permission only when you choose Bluetooth; declining keeps USB OTG.
+- OEM Bafang: the Cockpit reads speed the same way as before v0.5.6 again - the reply check added in v0.5.6 now applies to BBS-FW only, as intended.
+
 ## v0.5.9 - 2026-10-10 (versionCode 98)
 - Connection status messages on the Connect screen are now shown in all 19 languages - previously only Polish and English had their own text and the other languages showed English.
 - Calmer, more helpful wording for a few connection messages, e.g. when no connection is made after several attempts the app now suggests checking the cable and power.
