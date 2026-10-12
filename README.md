@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  A modern Android app for Bafang BBS01 / BBS02 / BBSHD mid-drive controllers, talking directly to the controller over UART (USB OTG programming cable), now supporting both factory OEM Bafang firmware and <a href="https://github.com/danielnilsson9/bbs-fw">bbs-fw</a>, switchable in Settings.
+  A modern Android app for Bafang BBS01 / BBS02 / BBSHD mid-drive controllers, talking directly to the controller over UART (USB OTG programming cable or a Bluetooth UART bridge), now supporting both factory OEM Bafang firmware and <a href="https://github.com/danielnilsson9/bbs-fw">bbs-fw</a>, switchable in Settings.
 </p>
 
 <p align="center">
@@ -45,12 +45,11 @@
 ## Features
 
 ### Connection
-- USB OTG connection to Bafang BBS01/BBS02/BBSHD controller via a Bafang programming cable
+- USB OTG connection to Bafang BBS01/BBS02/BBSHD controller via a Bafang programming cable, or Bluetooth via a BT-06/HC-06 module on a UART-BT converter ([build notes](https://github.com/moskil2/UART-BT-Konwerter))
 - Connection status states: disconnected / searching / identifying / connected / error, with live status text
 - One-tap Connect/Disconnect, with a quick "Go to Cockpit" shortcut once connected
 - Automatic reconnect after a dropped connection during riding, with a "Connecting…" badge and a failure indicator after max retries
 - Firmware type indicator shown on the Connect screen
-- (Placeholder, not functional yet) Bluetooth connection type shown as "coming soon" in Settings
 
 ### Cockpit (live dashboard)
 - Large digital speed readout (km/h or mph) with optional GPS-speed annotation for comparison
@@ -154,6 +153,7 @@ The bbs-fw counterpart of STREET/RACE - built into the firmware itself, so nothi
 
 ### Settings
 - Firmware type switch (see above)
+- Connection type: USB OTG Wire or Bluetooth (pick the paired module from a list; the Bluetooth permission is requested only when Bluetooth is chosen)
 - Fast Cockpit refresh toggle (experimental, shorter telemetry polling)
 - GPS Speed toggle (phone-GPS speed annotation on Cockpit, location permission requested on enable)
 - Units toggle (km/h/mph)
@@ -188,6 +188,8 @@ A standard Bafang BBS USB programming cable (OTG) - you can get one
 [here](https://fasterbikes.eu/en/shop/accessories/cables/bafang-bbs-usb-programming-cable/),
 or use one of the cheap Chinese equivalents, which work just as well.
 
+Or, instead of the cable, a Bluetooth UART bridge: a BT-06/HC-06 module set to 1200 baud on a small UART-BT converter plugged into the controller's display connector - see the [UART-BT converter repository](https://github.com/moskil2/UART-BT-Konwerter).
+
 ## How to connect the app to your controller
 
 For a step-by-step guide on setting up EggSPEED with your Bafang BBS controller, see:
@@ -205,7 +207,7 @@ For a step-by-step guide on setting up EggSPEED with your Bafang BBS controller,
 - ✅ **Progress: 100%** - STREET and RACE dual assist-profile modes for OEM Bafang controllers - switch between two full sets of 10 assist levels on the fly, the EggRider Road/Offroad equivalent
   <br><img src="screenshots/21.jpg" width="140" alt="STREET/RACE assist levels screen" />
 
-- **Progress: 20%** - A Bluetooth module replacing the USB OTG programming cable - full read/write communication over BT, no cable and no plugging the phone into the controller needed - **[Project repository on GitHub](https://github.com/moskil2/UART-BT-Konwerter)**
+- ✅ **Progress: 100%** - A Bluetooth module replacing the USB OTG programming cable - full read/write communication over BT, no cable and no plugging the phone into the controller needed (since v0.6.1) - **[Project repository on GitHub](https://github.com/moskil2/UART-BT-Konwerter)**
   <br><img src="screenshots/22.jpg" width="140" alt="HM-10 Bluetooth UART module" />
 
 - ✅ **Progress: 100%** - Added Norwegian, Japanese, Latvian, and Estonian language support (17 languages total)
@@ -235,6 +237,7 @@ Every write goes through two safety layers before anything is sent:
 
 ### Core features
 - USB OTG connection (Bafang programming cable, UART 1200 baud 8N1; DTR/RTS asserted on OEM only - bbs-fw's own official tool never touches them)
+- Bluetooth connection (Bluetooth Classic SPP to a BT-06/HC-06 module on a UART-BT converter, 1200 baud)
 - Controller identification (OEM: manufacturer, model, HW/FW versions, voltage, max current; bbs-fw: firmware version, config format version, controller type)
 - Full configuration read and write: OEM Basic / Pedal Assist / Throttle, or bbs-fw System / Assist Levels
 - Live dashboard: speed (wheel RPM × circumference), battery %, power W (estimated on OEM, real ADC reading on bbs-fw), brake
@@ -243,7 +246,6 @@ Every write goes through two safety layers before anything is sent:
 
 ### What EggSPEED deliberately does NOT do
 - Flash firmware (not planned at all)
-- Talk to the controller over Bluetooth (planned for the future - needs its own hardware bridge; Bluetooth IS supported for the optional remote-button feature, see above)
 
 ## Building
 
@@ -252,7 +254,7 @@ EggSPEED is a Kotlin / Jetpack Compose Android app (Gradle project, Android 8.0+
 ## Architecture
 
 Roughly, from the bottom up:
-- **Serial layer** - USB OTG UART (usb-serial-for-android), 1200 baud 8N1; DTR/RTS asserted on OEM only
+- **Serial layer** - USB OTG UART (usb-serial-for-android), 1200 baud 8N1; DTR/RTS asserted on OEM only; or Bluetooth Classic SPP (RFCOMM) to a UART-BT bridge - both behind one transport interface
 - **Protocol layer** - pure Kotlin, no Android dependency; one implementation per firmware (OEM Bafang, bbs-fw) sharing the checksum and the telemetry polling loop
 - **Profiles** - OEM profiles as `.ini` compatible with the factory Bafang Configuration Tool; bbs-fw profiles as Base64 of the config bytes sent over the wire, tagged with a firmware marker and a config-version check
 - **Trip recorder** - saves finished trips to a local history
