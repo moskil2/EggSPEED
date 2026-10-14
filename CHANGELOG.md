@@ -1,6 +1,20 @@
 # Changelog
 
 
+## v0.6.4 - 2026-10-14 (versionCode 103)
+- BBS-FW Assist Levels: every parameter now has a short description behind a green arrow (Type, Variant, Torque Amplification, Max Current, Max Cadence, Max Speed, Enable Throttle, Throttle Overrides, Max Throttle Current, Operation Mode Toggle, Startup Assist Level), based on what the BBS-FW firmware actually does with each value.
+- "Hide Normal/Sport button on Cockpit" now uses YES / NO buttons and explains the N/S letter.
+
+## v0.6.3 - 2026-10-14 (versionCode 102)
+- BBS-FW: new option "Hide Normal/Sport button on Cockpit" under Operation Mode Toggle. With any setting other than Sport Button the button can be hidden; a blue N or S above the speed unit then shows the current mode.
+
+## v0.6.2 - 2026-10-14 (versionCode 101)
+- BBS-FW: the Cockpit Normal/Sport and Light buttons now follow the controller's Operation Mode Toggle setting. Off - Sport stays off and the Normal/Sport button only shows the state. Sport Button - unchanged. Lights Button - the Light button switches Normal/Sport. PAS N + Lights Button - on PAS N the Light button switches Normal/Sport, on other levels it controls the light. Brakes @ Power On - Sport only if the brake is held while the app connects; disconnecting returns to Normal. A short note on the Cockpit and under the setting explains the current behaviour.
+- BBS-FW: after saving, the app lists changed settings that take effect only after the controller restarts (current limit, speed limit, low voltage cutoff, wheel size and others) and asks you to switch the bike's power off and on - BBS-FW has no remote restart.
+- Bluetooth: connection messages mention the Bluetooth module instead of the cable when Bluetooth is selected.
+- Settings > Connection: only the selected Bluetooth module is shown; other paired devices are under "Choose another module". The Bluetooth description is shorter and links to the module build guide.
+- About: Privacy policy and Terms of service now mention Bluetooth next to the USB cable; the Contact tile header matches the other tiles.
+
 ## v0.6.1 - 2026-10-12 (versionCode 100)
 - New: Bluetooth connection. Settings > Connection (now right below Controller firmware) lets you choose USB OTG Wire or Bluetooth; USB OTG stays the default.
 - Bluetooth works with a BT-06/HC-06 module on a UART-BT converter set to 1200 baud (build notes: https://github.com/moskil2/UART-BT-Konwerter). Pair the module in the phone's Bluetooth settings first, then pick it from the list in Settings - the app remembers it by address, so the module can have any name. Tested with OEM Bafang firmware.
