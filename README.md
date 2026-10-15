@@ -212,7 +212,7 @@ For a step-by-step guide on setting up EggSPEED with your Bafang BBS controller,
 
 - ✅ **Progress: 100%** - Added Norwegian, Japanese, Latvian, and Estonian language support (17 languages total)
 
-- **Progress: 10%** - Selectable cockpit styles - three new looks (Sport Classic, Modern Performance, Technical Instrument) to choose in Settings; the current cockpit stays the default
+- ✅ **Progress: 100%** - Selectable cockpit styles - three new looks (Sport Classic, Modern Performance, Technical Instrument) to choose in Settings; the current cockpit stays the default
   <br><img src="screenshots/cockpit_styles.jpg" width="480" alt="Three new cockpit styles: Sport Classic, Modern Performance, Technical Instrument" />
 
 ## Safety model
