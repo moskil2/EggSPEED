@@ -208,7 +208,7 @@ For a step-by-step guide on setting up EggSPEED with your Bafang BBS controller,
   <br><img src="screenshots/21.jpg" width="140" alt="STREET/RACE assist levels screen" />
 
 - ✅ **Progress: 100%** - A Bluetooth module replacing the USB OTG programming cable - full read/write communication over BT, no cable and no plugging the phone into the controller needed (since v0.6.1; tested with OEM Bafang and BBS-FW) - **[Project repository on GitHub](https://github.com/moskil2/UART-BT-Konwerter)**
-  <br><img src="screenshots/bt06.png" width="140" alt="BT-06 Bluetooth UART module" />
+  <br><img src="screenshots/bt_module.png" width="140" alt="EggSPEED Bluetooth module" />
 
 - ✅ **Progress: 100%** - Added Norwegian, Japanese, Latvian, and Estonian language support (17 languages total)
 
