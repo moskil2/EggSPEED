@@ -1,6 +1,27 @@
 # Changelog
 
 
+## v0.7.0 - 2026-10-17 (versionCode 109)
+- Cockpit styles: needles and value arcs now move smoothly between readings instead of stepping.
+
+## v0.6.9 - 2026-10-15 (versionCode 108)
+- Cockpit styles: on every Cockpit entry the needles sweep to the end of the scale and back, then settle on the live value.
+
+## v0.6.8 - 2026-10-15 (versionCode 107)
+- Cockpit styles: the assist level digit is centered and no longer cut off; the GPS speed block no longer shifts when the number of digits changes.
+
+## v0.6.7 - 2026-10-15 (versionCode 106)
+- Cockpit styles: larger speed gauge, GPS speed in two lines, units no longer cut off in Technical Instrument; style previews always visible in Settings.
+
+## v0.6.6 - 2026-10-15 (versionCode 105)
+- New: selectable cockpit styles in Settings > Cockpit - Sport Classic, Modern Performance and Technical Instrument (analog gauges, dark only), with previews. The current cockpit stays the default.
+- BBS-FW: the mode note under the Cockpit buttons is removed; the explanation stays under Operation Mode Toggle in Assist Levels.
+- BBS-FW: the "Hide Normal/Sport button" description is now behind a green arrow, like the other parameters.
+
+## v0.6.5 - 2026-10-15 (versionCode 104)
+- ODO is now its own total-distance counter, independent of Trip: resetting Trip no longer changes ODO. The value entered in Settings sets the counter (e.g. when moving from an old display) and it keeps counting from there. After the update ODO continues from the value it showed before.
+- Trip, ODO and average speed are saved every 15 seconds while riding, so little is lost if Android closes the app mid-ride.
+
 ## v0.6.4 - 2026-10-14 (versionCode 103)
 - BBS-FW Assist Levels: every parameter now has a short description behind a green arrow (Type, Variant, Torque Amplification, Max Current, Max Cadence, Max Speed, Enable Throttle, Throttle Overrides, Max Throttle Current, Operation Mode Toggle, Startup Assist Level), based on what the BBS-FW firmware actually does with each value.
 - "Hide Normal/Sport button on Cockpit" now uses YES / NO buttons and explains the N/S letter.
