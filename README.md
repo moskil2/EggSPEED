@@ -89,6 +89,7 @@
 ### Trip history
 - Every trip you reset in the Cockpit is saved to a history list (newest first, named Trip_<start>_<end>); open a trip to see its distance, trip and moving time, average and max speed, start/end time, energy used (Wh, Wh/km or Wh/mi), average and max power and current, battery at start/end and % used, min/max voltage, and estimated range
 - Trips can be deleted manually
+- Tap TRIP in the Cockpit to see the current trip with the same details, before it is saved to the history
 - Options: start a new trip automatically each time you connect to the controller, and/or after a break in riding longer than a time you choose (1 minute to 24 hours)
 
 ### Controller programming - OEM Bafang firmware
@@ -305,6 +306,13 @@ Roughly, from the bottom up:
 As of v0.5.8: about 21,000 lines of Kotlin across 70 source files, including roughly 1,400 lines of tests. A large share of the app's lines are inline translations - every user-facing text carries all 19 languages right where it's used.
 
 ## Changelog
+
+## v0.7.2 - 2026-10-19 (versionCode 111)
+- New cockpit styles: Modern Minimalist, Dark Cockpit and Outdoor (analog, dark only) with a trip speed chart - speed along the current TRIP, dashed line = TRIP average, resets with TRIP.
+- Tap TRIP in the Cockpit to see the current trip (same details as in trip history).
+- Settings > Cockpit style: description opens only with the green arrow, tap a preview or name to select, previews in two rows.
+- Settings: clearer "Show errors on Cockpit" description; removed a redundant reconnect note in Connection.
+- Slimmer top bar - more room for the Cockpit on smaller phones.
 
 ## v0.7.0 - 2026-10-17 (versionCode 109)
 - Cockpit styles: needles and value arcs now move smoothly between readings instead of stepping.

@@ -1,6 +1,13 @@
 # Changelog
 
 
+## v0.7.2 - 2026-10-19 (versionCode 111)
+- New cockpit styles: Modern Minimalist, Dark Cockpit and Outdoor (analog, dark only) with a trip speed chart - speed along the current TRIP, dashed line = TRIP average, resets with TRIP.
+- Tap TRIP in the Cockpit to see the current trip (same details as in trip history).
+- Settings > Cockpit style: description opens only with the green arrow, tap a preview or name to select, previews in two rows.
+- Settings: clearer "Show errors on Cockpit" description; removed a redundant reconnect note in Connection.
+- Slimmer top bar - more room for the Cockpit on smaller phones.
+
 ## v0.7.0 - 2026-10-17 (versionCode 109)
 - Cockpit styles: needles and value arcs now move smoothly between readings instead of stepping.
 
