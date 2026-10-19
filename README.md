@@ -66,6 +66,26 @@
 - PROTECT/SAFE status chip (shown only if PROTECT is enabled)
 - Built-in "Test mode" forcing extreme values across the Cockpit layout for visual verification
 
+### Cockpit styles
+- Seven Cockpit looks to choose in Settings > Cockpit; Default stays active after install
+- Default: the classic digital Cockpit - the only one with Light mode, High contrast and Large digits
+- Six analog styles (dark only): Sport Classic, Modern Performance, Technical Instrument, Modern Minimalist, Dark Cockpit and Outdoor
+- Modern Minimalist, Dark Cockpit and Outdoor add a speed chart for the current TRIP: the line shows your speed along the trip, the dashed line the TRIP average; it resets together with TRIP
+
+<table align="center">
+  <tr>
+    <td><img src="screenshots/cockpit_default.jpg" width="140" alt="Default cockpit style" /></td>
+    <td><img src="screenshots/cockpit_sport_classic.jpg" width="140" alt="Sport Classic cockpit style" /></td>
+    <td><img src="screenshots/cockpit_modern_performance.jpg" width="140" alt="Modern Performance cockpit style" /></td>
+    <td><img src="screenshots/cockpit_technical_instrument.jpg" width="140" alt="Technical Instrument cockpit style" /></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/cockpit_modern_minimalist.jpg" width="140" alt="Modern Minimalist cockpit style with the trip speed chart" /></td>
+    <td><img src="screenshots/cockpit_dark_cockpit.jpg" width="140" alt="Dark Cockpit style with the trip speed chart" /></td>
+    <td><img src="screenshots/cockpit_outdoor.jpg" width="140" alt="Outdoor cockpit style with the trip speed chart" /></td>
+  </tr>
+</table>
+
 ### Trip history
 - Every trip you reset in the Cockpit is saved to a history list (newest first, named Trip_<start>_<end>); open a trip to see its distance, trip and moving time, average and max speed, start/end time, energy used (Wh, Wh/km or Wh/mi), average and max power and current, battery at start/end and % used, min/max voltage, and estimated range
 - Trips can be deleted manually
