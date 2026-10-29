@@ -307,6 +307,10 @@ As of v0.5.8: about 21,000 lines of Kotlin across 70 source files, including rou
 
 ## Changelog
 
+## v0.7.3 - 2026-10-29 (versionCode 112)
+- Bafang Assist Levels (OEM, STREET/RACE on): while RACE is active, the STREET and RACE levels are view-only - switch to STREET on the Cockpit to edit them.
+- Battery: new "Total energy used" tile - total Wh and Ah drawn from the battery while the app is connected, kept across restarts, with a small reset button (with confirmation).
+
 ## v0.7.2 - 2026-10-19 (versionCode 111)
 - New cockpit styles: Modern Minimalist, Dark Cockpit and Outdoor (analog, dark only) with a trip speed chart - speed along the current TRIP, dashed line = TRIP average, resets with TRIP.
 - Tap TRIP in the Cockpit to see the current trip (same details as in trip history).
