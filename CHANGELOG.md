@@ -1,6 +1,9 @@
 # Changelog
 
 
+## v0.7.4 - 2026-11-01 (versionCode 113)
+- Connect: the Disconnect button now turns off the light and sets the assist level to 0 (sent twice, 1 s apart) before closing the connection - it takes about 2 s. On BBS-FW with Lights, or PASx Light at level x, the light command is skipped because there it switches Normal/Sport.
+
 ## v0.7.3 - 2026-10-29 (versionCode 112)
 - Bafang Assist Levels (OEM, STREET/RACE on): while RACE is active, the STREET and RACE levels are view-only - switch to STREET on the Cockpit to edit them.
 - Battery: new "Total energy used" tile - total Wh and Ah drawn from the battery while the app is connected, kept across restarts, with a small reset button (with confirmation).
